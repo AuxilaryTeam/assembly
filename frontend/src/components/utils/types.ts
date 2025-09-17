@@ -47,22 +47,29 @@ export interface LoginRequest {
 }
 
 
+
+
 export interface SignUpForm {
     firstName: string;
     lastName: string;
     email: string;
+    username: string;
     password: string;
     confirmPassword: string;
+    roleId: number;
 }
 
 export interface SignUpRequest {
     firstName: string;
-    middleName: string;
     lastName: string;
     email: string;
+    username: string;
     password: string;
+    roleId: number
+
 
 }
+
 
 
 // Retention types

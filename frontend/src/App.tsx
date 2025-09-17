@@ -1,7 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
 import AppLayout from "./components/layouts/AppLayout";
-import PublicPollDisplay from "./pages/Poll";
+import { PublicPollDisplay, SignIn, SignUp } from "./index";
 import Issues from "./pages/Issues";
 
 function App() {
@@ -9,10 +9,13 @@ function App() {
     <BrowserRouter>
       <AppLayout>
         <Routes>
-          <Route path="/p" element={<PublicPollDisplay />} />
+          <Route path="/" element={<PublicPollDisplay />} />
         </Routes>
         <Routes>
-          <Route path="/i" element={<Issues />} />
+          <Route path="/signin" element={<SignIn />} />
+        </Routes>
+        <Routes>
+          <Route path="/signup" element={<SignUp />} />
         </Routes>
       </AppLayout>
     </BrowserRouter>
