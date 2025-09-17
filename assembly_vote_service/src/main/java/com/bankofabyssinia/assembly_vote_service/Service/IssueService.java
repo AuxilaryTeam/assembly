@@ -145,7 +145,7 @@ public class IssueService {
             default -> throw new IllegalArgumentException("Invalid option id: " + issueVote.getOptionId());
         };
 
-        Voter voter = voterRepository.findById(issueVote.getVoterId())
+        Voter voter = voterRepository.findByShareholderid(issueVote.getVoterShareHolderId())
                 .orElseThrow(() -> new IllegalArgumentException("Voter not found with id: " + issueVote.getVoterId()));
 
         // check the voter is the attended

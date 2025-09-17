@@ -57,4 +57,24 @@ public class VoterController {
         }
     }
 
+    // find voter by shareholder id
+    @GetMapping("/{shareholderId}")
+    public ResponseEntity<?> getVoterByShareholderId(@PathVariable String shareholderId,
+                                                        HttpServletRequest requestHeader) {
+            String token = requestHeader.getHeader("Authorization").substring(7);
+            User user = authService.getUserFromToken(token);
+            try {
+                Voter voter = voterService.getVoterByShareholderId(shareholderId, user);
+                return ResponseEntity.ok(voter);
+            } catch (Exception e) {
+                return ResponseEntity.status(500).body(
+                        Map.of(
+                                "error", "Voter retrieval failed",
+                                "message", e.getMessage()
+                        )
+                );
+            }
+        }   
+
+    // find voter by shareholder id
 }

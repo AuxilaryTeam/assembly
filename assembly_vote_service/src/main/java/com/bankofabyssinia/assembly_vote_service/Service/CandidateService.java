@@ -111,7 +111,7 @@ public class CandidateService {
     public CandidateVote voteForCandidate(VoteDTO voteDTO, User user) {
         Position position = positionRepository.findById(voteDTO.getPositionId()).orElseThrow(() -> new RuntimeException("Position not found with id: " + voteDTO.getPositionId()));
         Candidate candidate = candidateRepository.findById(voteDTO.getCandidateId()).orElseThrow(() -> new RuntimeException("Candidate not found with id: " + voteDTO.getCandidateId()));
-        Voter voter = voterRepository.findById(voteDTO.getVoterId()).orElseThrow(() -> new RuntimeException("Voter not found with id: " + voteDTO.getVoterId()));
+        Voter voter = voterRepository.findByShareholderid(voteDTO.getVoterShareHolderId()).orElseThrow(() -> new RuntimeException("Voter not found with id: " + voteDTO.getVoterId()));
 
         // check the voter is the attended
         if (!voter.getAttendance()) {

@@ -48,6 +48,11 @@ public class AuthService {
     public LoginResponse login (LoginRequest loginRequest) {
         Optional<User> userOpt = userRepo.findByEmailIgnoreCase(loginRequest.getEmail());
 
+        // login with username or email (added feature)
+        if (userOpt.isEmpty()) {
+            userOpt = userRepo.findByUsernameIgnoreCase(loginRequest.getUsername());
+        }
+
         if (userOpt.isPresent()) {
             User user = userOpt.get();
             if (encoder.matches(loginRequest.getPassword(), user.getPassword())) {
