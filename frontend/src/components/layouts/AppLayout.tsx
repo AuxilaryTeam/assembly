@@ -18,7 +18,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         backgroundPosition: "center",
         backgroundColor: "#f5f4f2", // fallback color
       }}>
-      {/* <Header /> */}
+      <Header />
       <main className="flex-grow">
         <ToastContainer />
         {children}
