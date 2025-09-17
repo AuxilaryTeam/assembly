@@ -1,5 +1,5 @@
 import SignInForm from "../components/forms/SiginInForm";
-import BoALogo from "../assets/react.svg";
+
 import { SystemTitle } from "../components/utils/modules";
 
 const SignIn = () => {
@@ -15,14 +15,7 @@ const SignIn = () => {
         </div>
 
         {/* Right Side: Logo and Text */}
-        <div className="w-1/2 bg-[#f1ab15] flex flex-col justify-center items-center p-10">
-          <img
-            src={BoALogo}
-            alt="Logo of bank of abyssinia"
-            className="h-24 w-24 mb-6"
-          />
-          <SystemTitle />
-        </div>
+        <SystemTitle />
       </div>
     </div>
   );
