@@ -216,17 +216,8 @@ const Header: React.FC = () => {
             <div className="relative">
               {/* Desktop nav links */}
               <nav className="hidden lg:flex items-center gap-5">
-                {headerLink({ to: "/", children: "Dashboard" })}
-                {headerLink({ to: "/weeklyinput", children: "Weekly Input" })}
-                {headerLink({ to: "/report", children: "Report" })}
-
-                {user !== null &&
-                  user.roleName === "ADMIN" &&
-                  headerLink({ to: "/authorize", children: "Authorize" })}
-                {headerLink({
-                  to: "/proceeds",
-                  children: "Proceeds Processing",
-                })}
+                {headerLink({ to: "/", children: "Polls" })}
+                {headerLink({ to: "/issues", children: "Issues" })}
               </nav>
             </div>
           )}

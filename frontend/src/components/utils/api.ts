@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { LoginRequest, SignUpRequest, Customer, ImportRequest, RetentionRequestDTO } from "./types";
+import type { LoginRequest, SignUpRequest, IssueItem } from "./types";
 
 const BASE_URL = "http://localhost:8081/api"
 
@@ -24,4 +24,23 @@ export const userSignUp = (userData: SignUpRequest) => {
 
 export const userLogin = (userData: LoginRequest) => {
     return api.post("/auth/login", userData);
+}
+
+export const createIssue = (newIssue: IssueItem) => {
+    return api.post("/issue/createIssue", newIssue);
+}
+
+
+
+//  ========== Issue ===============
+export const getIssueList = () => {
+    return api.get("/issue/active");
+}
+
+export const activateIssue = (id: number) => {
+    return api.put(`/issue/active/${id}`)
+}
+
+export const closeIssue = (id: number) => {
+    return api.put(`/issue/close/${id}`)
 }
