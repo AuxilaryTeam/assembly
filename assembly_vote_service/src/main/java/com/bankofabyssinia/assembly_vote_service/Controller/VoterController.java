@@ -3,6 +3,7 @@ package com.bankofabyssinia.assembly_vote_service.Controller;
 import com.bankofabyssinia.assembly_vote_service.DTO.VoterRegisterRequest;
 import com.bankofabyssinia.assembly_vote_service.Entity.User;
 import com.bankofabyssinia.assembly_vote_service.Entity.Voter;
+import com.bankofabyssinia.assembly_vote_service.Exception.VoterNotFoundException;
 import com.bankofabyssinia.assembly_vote_service.Service.AuthService;
 import com.bankofabyssinia.assembly_vote_service.Service.VoterService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -66,7 +67,15 @@ public class VoterController {
             try {
                 Voter voter = voterService.getVoterByShareholderId(shareholderId, user);
                 return ResponseEntity.ok(voter);
-            } catch (Exception e) {
+            } catch (VoterNotFoundException e) {
+                return ResponseEntity.status(404).body(
+                        Map.of(
+                                "error", "Voter not found",
+                                "message", e.getMessage()
+                        )
+                );
+            }
+            catch (Exception e) {
                 return ResponseEntity.status(500).body(
                         Map.of(
                                 "error", "Voter retrieval failed",
