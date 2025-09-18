@@ -58,7 +58,7 @@ const CreateIssueForm: React.FC = () => {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="bg-[#f1ab15] hover:bg-yellow-600 text-white px-4 py-2 rounded">
+        className="bg-[#f1ab15] hover:bg-yellow-600 text-white px-4 py-2 rounded cursor-pointer">
         {isSubmitting ? "Submitting..." : "Create Issue"}
       </button>
     </form>

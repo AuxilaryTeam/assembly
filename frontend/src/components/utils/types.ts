@@ -67,6 +67,9 @@ export interface SignUpRequest {
 
 }
 
+
+
+//  ======== Issue ==========
 export type IssueRequest = {
     id: number;
     title: string;
@@ -81,3 +84,36 @@ export type IssueItem = {
     active: boolean;
 
 }
+
+export type IssueResult = {
+    title: string;
+    description: string;
+    status: "OPEN" | "CLOSED" | string; // can extend later
+    options: Record<string, number>;
+};
+
+// ========== Voter ===========
+
+export type VoterItem = {
+    id: number;
+    attendance: boolean | null;
+    devidend: number | null;
+    fiscalyear: string | null;
+    nameamh: string | null;
+    nameeng: string | null;
+    paidcapital: number | null;
+    phone: string | null;
+    shareholderid: string | null;
+    sharesubsription: number | null;
+    totalcapital: number | null;
+    votingsubscription: number | null;
+};
+
+export type VoteRequest = {
+    voterId: number;
+    voterShareHolderId: string;
+    positionId?: number;
+    candidateId?: number;
+    issueId?: number;
+    optionId?: number;
+};

@@ -7,8 +7,10 @@ import Modal from "../components/modal/Modal";
 import CreateIssueForm from "../components/forms/CreateIssueForm";
 import { getIssueList } from "../components/utils/api";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const IssuesPage = () => {
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [issues, setIssues] = useState<IssueItem[]>([]);
   const [createIssue, setCreateIssue] = useState(false);
@@ -43,7 +45,7 @@ const IssuesPage = () => {
           </h1>
           {/* Create Button */}
           <button
-            className="bg-[#f1ab15] hover:bg-yellow-600 text-white font-semibold px-4 py-2 rounded shadow transition"
+            className="bg-[#f1ab15] hover:bg-yellow-600 text-white font-semibold px-4 py-2 rounded shadow transition cursor-pointer"
             onClick={() => {
               setCreateIssue(!createIssue);
             }}>
@@ -72,6 +74,7 @@ const IssuesPage = () => {
         {filteredData.map((item) => (
           <div
             key={item.id}
+            onClick={() => navigate(`/issues/${item.id}`)}
             className="bg-[#f1ab1544] hover:bg-[#f1ab15b4] cursor-pointer p-4 rounded text-center">
             <p className="font-bold">{item.title}</p>
             <p className="text-gray-600 text-sm">{item.description}</p>

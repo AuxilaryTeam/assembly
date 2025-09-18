@@ -1,7 +1,13 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
 import AppLayout from "./components/layouts/AppLayout";
-import { IssuesPage, PublicPollDisplay, SignIn, SignUp } from "./index";
+import {
+  IssueDetailPage,
+  IssuesPage,
+  PublicPollDisplay,
+  SignIn,
+  SignUp,
+} from "./index";
 
 function App() {
   return (
@@ -12,6 +18,7 @@ function App() {
           <Route path="/signup" element={<SignUp />} />
           <Route path="/" element={<PublicPollDisplay />} />
           <Route path="/issues" element={<IssuesPage />} />
+          <Route path="/issues/:id" element={<IssueDetailPage />} />
         </Routes>
       </AppLayout>
     </BrowserRouter>
