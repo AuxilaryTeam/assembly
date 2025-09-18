@@ -14,4 +14,8 @@ public interface CandidateVoteRepository extends JpaRepository<CandidateVote, Lo
 
     boolean existsByVoterAndPositionAndAssignment(Voter voter, Position position, CandidateAssignment candidateAssignment);
 //    List<CandidateVote> findByBallot_Id(Long ballotId);
+
+    List<CandidateVote> findByVoterId(Long id);
+
+    List<CandidateVote> findByVoterIdAndPosition(Long id, Position position);
 }
