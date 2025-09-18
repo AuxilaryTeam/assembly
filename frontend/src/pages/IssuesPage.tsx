@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import ActiveIssuesList from "../components/issues/ActiveIssuesList";
 import VoteForm from "../components/issues/VoteForm";
 import { FaSearch } from "react-icons/fa";
-import { sampleData } from "../components/utils/mockApi";
 import type { IssueItem } from "../components/utils/types";
 import Modal from "../components/modal/Modal";
 import CreateIssueForm from "../components/forms/CreateIssueForm";
@@ -11,7 +10,7 @@ import { toast } from "react-toastify";
 
 const IssuesPage = () => {
   const [search, setSearch] = useState("");
-  const [issues, setIssues] = useState<IssueItem[]>(sampleData);
+  const [issues, setIssues] = useState<IssueItem[]>([]);
   const [createIssue, setCreateIssue] = useState(false);
   const filteredData = issues.filter(
     (card) =>

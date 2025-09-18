@@ -67,8 +67,17 @@ export interface SignUpRequest {
 
 }
 
-export type IssueItem = {
+export type IssueRequest = {
     id: number;
     title: string;
     description: string;
 };
+
+export type IssueItem = {
+    id: number;
+    title: string;
+    description: string;
+    status: string;
+    active: boolean;
+
+}

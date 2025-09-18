@@ -1,16 +1,16 @@
 import React from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { createIssue } from "../utils/api";
-import type { IssueItem } from "../utils/types";
+import type { IssueRequest } from "../utils/types";
 
 const CreateIssueForm: React.FC = () => {
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<IssueItem>();
+  } = useForm<IssueRequest>();
 
-  const onSubmit: SubmitHandler<IssueItem> = async (data) => {
+  const onSubmit: SubmitHandler<IssueRequest> = async (data) => {
     try {
       const response = await createIssue(data); // Replace with your endpoint
       console.log("Issue created:", response.data);
