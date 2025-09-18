@@ -218,6 +218,7 @@ const Header: React.FC = () => {
               <nav className="hidden lg:flex items-center gap-5">
                 {headerLink({ to: "/", children: "Polls" })}
                 {headerLink({ to: "/issues", children: "Issues" })}
+                {headerLink({ to: "/positions", children: "Positions" })}
               </nav>
             </div>
           )}

@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { LoginRequest, SignUpRequest, IssueRequest, VoterItem, VoteRequest } from "./types";
+import type { LoginRequest, SignUpRequest, IssueRequest, VoterItem, VoteRequest, PositionRequest } from "./types";
 
 const BASE_URL = "http://localhost:8081/api"
 
@@ -61,7 +61,27 @@ export const voteIssue = (vote: VoteRequest) => {
     return api.post("/issue/vote", vote)
 }
 
+// ============= Positions ====================
 
+export const getActivePositions = () => {
+    return api.get("/positions/active")
+}
+
+export const activatePosition = (id: number) => {
+    return api.put(`/positions/activate/${id}`)
+}
+
+export const closePosition = (id: number) => {
+    return api.put(`/positions/close/${id}`)
+}
+
+export const createPosition = (data: PositionRequest) => {
+    return api.post("/positions/create", data)
+}
+
+export const updatePosition = (id: number, data: PositionRequest) => {
+    return api.put(`/positions/update/${id}`, data)
+}
 
 //  ============= voter =============
 

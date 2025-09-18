@@ -4,6 +4,8 @@ import AppLayout from "./components/layouts/AppLayout";
 import {
   IssueDetailPage,
   IssuesPage,
+  PositionDetailPage,
+  PositionsPage,
   PublicPollDisplay,
   SignIn,
   SignUp,
@@ -19,6 +21,8 @@ function App() {
           <Route path="/" element={<PublicPollDisplay />} />
           <Route path="/issues" element={<IssuesPage />} />
           <Route path="/issues/:id" element={<IssueDetailPage />} />
+          <Route path="/positions" element={<PositionsPage />} />
+          <Route path="/positions/:id" element={<PositionDetailPage />} />
         </Routes>
       </AppLayout>
     </BrowserRouter>
