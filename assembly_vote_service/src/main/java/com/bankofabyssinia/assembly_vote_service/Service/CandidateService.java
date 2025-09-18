@@ -83,8 +83,10 @@ public class CandidateService {
                 .orElseThrow(() -> new RuntimeException("Position not found with id: " + candidateAssignmentDTO.getPositionId()));
 
         // check if the position is draft
-        if (position.getStatus() != ElectionStatus.DRAFT) {
+        if (position.getStatus() == ElectionStatus.DRAFT) {
             throw new RuntimeException("Can only assign candidates to positions in DRAFT status.");
+        } else if (position.getStatus() == ElectionStatus.CLOSED) {
+            throw new RuntimeException("Cannot assign candidates to a CLOSED position.");
         }
 
         // check the number of assigned candidates to the position is less than or equal to the allowed number
