@@ -115,6 +115,22 @@ public class PositionController {
         }
     }
 
+    // List of active positions
+    @GetMapping("/active")
+    public ResponseEntity<?> listOfActivePositions(HttpServletRequest requestHeader) {
+        String token = authService.getToken(requestHeader);
+        User user = authService.getUserFromToken(token);
+        try {
+            return ResponseEntity.ok(positionService.getActivePositions(user));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(
+                    Map.of(
+                            "error", "Could not retrieve active positions",
+                            "message", e.getMessage()
+                    )
+            );
+        }
+    }
 
 
 }

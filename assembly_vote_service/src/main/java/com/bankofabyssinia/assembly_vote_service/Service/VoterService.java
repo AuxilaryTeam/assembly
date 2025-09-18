@@ -39,5 +39,17 @@ public class VoterService {
         return voterRepository.findAll();
     }
 
+    // find voter by shareholder id
+    public Voter getVoterByShareholderId(String shareholderId, User user) {
+        Log log = new Log();
+        log.setAction("Searched for voter with shareholder ID: " + shareholderId);
+        log.setUser(user);
+        log.setTimestamp(java.time.Instant.now());
+        logRepository.save(log);
+
+        return voterRepository.findByShareholderid(shareholderId)
+                .orElseThrow(() -> new IllegalArgumentException("Voter not found with shareholder ID: " + shareholderId));
+    }
+
 
 }

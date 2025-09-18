@@ -7,6 +7,7 @@ import com.bankofabyssinia.assembly_vote_service.Repository.LogRepository;
 import com.bankofabyssinia.assembly_vote_service.Repository.PositionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import java.util.List;
 
 @Service
 public class PositionService {
@@ -96,5 +97,18 @@ public class PositionService {
         log.setTimestamp(java.time.Instant.now());
         logRepo.save(log);
         return positionRepo.save(position);
+    }
+
+    public List<Position> getActivePositions(User user) {
+        List<Position> activePositions = positionRepo.findByStatus(ElectionStatus.OPEN);
+
+        Log log = new Log();
+        log.setAction("Retrieved all active Positions");
+        log.setUser(user);
+        log.setTimestamp(java.time.Instant.now());
+        logRepo.save(log);
+
+        return activePositions;
+        
     }
 }

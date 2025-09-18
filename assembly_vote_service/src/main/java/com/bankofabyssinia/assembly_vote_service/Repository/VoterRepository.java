@@ -10,4 +10,6 @@ import java.util.Optional;
 @Repository
 public interface VoterRepository extends JpaRepository<Voter, Long> {
     Optional<Voter> findById(Long id);
+
+    Optional<Voter> findByShareholderid(String shareholderId);
 }
