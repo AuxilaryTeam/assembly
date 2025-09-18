@@ -159,12 +159,6 @@ const IssueDetailPage = () => {
     };
     console.log("Submitting vote:", voteDTO, "for", voterData.shareholderid);
     try {
-      const voteDTO: VoteRequest = {
-        issueId: Number(id),
-        optionId: ISSUE_OPTION_IDS[selectedVote],
-        voterId: voterData.id,
-        voterShareHolderId: voterData.shareholderid ?? "",
-      };
       const response = await voteIssue(voteDTO);
       console.log(
         "Submitting vote:",
@@ -175,9 +169,13 @@ const IssueDetailPage = () => {
       console.log("Response for Voting", response);
       toast.success(`Vote '${selectedVote}' submitted successfully!`);
       setSelectedVote(""); // Reset vote after submission
-    } catch (error) {
-      console.error("Error submitting vote:", error);
-      toast.error("Error submitting vote");
+    } catch (error: any) {
+      console.error("Error submitting vote:", error); // simple, safe fallback
+      toast.error(
+        `Error submitting vote: ${
+          error?.response?.data?.message ?? error?.message ?? "Unknown error"
+        }`
+      );
     }
   };
 
@@ -266,10 +264,10 @@ const IssueDetailPage = () => {
               Shareholder Details
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <DetailItem label="ID" value={voterData.shareholderid} />
-              <DetailItem label="Name (Eng)" value={voterData.nameeng} />
-              <DetailItem label="Name (Amh)" value={voterData.nameamh} />
-              <DetailItem label="Phone" value={voterData.phone} />
+              <DetailItem label="ID" value={voterData.shareholderid ?? ""} />
+              <DetailItem label="Name (Eng)" value={voterData.nameeng ?? ""} />
+              <DetailItem label="Name (Amh)" value={voterData.nameamh ?? ""} />
+              <DetailItem label="Phone" value={voterData.phone ?? ""} />
               <DetailItem
                 label="Attendance"
                 value={voterData.attendance ? "Present" : "Absent"}
@@ -280,7 +278,7 @@ const IssueDetailPage = () => {
 
               <DetailItem
                 label="Voting Subscription"
-                value={voterData.votingsubscription}
+                value={voterData.votingsubscription ?? ""}
               />
             </div>
           </div>

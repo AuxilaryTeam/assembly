@@ -1,22 +1,34 @@
 package com.bankofabyssinia.assembly_vote_service.Controller;
 
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.bankofabyssinia.assembly_vote_service.DTO.IssueDTO;
-import com.bankofabyssinia.assembly_vote_service.DTO.IssueOptionDTO;
 import com.bankofabyssinia.assembly_vote_service.DTO.VoteDTO;
-import com.bankofabyssinia.assembly_vote_service.Entity.*;
+import com.bankofabyssinia.assembly_vote_service.Entity.Issue;
+import com.bankofabyssinia.assembly_vote_service.Entity.IssueVote;
+import com.bankofabyssinia.assembly_vote_service.Entity.Role;
+import com.bankofabyssinia.assembly_vote_service.Entity.User;
 import com.bankofabyssinia.assembly_vote_service.Repository.IssueRepository;
 import com.bankofabyssinia.assembly_vote_service.Service.AuthService;
 import com.bankofabyssinia.assembly_vote_service.Service.IssueService;
 import com.bankofabyssinia.assembly_vote_service.Service.ResultService;
-import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Map;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
+@Slf4j
 @RequestMapping("/api/issue")
 public class IssueController {
     @Autowired
@@ -121,7 +133,7 @@ public class IssueController {
 
     // voter vote for issue
     @PostMapping("/vote")
-    public ResponseEntity<?> voteForIssue(VoteDTO voteDTO, HttpServletRequest requestHeader) {
+    public ResponseEntity<?> voteForIssue(@RequestBody VoteDTO voteDTO, HttpServletRequest requestHeader) {
         String token = authService.getToken(requestHeader);
         User user = authService.getUserFromToken(token);
         try {
