@@ -2,6 +2,15 @@ import React, { useState, useMemo, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import type { OptionsType } from "./types";
 
+// System Tityel
+export const SystemTitle = () => {
+  return (
+    <p className="text-3xl font-bold text-white leading-relaxed text-center">
+      Share Holders <br /> Vote System
+    </p>
+  );
+};
+
 // Card and CardContent
 export const Card = ({
   children,

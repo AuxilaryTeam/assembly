@@ -103,7 +103,7 @@ export default function PublicPollDisplay({
   autoRotate = false,
   demo = true,
   overtakeIntervalMs = 5000,
-  topCount = 10,
+  topCount = 5,
   sortKey = "votes",
 }: Props) {
   const [proposal, setProposal] = useState<PublicProposal | null>(
