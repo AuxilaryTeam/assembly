@@ -1,21 +1,22 @@
 package com.bankofabyssinia.assembly_vote_service.Service;
 
-import com.bankofabyssinia.assembly_vote_service.Entity.User;
-import com.bankofabyssinia.assembly_vote_service.Entity.Voter;
-import com.bankofabyssinia.assembly_vote_service.Exception.VoterNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.bankofabyssinia.assembly_vote_service.Entity.CandidateVote;
 import com.bankofabyssinia.assembly_vote_service.Entity.Log;
 import com.bankofabyssinia.assembly_vote_service.Entity.Position;
+import com.bankofabyssinia.assembly_vote_service.Entity.User;
+import com.bankofabyssinia.assembly_vote_service.Entity.Voter;
+import com.bankofabyssinia.assembly_vote_service.Exception.VoterNotFoundException;
 import com.bankofabyssinia.assembly_vote_service.Repository.CandidateVoteRepository;
 import com.bankofabyssinia.assembly_vote_service.Repository.LogRepository;
 import com.bankofabyssinia.assembly_vote_service.Repository.PositionRepository;
 import com.bankofabyssinia.assembly_vote_service.Repository.VoterRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 @Service
 public class VoterService {
@@ -54,11 +55,11 @@ public class VoterService {
 
     // find voter by shareholder id
     public Voter getVoterByShareholderId(String shareholderId, User user) {
-        Log log = new Log();
-        log.setAction("Searched for voter with shareholder ID: " + shareholderId);
-        log.setUser(user);
-        log.setTimestamp(java.time.Instant.now());
-        logRepository.save(log);
+        // Log log = new Log();
+        // log.setAction("Searched for voter with shareholder ID: " + shareholderId);
+        // log.setUser(user);
+        // log.setTimestamp(java.time.Instant.now());
+        // logRepository.save(log);
 
         return voterRepository.findByShareholderid(shareholderId)
                 .orElseThrow(() -> new VoterNotFoundException("Voter not found with shareholder ID: " + shareholderId));

@@ -1,0 +1,14 @@
+{
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Spring Boot-AssemblyVoteServiceApplication<assembly_vote_service>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "com.bankofabyssinia.assembly_vote_service.AssemblyVoteServiceApplication",
+      "projectName": "assembly_vote_service",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
+    }
+  ]
+}

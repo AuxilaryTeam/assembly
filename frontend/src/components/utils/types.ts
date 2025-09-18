@@ -51,103 +51,69 @@ export interface SignUpForm {
     firstName: string;
     lastName: string;
     email: string;
+    username: string;
     password: string;
     confirmPassword: string;
+    roleId: number;
 }
 
 export interface SignUpRequest {
     firstName: string;
-    middleName: string;
     lastName: string;
     email: string;
+    username: string;
     password: string;
+    roleId: number
 
 }
 
 
-// Retention types
-export interface RetentionData {
-    Currency: string;
-    "Monthly Proceed": number;
-    "To Retention Account": number;
-    "To Customer Account": number;
-    "Surrender Amount": number;
-    "Outflow from Retention": number;
-    "Inflow to Retention": number;
-}
 
+//  ======== Issue ==========
+export type IssueRequest = {
+    id: number;
+    title: string;
+    description: string;
+};
 
-export interface Column {
-    key: string;
-    label: string;
-    width?: string;
-    sortable?: boolean;
-    formatNumber?: boolean;
-    type?: "text" | "number" | "date";
-    render?: (row: any, rowIdx?: number) => React.ReactNode;
-}
-
-export interface SortTableProps {
-    columns: Column[];
-    data: any[];
-    defaultSortKey?: string;
-    numericColumns?: boolean;
-    enableAddRowForm?: boolean;
-    onSaveRow?: (row: any) => void;
-}
-
-
-export interface Customer {
-    customerId: number;
-    customerName: string;
-    netBalance: number;
-    t24Id: number;
-}
-
-
-export interface ImportRequest {
-    currency: string;
-    importRequestAmount: string;
-    importDetail: string;
-    importType: string;
-    importData: string;
-    customerId: number;
-}
-
-export interface RetentionRequest {
-    currency: string;
-    retentionAmount: number;
-    creditAmount: number;
-    surrenderedAmount: number;
-    outflowAmount: number;
-    inflowAmount: number;
-    customer: number; // customer ID
-    weeklyReport: number;
-}
-
-export interface OptionsType {
-    value: string;
-    label: string;
-}
-
-export interface weeklyReport {
-    currency: string;
-    customerId: number;
-    customerName: string;
-    date: string;
-    monthlyProceedAmount: number;
-    netBalance: number;
+export type IssueItem = {
+    id: number;
+    title: string;
+    description: string;
     status: string;
-    weeklyReportId: number;
+    active: boolean;
+
 }
 
+export type IssueResult = {
+    title: string;
+    description: string;
+    status: "OPEN" | "CLOSED" | string; // can extend later
+    options: Record<string, number>;
+};
 
-export interface RetentionRequestDTO {
-    customer: number;
-    currency: string;
-    creditAmount: number;
-    retentionAmount: number;
-    surrenderedAmount: number;
-    inflowAmount: number;
-    outflowAmount: number;
-}
+// ========== Voter ===========
+
+export type VoterItem = {
+    id: number;
+    attendance: boolean | null;
+    devidend: number | null;
+    fiscalyear: string | null;
+    nameamh: string | null;
+    nameeng: string | null;
+    paidcapital: number | null;
+    phone: string | null;
+    shareholderid: string | null;
+    sharesubsription: number | null;
+    totalcapital: number | null;
+    votingsubscription: number | null;
+};
+
+export type VoteRequest = {
+    voterId: number;
+    voterShareHolderId: string;
+    positionId?: number;
+    candidateId?: number;
+    issueId?: number;
+    optionId?: number;
+};
