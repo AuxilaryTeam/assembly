@@ -59,7 +59,7 @@ const Search = () => {
         duration: 4000,
       });
       setTimeout(() => {
-        navigate("/assemblynah/", {
+        navigate("/", {
           replace: true,
           state: { showToast: true },
         });
@@ -188,7 +188,7 @@ const Search = () => {
       });
 
       if (isMarking) {
-        navigate("/assemblynah/print", {
+        navigate("/print", {
           state: {
             person: {
               ...selectedShareholder,
@@ -350,8 +350,7 @@ const Search = () => {
             <Button
               className="bg-amber-500 hover:bg-amber-600 text-white"
               onClick={handleConfirmAttendance}
-              disabled={loading}
-            >
+              disabled={loading}>
               {isMarking ? "Mark & Print" : "Unmark"}
             </Button>
           </DialogFooter>

@@ -21,7 +21,13 @@ interface CountUpComponentProps {
  * Custom component to animate a number count.
  * @param {CountUpComponentProps} props
  */
-const CountUpComponent = ({ start, end, duration, decimals, suffix }: CountUpComponentProps) => {
+const CountUpComponent = ({
+  start,
+  end,
+  duration,
+  decimals,
+  suffix,
+}: CountUpComponentProps) => {
   const [count, setCount] = useState(start);
 
   useEffect(() => {
@@ -98,7 +104,9 @@ const Display = () => {
       setPrevAttendanceCount(attendanceCount);
       setAttendanceCount(response.data);
       console.log(
-        `[${new Date().toLocaleString()}] Attendance count fetched successfully: ${response.data}`
+        `[${new Date().toLocaleString()}] Attendance count fetched successfully: ${
+          response.data
+        }`
       );
       return true;
     } catch (err) {
@@ -131,7 +139,9 @@ const Display = () => {
       setPrevSharesSum(sharesSum);
       setSharesSum(response.data);
       console.log(
-        `[${new Date().toLocaleString()}] Sum subscription fetched successfully: ${response.data}`
+        `[${new Date().toLocaleString()}] Sum subscription fetched successfully: ${
+          response.data
+        }`
       );
       return true;
     } catch (err) {
@@ -164,7 +174,9 @@ const Display = () => {
       setPrevSumVoting(sumVoting);
       setSumVoting(response.data);
       console.log(
-        `[${new Date().toLocaleString()}] Voting sum fetched successfully: ${response.data}`
+        `[${new Date().toLocaleString()}] Voting sum fetched successfully: ${
+          response.data
+        }`
       );
       return true;
     } catch (err) {
@@ -252,17 +264,15 @@ const Display = () => {
             <div className="flex items-center space-x-2 mb-4 md:mb-0">
               <Button
                 variant="outline"
-                onClick={() => navigate("/assemblynah/report")}
-                className="flex items-center gap-2"
-              >
+                onClick={() => navigate("/report")}
+                className="flex items-center gap-2">
                 <ArrowLeft size={18} />
                 Back
               </Button>
               <Button
                 variant="outline"
                 onClick={fetchData}
-                className="flex items-center gap-2"
-              >
+                className="flex items-center gap-2">
                 <RefreshCcw size={18} />
                 Refresh
               </Button>
@@ -273,8 +283,7 @@ const Display = () => {
                 onClick={() =>
                   setViewMode(viewMode === "grid" ? "list" : "grid")
                 }
-                className="flex items-center gap-2"
-              >
+                className="flex items-center gap-2">
                 {viewMode === "grid" ? (
                   <LayoutList size={18} />
                 ) : (
@@ -299,13 +308,12 @@ const Display = () => {
               viewMode === "grid"
                 ? "grid grid-cols-1 md:grid-cols-2"
                 : "flex flex-col"
-            }`}
-          >
+            }`}>
             {/* Attendance Count Metric */}
             <div className="relative bg-white p-8 rounded-2xl border border-gray-200 shadow-xl hover:shadow-2xl transition-shadow duration-300 overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-amber-50 to-amber-100 opacity-60 rounded-bl-full"></div>
               <p className="text-xl md:text-2xl font-bold text-gray-700 mb-4">
-                 ለስብሰባ የተገኙ የባለአክሲዮኖች ብዛት 
+                ለስብሰባ የተገኙ የባለአክሲዮኖች ብዛት
               </p>
               <p className="text-5xl md:text-7xl font-extrabold text-gray-900 leading-none">
                 <CountUpComponent
@@ -321,8 +329,7 @@ const Display = () => {
                   className="h-2 bg-amber-500 rounded-full"
                   style={{
                     width: `${Math.min((attendanceCount / 1000) * 100, 100)}%`,
-                  }}
-                ></div>
+                  }}></div>
               </div>
             </div>
 
@@ -330,7 +337,7 @@ const Display = () => {
             <div className="relative bg-white p-8 rounded-2xl border border-gray-200 shadow-xl hover:shadow-2xl transition-shadow duration-300 overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-amber-50 to-amber-100 opacity-60 rounded-bl-full"></div>
               <p className="text-xl md:text-2xl font-bold text-gray-700 mb-4">
-                 አጠቃላይ የተፈረመ አክሲዮን ካፒታል (በቁጥር) 
+                አጠቃላይ የተፈረመ አክሲዮን ካፒታል (በቁጥር)
               </p>
               <p className="text-5xl md:text-7xl font-extrabold text-gray-900 leading-none">
                 <CountUpComponent
@@ -346,8 +353,7 @@ const Display = () => {
                   className="h-2 bg-amber-500 rounded-full"
                   style={{
                     width: `${Math.min((sharesSum / 10000000) * 100, 100)}%`,
-                  }}
-                ></div>
+                  }}></div>
               </div>
             </div>
 
@@ -355,7 +361,7 @@ const Display = () => {
             <div className="relative bg-white p-8 rounded-2xl border border-gray-200 shadow-xl hover:shadow-2xl transition-shadow duration-300 overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-amber-50 to-amber-100 opacity-60 rounded-bl-full"></div>
               <p className="text-xl md:text-2xl font-bold text-gray-700 mb-4">
-                 የተገኙ ባለአክሲዮኖች የተፈረመ አክሲዮን መጠን (በቁጥር) 
+                የተገኙ ባለአክሲዮኖች የተፈረመ አክሲዮን መጠን (በቁጥር)
               </p>
               <p className="text-5xl md:text-7xl font-extrabold text-gray-900 leading-none">
                 <CountUpComponent
@@ -371,8 +377,7 @@ const Display = () => {
                   className="h-2 bg-amber-500 rounded-full"
                   style={{
                     width: `${Math.min((sumVoting / 10000000) * 100, 100)}%`,
-                  }}
-                ></div>
+                  }}></div>
               </div>
             </div>
 
@@ -380,7 +385,7 @@ const Display = () => {
             <div className="relative bg-white p-8 rounded-2xl border border-gray-200 shadow-xl hover:shadow-2xl transition-shadow duration-300 overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-amber-100 to-amber-200 opacity-70 rounded-bl-full"></div>
               <p className="text-xl md:text-2xl font-bold text-gray-700 mb-4">
-                 የተገኙ ባለአክሲዮኖች የተፈረመ አክሲዮን መጠን (በ%) 
+                የተገኙ ባለአክሲዮኖች የተፈረመ አክሲዮን መጠን (በ%)
               </p>
               <p className="text-5xl md:text-7xl font-extrabold text-gray-900 leading-none">
                 <CountUpComponent
@@ -394,8 +399,7 @@ const Display = () => {
               <div className="mt-6 h-2 bg-gray-100 rounded-full">
                 <div
                   className="h-2 bg-amber-500 rounded-full"
-                  style={{ width: `${percentage}%` }}
-                ></div>
+                  style={{ width: `${percentage}%` }}></div>
               </div>
             </div>
           </div>
@@ -407,8 +411,7 @@ const Display = () => {
               <div
                 className={`h-4 w-4 rounded-full ${
                   isLoading ? "bg-amber-500 animate-pulse" : "bg-green-500"
-                } mr-3`}
-              ></div>
+                } mr-3`}></div>
               <span className="text-md md:text-lg font-semibold text-gray-700">
                 {isLoading ? "Updating data..." : "System status: Normal"}
               </span>

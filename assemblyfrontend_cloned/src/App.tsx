@@ -10,33 +10,44 @@ import Report from "./components/report/Report";
 import { Toaster } from "./components/ui/toaster";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AuthLayout from "./components/AuthLayout";
+import PublicPollDisplay from "./components/pages/Poll";
+import PositionsPage from "./components/pages/PositionsPage";
+import IssuesPage from "./components/pages/IssuesPage";
+import PositionDetailPage from "./components/pages/PositionDetailPage";
+import IssueDetailPage from "./components/pages/IssueDetailPage";
 
 function App() {
   console.log("App component rendering");
-  
+
   return (
     <>
-      <Router>
+      <Router basename="/assemblynah">
         <Routes>
           {/* Public Route: Login */}
-          <Route path="/assemblynah/" element={<Login />} />
-          <Route path="/assemblynah/login" element={<Login />} />
+          <Route path="/" element={<Login />} />
+          <Route path="/login" element={<Login />} />
 
           {/* Protected Routes */}
-         <Route element={<ProtectedRoute />}>
-  <Route element={
-    <AuthLayout>
-      <DashboardLayout />
-    </AuthLayout>
-  }>
-    <Route path="/assemblynah/search" element={<Search />} />
-    <Route path="/assemblynah/searchprint" element={<Searchprint />} />
-    <Route path="/assemblynah/report" element={<Report />} />
-    <Route path="/assemblynah/displayprint" element={<Diplayprint />} />
-    <Route path="/assemblynah/print" element={<Print />} />
-  </Route>
-</Route>
-    <Route path="/assemblynah/display" element={<Diplay />} />
+          <Route element={<ProtectedRoute />}>
+            <Route
+              element={
+                <AuthLayout>
+                  <DashboardLayout />
+                </AuthLayout>
+              }>
+              <Route path="/search" element={<Search />} />
+              <Route path="/searchprint" element={<Searchprint />} />
+              <Route path="/report" element={<Report />} />
+              <Route path="/displayprint" element={<Diplayprint />} />
+              <Route path="/print" element={<Print />} />
+              <Route path="/position" element={<PositionsPage />} />
+              <Route path="/positions/:id" element={<PositionDetailPage />} />
+              <Route path="/issue" element={<IssuesPage />} />
+              <Route path="/issues/:id" element={<IssueDetailPage />} />
+            </Route>
+          </Route>
+          <Route path="/voting" element={<PublicPollDisplay />} />
+          <Route path="/display" element={<Diplay />} />
         </Routes>
       </Router>
 

@@ -2,16 +2,17 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
-import { 
-  ShieldAlert, 
-  CheckCircle, 
-  LogIn, 
-  Eye, 
-  EyeOff, 
-  User, 
+import {
+  ShieldAlert,
+  CheckCircle,
+  LogIn,
+  Eye,
+  EyeOff,
+  User,
   Lock,
-  Loader2
+  Loader2,
 } from "lucide-react";
+import { userLogin } from "./utils/api";
 
 const Login = () => {
   const location = useLocation();
@@ -25,7 +26,7 @@ const Login = () => {
 
   useEffect(() => {
     const state = location.state as { showToast?: boolean };
-  
+
     if (state?.showToast) {
       toast({
         variant: "destructive",
@@ -38,16 +39,16 @@ const Login = () => {
         description: "Please login to access this page.",
         duration: 4000,
       });
-  
+
       // Clear state so toast doesn't show again on refresh
       navigate(location.pathname, { replace: true, state: {} });
     }
   }, [location, toast, navigate]);
-  
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-  
+
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_API_BASE_URL}authenticate`,
@@ -56,7 +57,7 @@ const Login = () => {
           validateStatus: () => true, // Let us manually check status
         }
       );
-  
+
       if (
         typeof response.data !== "string" ||
         response.data.includes("<!DOCTYPE html") ||
@@ -64,9 +65,16 @@ const Login = () => {
       ) {
         throw new Error("Invalid response from server");
       }
-  
+
       localStorage.setItem("token", response.data);
-  
+
+      const response2 = await userLogin({
+        username: username,
+        password: password,
+      });
+
+      localStorage.setItem("voteServiceToken", response2.data.token);
+
       toast({
         variant: "success",
         title: (
@@ -78,8 +86,8 @@ const Login = () => {
         description: "Redirecting to dashboard...",
         duration: 2000,
       });
-  
-      setTimeout(() => navigate("/assemblynah/search"), 2000);
+
+      setTimeout(() => navigate("/search"), 2000);
     } catch (err) {
       toast({
         variant: "destructive",
@@ -97,13 +105,12 @@ const Login = () => {
       setLoading(false);
     }
   };
-  
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-amber-50 to-amber-100 p-4">
       <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-2xl shadow-xl border border-amber-200">
         {/* Header */}
         <div className="text-center space-y-2">
-        
           <h1 className="text-3xl font-bold text-gray-900">Assembly Login</h1>
           <p className="text-gray-500">Enter your credentials to continue</p>
         </div>
@@ -111,7 +118,9 @@ const Login = () => {
         <form onSubmit={handleLogin} className="space-y-6">
           {/* Username Field */}
           <div className="space-y-2">
-            <label htmlFor="username" className="text-sm font-medium text-gray-700 flex items-center gap-1">
+            <label
+              htmlFor="username"
+              className="text-sm font-medium text-gray-700 flex items-center gap-1">
               <User className="w-4 h-4" />
               Username
             </label>
@@ -133,7 +142,9 @@ const Login = () => {
 
           {/* Password Field */}
           <div className="space-y-2">
-            <label htmlFor="password" className="text-sm font-medium text-gray-700 flex items-center gap-1">
+            <label
+              htmlFor="password"
+              className="text-sm font-medium text-gray-700 flex items-center gap-1">
               <Lock className="w-4 h-4" />
               Password
             </label>
@@ -153,8 +164,7 @@ const Login = () => {
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-                disabled={loading}
-              >
+                disabled={loading}>
                 {showPassword ? (
                   <EyeOff className="w-5 h-5" />
                 ) : (
@@ -172,8 +182,7 @@ const Login = () => {
               loading
                 ? "bg-amber-400 cursor-not-allowed"
                 : "bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 shadow-md hover:shadow-lg"
-            }`}
-          >
+            }`}>
             {loading ? (
               <>
                 <Loader2 className="w-5 h-5 animate-spin" />

@@ -15,7 +15,7 @@ const AuthLayout = ({ children }: { children: React.ReactNode }) => {
 
     if (!token) {
       console.log("AuthLayout: No token found, showing toast and redirecting");
-      
+
       // Show toast with a slight delay to ensure component is mounted
       setTimeout(() => {
         toast({
@@ -24,13 +24,13 @@ const AuthLayout = ({ children }: { children: React.ReactNode }) => {
           description: "Please login to access this page.",
           duration: 3000,
         });
-        
+
         console.log("AuthLayout: Toast shown, navigating in 2.5 seconds");
-        
+
         // Navigate after toast duration
         setTimeout(() => {
           console.log("AuthLayout: Navigating to login page");
-          navigate("/assemblynah/", { replace: true });
+          navigate("/", { replace: true });
         }, 2500);
       }, 100);
     } else {

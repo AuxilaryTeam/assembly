@@ -14,8 +14,10 @@ const ProtectedRoute = () => {
     console.log("ProtectedRoute: Token found:", token ? "Yes" : "No");
 
     if (!token) {
-      console.log("ProtectedRoute: No token found, showing toast and redirecting");
-      
+      console.log(
+        "ProtectedRoute: No token found, showing toast and redirecting"
+      );
+
       // Show toast immediately
       toast({
         variant: "destructive",
@@ -25,20 +27,19 @@ const ProtectedRoute = () => {
       });
 
       console.log("ProtectedRoute: Toast triggered, waiting before navigation");
-      
+
       // Set flag to show toast
       setShowToast(true);
-      
+
       // Navigate after a delay to allow toast to be visible
       const timer = setTimeout(() => {
         console.log("ProtectedRoute: Navigating to login page");
-        navigate("/assemblynah/", {
+        navigate("/", {
           replace: true,
           state: { showToast: true },
         });
-        
-      }); 
-      
+      });
+
       return () => {
         console.log("ProtectedRoute: Cleaning up timeout");
         clearTimeout(timer);
@@ -51,12 +52,17 @@ const ProtectedRoute = () => {
 
   // Show nothing while checking authentication or showing toast
   if (isAuthenticated === null || showToast) {
-    console.log("ProtectedRoute: Authentication status unknown or showing toast, rendering null");
+    console.log(
+      "ProtectedRoute: Authentication status unknown or showing toast, rendering null"
+    );
     return null;
   }
 
-  console.log("ProtectedRoute: Authentication status:", isAuthenticated ? "Authenticated" : "Not authenticated");
-  
+  console.log(
+    "ProtectedRoute: Authentication status:",
+    isAuthenticated ? "Authenticated" : "Not authenticated"
+  );
+
   // Only render children if authenticated
   return isAuthenticated ? <Outlet /> : null;
 };

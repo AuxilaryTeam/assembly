@@ -28,7 +28,7 @@ const Print = () => {
 
   React.useEffect(() => {
     const handleAfterPrint = () => {
-      navigate("/assemblynah/search");
+      navigate("/search");
     };
 
     window.addEventListener("afterprint", handleAfterPrint);
@@ -44,20 +44,17 @@ const Print = () => {
           <div className="flex gap-2">
             <button
               onClick={goBack}
-              className="flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors"
-            >
+              className="flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors">
               <FiArrowLeft /> Go Back
             </button>
             <button
               onClick={printDocument}
-              className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
-            >
+              className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors">
               <FiPrinter /> Print Dividend
             </button>
             <button
-              onClick={()=>window.alert("Vote Paper ")}
-              className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
-            >
+              onClick={() => window.alert("Vote Paper ")}
+              className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors">
               <FiPrinter /> Print Vote Paper
             </button>
           </div>
@@ -208,8 +205,7 @@ const Print = () => {
           <div className="text-center">
             <div
               className="border-t border-gray-400 pt-3 mx-auto"
-              style={{ width: "80%" }}
-            >
+              style={{ width: "80%" }}>
               <p className="font-semibold text-sm">የባንኩ የአክሲዮን አስተዳዳሪ</p>
               <p className="text-xs text-gray-600">ስም እና ፊርማ</p>
             </div>
@@ -217,8 +213,7 @@ const Print = () => {
           <div className="text-center">
             <div
               className="border-t border-gray-400 pt-3 mx-auto"
-              style={{ width: "80%" }}
-            >
+              style={{ width: "80%" }}>
               <p className="font-semibold text-sm">የባለአክሲዮኑ ፊርማ</p>
               <p className="text-xs text-gray-600">ስም እና ፊርማ</p>
             </div>

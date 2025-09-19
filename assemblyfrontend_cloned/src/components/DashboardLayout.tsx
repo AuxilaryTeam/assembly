@@ -24,12 +24,14 @@ import { CheckCircle, ShieldAlert } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 const navItems = [
-  { name: "Attendance", icon: <FiClipboard />, path: "/assemblynah/search" },
-  { name: "Print Attendance", icon: <FiPrinter />, path: "/assemblynah/searchprint" },
-  { name: "Report", icon: <FiFileText />, path: "/assemblynah/report" },
-  { name: "Display", icon: <FiMonitor />, path: "/assemblynah/display" },
-  { name: "Print Display ", icon: <BsCardChecklist />, path: "/assemblynah/displayprint" },
-  { name: "Voting Screen", icon: <FiCheckSquare />, path: "/assemblynah/voting" },
+  { name: "Attendance", icon: <FiClipboard />, path: "/search" },
+  { name: "Print Attendance", icon: <FiPrinter />, path: "/searchprint" },
+  { name: "Report", icon: <FiFileText />, path: "/report" },
+  { name: "Display", icon: <FiMonitor />, path: "/display" },
+  { name: "Print Display ", icon: <BsCardChecklist />, path: "/displayprint" },
+  { name: "Voting Screen", icon: <FiCheckSquare />, path: "/voting" },
+  { name: "Issue", icon: <FiCheckSquare />, path: "/issue" },
+  { name: "Position", icon: <FiCheckSquare />, path: "/position" },
 ];
 
 const DashboardLayout = () => {
@@ -50,7 +52,7 @@ const DashboardLayout = () => {
         description: "You have been logged out.",
         duration: 3000,
       });
-      navigate("/assemblynah");
+      navigate("/");
     } catch (error) {
       toast({
         variant: "destructive",
@@ -86,10 +88,8 @@ const DashboardLayout = () => {
             }}
             exit={{ width: 0 }}
             transition={{ duration: 0.2 }}
-            className="hidden md:flex flex-col bg-white shadow-xl border-r border-gray-200 print:hidden"
-          >
+            className="hidden md:flex flex-col bg-white shadow-xl border-r border-gray-200 print:hidden">
             <div className="flex flex-col h-full">
-              
               {/* Sidebar header with collapse controls */}
               <div className="flex items-center justify-between p-4 border-b border-gray-200">
                 {sidebarState === "expanded" ? (
@@ -98,18 +98,18 @@ const DashboardLayout = () => {
                     <button
                       onClick={() => setSidebarState("collapsed")}
                       className="text-gray-700 p-1 hover:bg-gray-200 rounded"
-                      title="Expand"
-                    >
+                      title="Expand">
                       <FiChevronLeft size={28} />
                     </button>
                   </div>
                 ) : (
-                  
-                  <div className="flex flex-col items-center w-full"> {sidebarState === "hidden" && (
-                    <div className="flex flex-row items-left justify-around w-full"> 
-                                <img src={logo} alt="Logo" className="h-14 w-auto" />
-                    </div>
-                  )}
+                  <div className="flex flex-col items-center w-full">
+                    {" "}
+                    {sidebarState === "hidden" && (
+                      <div className="flex flex-row items-left justify-around w-full">
+                        <img src={logo} alt="Logo" className="h-14 w-auto" />
+                      </div>
+                    )}
                     <img
                       src={collapsedLogo}
                       alt="Logo"
@@ -119,36 +119,33 @@ const DashboardLayout = () => {
                       <button
                         onClick={() => setSidebarState("expanded")}
                         className="text-gray-700 p-1 hover:bg-gray-200 rounded"
-                        title="Expand"
-                      >
+                        title="Expand">
                         <FiMenu size={20} />
                       </button>
                     </div>
                   </div>
                 )}
-                
               </div>
 
               {/* Navigation items */}
               <nav className="flex-1 overflow-y-auto mt-6 px-2 space-y-2">
-              
                 {navItems.map((item) => {
                   const commonClasses = `flex items-center p-4 text-base font-semibold rounded-lg transition-colors hover:bg-amber-100 hover:text-amber-700 ${
                     sidebarState === "collapsed" ? "justify-center" : ""
                   }`;
-                  const activeClasses = "bg-amber-50 text-custom-yellow shadow-inner";
+                  const activeClasses =
+                    "bg-amber-50 text-custom-yellow shadow-inner";
                   const inactiveClasses = "text-gray-700";
 
-                  if (item.path === "/assemblynah/display") {
+                  if (item.path === "/display") {
                     return (
                       <a
                         key={item.name}
-                        href={item.path}
+                        href={`/assemblynah${item.path}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className={`${commonClasses} ${inactiveClasses}`}
-                        title={sidebarState === "collapsed" ? item.name : ""}
-                      >
+                        title={sidebarState === "collapsed" ? item.name : ""}>
                         <span className="text-xl">{item.icon}</span>
                         {sidebarState === "expanded" && (
                           <span className="ml-3">{item.name}</span>
@@ -162,10 +159,11 @@ const DashboardLayout = () => {
                       key={item.name}
                       to={item.path}
                       className={({ isActive }) =>
-                        `${commonClasses} ${isActive ? activeClasses : inactiveClasses}`
+                        `${commonClasses} ${
+                          isActive ? activeClasses : inactiveClasses
+                        }`
                       }
-                      title={sidebarState === "collapsed" ? item.name : ""}
-                    >
+                      title={sidebarState === "collapsed" ? item.name : ""}>
                       <span className="text-xl">{item.icon}</span>
                       {sidebarState === "expanded" && (
                         <span className="ml-3">{item.name}</span>
@@ -183,8 +181,7 @@ const DashboardLayout = () => {
                     sidebarState === "collapsed" ? "w-12 px-0" : "w-full"
                   }`}
                   onClick={handleLogout}
-                  title={sidebarState === "collapsed" ? "Logout" : ""}
-                >
+                  title={sidebarState === "collapsed" ? "Logout" : ""}>
                   <FiLogOut
                     className={sidebarState === "collapsed" ? "" : "mr-2"}
                   />
@@ -195,19 +192,17 @@ const DashboardLayout = () => {
           </motion.aside>
         )}
       </AnimatePresence>
-   {/* Expand Button (Visible when sidebar is hidden) */}
-   {sidebarState === "hidden" && (
+      {/* Expand Button (Visible when sidebar is hidden) */}
+      {sidebarState === "hidden" && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="fixed bottom-4 left-4 z-50 print:hidden"
-        >
+          className="fixed bottom-4 left-4 z-50 print:hidden">
           <Button
             className="bg-amber-400 hover:bg-amber-500 text-black rounded-full p-3 shadow-lg"
-            onClick={expandSidebar}
-          >
+            onClick={expandSidebar}>
             <FiChevronRight size={24} />
           </Button>
         </motion.div>
@@ -220,7 +215,6 @@ const DashboardLayout = () => {
           <div className="flex items-center gap-4">
             {sidebarState === "hidden" ? (
               <div className="flex flex-row items-center w-full">
-              
                 <img src={logo} alt="Logo" className="h-14 w-auto ml-4" />
               </div>
             ) : (
@@ -229,9 +223,7 @@ const DashboardLayout = () => {
                 size="icon"
                 onClick={hideSidebar}
                 className="text-gray-700 p-1 hover:bg-gray-200 rounded"
-                title="Hide Sidebar"
-              >
-              
+                title="Hide Sidebar">
                 <FiX size={38} />
               </Button>
             )}
