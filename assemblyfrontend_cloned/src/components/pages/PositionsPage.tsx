@@ -8,6 +8,7 @@ import { getActivePositions, getIssueList } from "../utils/api";
 import { useNavigate } from "react-router-dom";
 import { CircleX } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import CreatePositionForm from "../forms/CreatePositionForm";
 
 const PositionsPage = () => {
   const navigate = useNavigate();
@@ -99,7 +100,7 @@ const PositionsPage = () => {
         onClose={function (): void {
           setCreateIssue(!createIssue);
         }}>
-        <CreateIssueForm />
+        <CreatePositionForm />
       </Modal>
     </div>
   );

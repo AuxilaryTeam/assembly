@@ -286,7 +286,7 @@ export default function PublicPollDisplay({
 
   /* ---------------- Render ---------------- */
   return (
-    <div className="max-h-screen bg-white text-black p-5 flex items-center justify-center">
+    <div className="max-h-screen bg-white text-black p-5 mt-10 flex items-center justify-center">
       <style>{`
         .bar-inner { transition: width 700ms cubic-bezier(.2,.9,.2,1); }
         .row-move { transition: background-color 600ms ease, color 500ms ease; }
