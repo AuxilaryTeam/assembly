@@ -1,3 +1,4 @@
+import React from "react";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 /* ---------- Types ---------- */
@@ -50,51 +51,46 @@ const DUMMY_PROPOSAL: PublicProposal = {
 };
 
 const DUMMY_NOMINEES: PublicNominee[] = [
-  { id: "n1", name: "Dr. Hana Solomon", position: "Chair", votes: 12000 },
-  { id: "n2", name: "Mr. Fikru Alem", position: "Board Member", votes: 9800 },
-  { id: "n3", name: "Ms. Liya Bekele", position: "Board Member", votes: 5600 },
+  { id: "n1", name: "Dr. Hana Solomon", position: "Chair", votes: 25000 },
+  { id: "n2", name: "Mr. Fikru Alem", position: "Board Member", votes: 18000 },
+  { id: "n3", name: "Ms. Liya Bekele", position: "Board Member", votes: 12000 },
   {
     id: "n4",
     name: "Mr. Solomon Desta",
     position: "Board Member",
-    votes: 3200,
+    votes: 7000,
   },
   {
     id: "n5",
     name: "Ms. Selam Tadesse",
     position: "Board Member",
-    votes: 2100,
-  },
-  { id: "a1", name: "Dr. Hana Solomon", position: "Chair", votes: 12000 },
-  { id: "a2", name: "Mr. Fikru Alem", position: "Board Member", votes: 9800 },
-  { id: "a3", name: "Ms. Liya Bekele", position: "Board Member", votes: 5600 },
-  {
-    id: "a4",
-    name: "Mr. Solomon Desta",
-    position: "Board Member",
-    votes: 3200,
+    votes: 4000,
   },
   {
-    id: "a5",
-    name: "Ms. Selam Tadesse",
+    id: "a1",
+    name: "Dr. Amina Tesfaye",
     position: "Board Member",
-    votes: 2100,
+    votes: 2500,
   },
-  { id: "b1", name: "Dr. Hana Solomon", position: "Chair", votes: 12000 },
-  { id: "b2", name: "Mr. Fikru Alem", position: "Board Member", votes: 9800 },
-  { id: "b3", name: "Ms. Liya Bekele", position: "Board Member", votes: 5600 },
+  { id: "a2", name: "Mr. Yonas Kebede", position: "Board Member", votes: 2000 },
   {
-    id: "b4",
-    name: "Mr. Solomon Desta",
+    id: "a3",
+    name: "Ms. Eden Mulugeta",
     position: "Board Member",
-    votes: 3200,
+    votes: 1500,
   },
+  { id: "a4", name: "Mr. Dawit Gebre", position: "Board Member", votes: 1000 },
+  { id: "a5", name: "Ms. Tsedey Asrat", position: "Board Member", votes: 800 },
+  { id: "b1", name: "Dr. Kaleb Worku", position: "Board Member", votes: 600 },
   {
-    id: "b5",
-    name: "Ms. Selam Tadesse",
+    id: "b2",
+    name: "Mr. Bereket Tsegaye",
     position: "Board Member",
-    votes: 2100,
+    votes: 400,
   },
+  { id: "b3", name: "Ms. Ruth Haile", position: "Board Member", votes: 300 },
+  { id: "b4", name: "Mr. Elias Negash", position: "Board Member", votes: 200 },
+  { id: "b5", name: "Ms. Mahlet Abebe", position: "Board Member", votes: 100 },
 ];
 
 /* ---------- Component ---------- */
@@ -283,15 +279,10 @@ export default function PublicPollDisplay({
     0,
     Math.min(sortedNominees.length, Math.floor(topCount || 0))
   );
-  const topList = sortedNominees.slice(0, safeTopCount);
-  const others = sortedNominees.slice(safeTopCount);
-
-  // NEW: show split layout only when topCount is meaningfully larger than the leaderboard (user's rule)
-  const showSplit = safeTopCount > 3;
 
   /* ---------------- Render ---------------- */
   return (
-    <div className="min-h-screen bg-white text-black p-6 flex items-center justify-center">
+    <div className="min-h-screen bg-white text-black p-4 flex items-center justify-center">
       <style>{`
         .bar-inner { transition: width 700ms cubic-bezier(.2,.9,.2,1); }
         .row-move { transition: background-color 600ms ease, color 500ms ease; }
@@ -300,390 +291,96 @@ export default function PublicPollDisplay({
         .text-up { color: rgba(241,171,21,1) !important; }
         .text-down { color: rgba(220,38,38,1) !important; }
         .top-highlight { background-color: rgba(241,171,21,0.08); }
-        .pct-bar { background-color: rgba(0,0,0,0.04); border-radius: 999px; height: 14px; overflow: hidden; }
+        .pct-bar { background-color: rgba(0,0,0,0.1); border-radius: 999px; height: 24px; overflow: hidden; }
         .pct-bar-inner { height: 100%; border-radius: 999px; background-color: #f1ab15; }
+        .table-container { max-height: 80vh; overflow-y: auto; }
       `}</style>
 
-      <div className="w-full max-w-6xl">
+      <div className="w-full max-w-full">
         {/* header */}
         <header className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-lg bg-[#f1ab15] flex items-center justify-center text-white text-xl font-bold">
+            <div className="w-16 h-16 rounded-lg bg-[#f1ab15] flex items-center justify-center text-white text-2xl font-bold">
               S
             </div>
             <div>
-              <h1 className="text-3xl font-bold">
+              <h1 className="text-4xl font-bold">
                 {proposal?.title ?? "Live Poll"}
               </h1>
-              <div className="text-sm text-black text-opacity-70">
+              <div className="text-base text-black text-opacity-70">
                 {proposal?.category ?? "—"} • {proposal?.status ?? "—"}
               </div>
-            </div>
-          </div>
-          <div className="text-right">
-            <div className="text-xs text-black text-opacity-70">Ends in</div>
-            <div className="mt-1 px-3 py-1 rounded bg-[#f1ab15]/10 font-mono">
-              {formatTimeLeft(proposal?.end)}
             </div>
           </div>
         </header>
 
         <main>
-          {/* Top-3 leaderboard (kept) */}
-          {!showSplit && (
-            <section className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-              {sortedNominees.slice(0, 3).map((n, idx) => {
-                const pct =
-                  totalVotes === 0
-                    ? 0
-                    : Math.round(((n.votes || 0) / totalVotes) * 100);
-                const movement = movementRef.current[n.id]?.dir;
-                const isHighlight = idx === highlightIndex;
-                return (
-                  <div
-                    key={n.id}
-                    className={`p-6 rounded-lg shadow-sm border border-black/5 ${
-                      movement
-                        ? movement === "up"
-                          ? "row-up"
-                          : "row-down"
-                        : ""
-                    } ${movement ? "overtake" : ""} ${
-                      isHighlight ? "ring-4 ring-[#f1ab15]/30" : ""
-                    }`}
-                    ref={(el) => {
-                      nodesRef.current[n.id] = el;
-                    }}>
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="text-sm text-black text-opacity-70">
-                          {idx === 0 ? "1st" : idx === 1 ? "2nd" : "3rd"}
-                        </div>
-                        <div className="text-xl font-semibold mt-1">
-                          {n.name}
-                        </div>
-                        <div className="text-xs text-black text-opacity-70 mt-1">
-                          {n.position}
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div
-                          className={`text-3xl font-bold ${
-                            movement === "up"
-                              ? "text-up"
-                              : movement === "down"
-                              ? "text-down"
-                              : ""
-                          }`}>
-                          {(n.votes || 0).toLocaleString()}
-                        </div>
-                        <div className="text-sm text-black text-opacity-70">
-                          {pct}%
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="mt-4 h-3 bg-[#f1ab15]/10 rounded overflow-hidden">
-                      <div
-                        style={{ width: `${pct}%` }}
-                        className="h-3 bar-inner bg-[#f1ab15]"
-                      />
-                    </div>
-                  </div>
-                );
-              })}
-            </section>
-          )}
-
-          {/* CONDITIONAL AREA:
-              - if showSplit === true: render TopN (larger) + Others
-              - else: render single full-width table with all nominees
-          */}
-          {showSplit ? (
-            /* SPLIT LAYOUT (TopN + Others) - same as previous behavior */
-            <section className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-              <div className="bg-white border border-black/10 rounded p-4 md:col-span-2">
-                <div className="flex items-center justify-between mb-3">
-                  <h2 className="font-semibold">Top {safeTopCount}</h2>
-                  <div className="text-sm text-black text-opacity-70">
-                    Total votes: <strong>{totalVotes.toLocaleString()}</strong>
-                  </div>
-                </div>
-
-                <div className="overflow-x-auto">
-                  <table className="min-w-full text-left">
-                    <thead>
-                      <tr className="text-xs text-black text-opacity-70">
-                        <th className="p-3 w-12">#</th>
-                        <th className="p-3">Nominee</th>
-                        <th className="p-3 w-48">Percentage</th>
-                        <th className="p-3 text-right w-36">Votes</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {topList.map((n, i) => {
-                        const rank = i + 1;
-                        const pct =
-                          totalVotes === 0
-                            ? 0
-                            : Math.round(((n.votes || 0) / totalVotes) * 100);
-                        const movement = movementRef.current[n.id]?.dir;
-                        return (
-                          <tr
-                            key={n.id}
-                            className={`row-move top-highlight`}
-                            ref={(el) => {
-                              nodesRef.current[n.id] = el as HTMLElement;
-                            }}>
-                            <td className="p-3 font-medium">{rank}</td>
-                            <td
-                              className={`p-3 ${
-                                movement === "up"
-                                  ? "row-up"
-                                  : movement === "down"
-                                  ? "row-down"
-                                  : ""
-                              }`}>
-                              <div className="font-semibold">{n.name}</div>
-                              <div className="text-xs text-black text-opacity-60">
-                                {n.position}
-                              </div>
-                            </td>
-                            <td className="p-3">
-                              <div className="flex items-center gap-3">
-                                <div className="flex-1">
-                                  <div
-                                    className="pct-bar"
-                                    role="progressbar"
-                                    aria-valuenow={pct}
-                                    aria-valuemin={0}
-                                    aria-valuemax={100}
-                                    aria-label={`${n.name} percentage`}>
-                                    <div
-                                      className="pct-bar-inner bar-inner"
-                                      style={{ width: `${pct}%` }}
-                                    />
-                                  </div>
-                                </div>
-                                <div className="text-sm text-black text-opacity-70 w-12 text-right">
-                                  {pct}%
-                                </div>
-                              </div>
-                            </td>
-                            <td
-                              className={`p-3 text-right font-mono ${
-                                movement === "up" ? "top-text" : ""
-                              }`}>
-                              {(n.votes || 0).toLocaleString()}
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
+          <section className="bg-white border border-black/10 rounded-lg p-4">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-semibold">Nominees</h2>
+              <div className="text-2xl text-black text-opacity-70">
+                Total votes: <strong>{totalVotes.toLocaleString()}</strong>
               </div>
+            </div>
 
-              <div className="bg-white border border-black/10 rounded p-4 md:col-span-1">
-                <div className="flex items-center justify-between mb-3">
-                  <h2 className="font-semibold">Other nominees</h2>
-                  <div className="text-sm text-black text-opacity-70">
-                    Count: <strong>{others.length}</strong>
-                  </div>
-                </div>
+            <div className="table-container">
+              <table className="min-w-full text-left">
+                <thead>
+                  <tr className="text-base text-black text-opacity-70">
+                    <th className="p-4 w-10">#</th>
+                    <th className="p-4">Nominee</th>
+                    <th className="p-4 w-80">Percentage</th>
+                    <th className="p-4 text-right w-36">Votes</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {sortedNominees.map((n, i) => {
+                    const rank = i + 1;
+                    const pct =
+                      totalVotes === 0
+                        ? 0
+                        : Math.round(((n.votes || 0) / totalVotes) * 100);
+                    const movement = movementRef.current[n.id]?.dir;
 
-                {/* TABLE version — headers visually hidden for accessibility */}
-                <div className="overflow-x-auto">
-                  {/* <table className="min-w-full text-left">
-                    <thead>
-                      <tr className="sr-only">
-                        <th>#</th>
-                        <th>Nominee</th>
-                        <th>Percentage</th>
-                        <th>Votes</th>
-                      </tr>
-                    </thead>
+                    // Insert a single-line separator after the topCount nominee
+                    const separator =
+                      i === safeTopCount &&
+                      safeTopCount < sortedNominees.length ? (
+                        <tr key={`separator-${i}`}>
+                          <td colSpan={4} className="p-0">
+                            <div className="border-t-6 border-[#f1ab15]"></div>
+                          </td>
+                        </tr>
+                      ) : null;
 
-                    <tbody>
-                      {others.map((n, j) => {
-                        const idx = safeTopCount + j + 1;
-                        const pct =
-                          totalVotes === 0
-                            ? 0
-                            : Math.round(((n.votes || 0) / totalVotes) * 100);
-                        const movement = movementRef.current[n.id]?.dir;
-                        return (
-                          <tr
-                            key={n.id}
-                            className={`row-move ${
-                              j % 2 === 0 ? "bg-white" : "bg-[#f1ab15]/5"
-                            }`}
-                            ref={(el) => {
-                              nodesRef.current[n.id] = el as HTMLElement;
-                            }}>
-                            <td className="p-2 align-middle w-12 text-sm">
-                              {idx}
-                            </td>
-
-                            <td className="p-2 align-middle min-w-0">
-                              <div className="flex items-start justify-between gap-3">
-                                <div className="min-w-0">
-                                  <div className="text-sm font-medium truncate leading-tight">
-                                    {n.name}
-                                  </div>
-                                  <div className="text-xs text-black text-opacity-60 truncate">
-                                    {n.position}
-                                  </div>
-                                </div>
-                                <div className="text-xs font-mono text-right whitespace-nowrap">
-                                  {(n.votes || 0).toLocaleString()}
-                                </div>
-                              </div>
-
-                              <div className="mt-2 flex items-center gap-3">
-                                <div className="flex-1">
-                                  <div
-                                    className="pct-bar"
-                                    role="progressbar"
-                                    aria-valuenow={pct}
-                                    aria-valuemin={0}
-                                    aria-valuemax={100}
-                                    aria-label={`${n.name} percentage`}>
-                                    <div
-                                      className="pct-bar-inner bar-inner"
-                                      style={{ width: `${pct}%` }}
-                                    />
-                                  </div>
-                                </div>
-                                <div className="text-xs text-black text-opacity-70 w-12 text-right">
-                                  {pct}%
-                                </div>
-                              </div>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table> */}
-                  {/* LIST version — simple, compact, clean */}
-                  <ul className="space-y-2">
-                    {others.map((n, j) => {
-                      const idx = safeTopCount + j + 1;
-                      const pct =
-                        totalVotes === 0
-                          ? 0
-                          : Math.round(((n.votes || 0) / totalVotes) * 100);
-                      const movement = movementRef.current[n.id]?.dir;
-                      return (
-                        <li
-                          key={n.id}
-                          ref={(el) => {
-                            nodesRef.current[n.id] = el as HTMLElement;
-                          }}
-                          className={`p-2 rounded-md ${
-                            j % 2 === 0 ? "bg-white" : "bg-[#f1ab15]/5"
-                          } row-move`}>
-                          <div className="flex items-start justify-between gap-3">
-                            <div className="w-10 text-sm font-medium">
-                              {idx}
-                            </div>
-
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center justify-between gap-3">
-                                <div className="min-w-0">
-                                  <div className="text-sm font-medium truncate leading-tight">
-                                    {n.name}
-                                  </div>
-                                  <div className="text-xs text-black text-opacity-60 truncate">
-                                    {n.position}
-                                  </div>
-                                </div>
-                                <div className="text-xs font-mono whitespace-nowrap">
-                                  {(n.votes || 0).toLocaleString()}
-                                </div>
-                              </div>
-
-                              <div className="mt-2 flex items-center gap-3">
-                                <div className="flex-1">
-                                  <div
-                                    className="pct-bar"
-                                    role="progressbar"
-                                    aria-valuenow={pct}
-                                    aria-valuemin={0}
-                                    aria-valuemax={100}
-                                    aria-label={`${n.name} percentage`}>
-                                    <div
-                                      className="pct-bar-inner bar-inner"
-                                      style={{ width: `${pct}%` }}
-                                    />
-                                  </div>
-                                </div>
-                                <div className="text-xs text-black text-opacity-70 w-12 text-right">
-                                  {pct}%
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
-              </div>
-            </section>
-          ) : (
-            /* SINGLE FULL-WIDTH TABLE WHEN topCount <= 3 (no separate top panel) */
-            <section className="bg-white border border-black/10 rounded p-4 mb-6">
-              <div className="flex items-center justify-between mb-3">
-                <h2 className="font-semibold">Nominees</h2>
-                <div className="text-sm text-black text-opacity-70">
-                  Total votes: <strong>{totalVotes.toLocaleString()}</strong>
-                </div>
-              </div>
-
-              <div className="overflow-x-auto">
-                <table className="min-w-full text-left">
-                  <thead>
-                    <tr className="text-xs text-black text-opacity-70">
-                      <th className="p-3 w-12">#</th>
-                      <th className="p-3">Nominee</th>
-                      <th className="p-3 w-48">Percentage</th>
-                      <th className="p-3 text-right w-36">Votes</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {sortedNominees.map((n, i) => {
-                      const rank = i + 1;
-                      const pct =
-                        totalVotes === 0
-                          ? 0
-                          : Math.round(((n.votes || 0) / totalVotes) * 100);
-                      const movement = movementRef.current[n.id]?.dir;
-                      return (
+                    return (
+                      <React.Fragment key={n.id}>
+                        {separator}
                         <tr
-                          key={n.id}
                           className={`row-move ${
                             i % 2 === 0 ? "bg-white" : "bg-[#f1ab15]/5"
                           }`}
                           ref={(el) => {
                             nodesRef.current[n.id] = el as HTMLElement;
                           }}>
-                          <td className="p-3">{rank}</td>
                           <td
-                            className={`p-3 ${
+                            className={`p-4 text-2xl font-black ${
+                              rank <= safeTopCount ? "text-[#f1ab15]" : ""
+                            }`}>
+                            {rank}
+                          </td>
+                          <td
+                            className={`p-4 ${
                               movement === "up"
                                 ? "row-up"
                                 : movement === "down"
                                 ? "row-down"
                                 : ""
                             }`}>
-                            <div className="font-medium">{n.name}</div>
-                            <div className="text-xs text-black text-opacity-60">
-                              {n.position}
-                            </div>
+                            <div className="font-bold text-2xl">{n.name}</div>
                           </td>
-                          <td className="p-3">
-                            <div className="flex items-center gap-3">
+                          <td className="p-4">
+                            <div className="flex items-center gap-6">
                               <div className="flex-1">
                                 <div
                                   className="pct-bar"
@@ -698,13 +395,13 @@ export default function PublicPollDisplay({
                                   />
                                 </div>
                               </div>
-                              <div className="text-sm text-black text-opacity-70 w-12 text-right">
+                              <div className="text-2xl font-semibold text-black w-16 text-right">
                                 {pct}%
                               </div>
                             </div>
                           </td>
                           <td
-                            className={`p-3 text-right font-mono ${
+                            className={`p-4 text-right font-mono font-bold text-2xl ${
                               movement === "up"
                                 ? "text-up"
                                 : movement === "down"
@@ -714,13 +411,13 @@ export default function PublicPollDisplay({
                             {(n.votes || 0).toLocaleString()}
                           </td>
                         </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            </section>
-          )}
+                      </React.Fragment>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </section>
         </main>
       </div>
     </div>
