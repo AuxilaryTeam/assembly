@@ -1,21 +1,30 @@
 package com.bankofabyssinia.assembly_vote_service.Controller;
 
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.bankofabyssinia.assembly_vote_service.DTO.CandidateAssignmentDTO;
 import com.bankofabyssinia.assembly_vote_service.DTO.VoteDTO;
-import com.bankofabyssinia.assembly_vote_service.Entity.*;
+import com.bankofabyssinia.assembly_vote_service.Entity.Candidate;
+import com.bankofabyssinia.assembly_vote_service.Entity.CandidateAssignment;
+import com.bankofabyssinia.assembly_vote_service.Entity.CandidateVote;
+import com.bankofabyssinia.assembly_vote_service.Entity.Position;
+import com.bankofabyssinia.assembly_vote_service.Entity.User;
 import com.bankofabyssinia.assembly_vote_service.Repository.PositionRepository;
 import com.bankofabyssinia.assembly_vote_service.Service.AuthService;
 import com.bankofabyssinia.assembly_vote_service.Service.CandidateService;
 import com.bankofabyssinia.assembly_vote_service.Service.ResultService;
-import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpRequest;
-import org.springframework.http.RequestEntity;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Map;
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/candidates")
@@ -141,7 +150,10 @@ public class CandidateController {
 
             return ResponseEntity.ok(
                     Map.of(
-                            "position", position.getName(),
+                            "title", position.getName(),
+                            "description", position.getDescription(),
+                            "maxVotes",position.getMaxVotes(),
+                            "status",position.getStatus(),
                             "candidates", candidates
                     )
             );
@@ -178,8 +190,11 @@ public class CandidateController {
                     )
             );
         }
-
     }
+
+
+    //
+
 
     // report for who voted for candidate in each position
     public ResponseEntity<?> getDetailedResultsByPosition(@PathVariable Long positionId, HttpServletRequest requestHeader) {
@@ -205,4 +220,28 @@ public class CandidateController {
         }
     }
 
+    // get all candidate, the vote they gate and the rank based on the vote they get voted for them in a specific position
+    @GetMapping("/rankings/position/{positionId}")
+    public ResponseEntity<?> getCandidateRankingsByPosition(@PathVariable Long positionId, HttpServletRequest requestHeader) {
+        String token = authService.getToken(requestHeader);
+        User user = authService.getUserFromToken(token);
+        try {
+            Position position = positionRepository.findById(positionId).orElseThrow(() -> new RuntimeException("Position not found"));
+            List<Map<String, Object>> rankings = resultService.candidateRankings(positionId, user);
+
+            return ResponseEntity.ok(
+                    Map.of(
+                            "position", position.getName(),
+                            "rankings", rankings
+                    )
+            );
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(
+                    Map.of(
+                            "error", "Could not retrieve candidate rankings for the position",
+                            "message", e.getMessage()
+                    )
+            );
+        }
+    }
 }

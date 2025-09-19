@@ -82,7 +82,6 @@ export type IssueItem = {
     description: string;
     status: string;
     active: boolean;
-
 }
 
 export type IssueResult = {
@@ -91,6 +90,32 @@ export type IssueResult = {
     status: "OPEN" | "CLOSED" | string; // can extend later
     options: Record<string, number>;
 };
+
+// ============= Positions ============
+export interface PositionRequest {
+    name: string;
+    description: string;
+    maxVotes: number;
+    maxCandidates: number;
+    // electionId?: number; 
+}
+
+export type ElectionStatus = "DRAFT" | "OPEN" | "CLOSED";
+
+export interface PositionItem {
+    id: number;              // Long → number
+    name: string;
+    description: string;
+    maxCandidates: number;   // default handled in backend
+    maxVotes: number;
+    status?: ElectionStatus; // can be null/undefined if not set
+    // election?: Election;  // uncomment if you later need relation
+}
+
+
+
+
+
 
 // ========== Voter ===========
 

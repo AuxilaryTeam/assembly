@@ -1,5 +1,10 @@
 import { useParams } from "react-router-dom";
-import { getIssue, getVoterById, voteIssue } from "../components/utils/api";
+import {
+  getPositionInfo,
+  getVoterById,
+  voteIssue,
+  votePosition,
+} from "../components/utils/api";
 import type {
   IssueResult,
   VoteRequest,
@@ -8,6 +13,22 @@ import type {
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { FaSearch, FaClipboardCheck } from "react-icons/fa";
+
+interface Candidate {
+  id: number;
+  fullName: string;
+  manifesto: string;
+  photoUrl: string;
+  active: boolean;
+}
+
+interface PositionData {
+  maxVotes: number;
+  candidates: Candidate[];
+  title: string;
+  description: string;
+  status: string;
+}
 
 /**
  * Helper: try to read a value from a response object using many possible keys
@@ -61,7 +82,6 @@ const normalizeToIssueResult = (raw: any): IssueResult => {
 
   // If options not found, the API might have them nested inside a different field
   if (!rawOptions) {
-    // attempt to find any object value that looks like vote counts (has numeric values)
     const candidate = Object.values(raw).find(
       (v) =>
         v &&
@@ -72,11 +92,9 @@ const normalizeToIssueResult = (raw: any): IssueResult => {
     rawOptions = candidate || null;
   }
 
-  // If still not found, fallback to empty object
   const optionsObj: Record<string, number> =
     rawOptions && typeof rawOptions === "object"
       ? Object.entries(rawOptions).reduce((acc, [k, v]) => {
-          // convert numeric-like strings to numbers when needed
           const num = typeof v === "number" ? v : Number(v);
           acc[k.toUpperCase()] = Number.isFinite(num) ? num : 0;
           return acc;
@@ -106,25 +124,18 @@ const DetailItem = ({
   </div>
 );
 
-const ISSUE_OPTION_IDS = {
-  YES: 0,
-  NO: 1,
-  ABSTAIN: 2,
-};
-
-const IssueDetailPage = () => {
+const PositionDetailPage = () => {
   const { id } = useParams();
   const [issueData, setIssueData] = useState<IssueResult>({
     title: "",
     description: "",
     status: "",
-    options: { YES: 0, NO: 0, ABSTAIN: 0 },
+    options: {},
   });
+  const [positionData, setPositionData] = useState<PositionData | null>(null);
   const [search, setSearch] = useState("");
   const [voterData, setVoterData] = useState<VoterItem | null>(null);
-  const [selectedVote, setSelectedVote] = useState<
-    "YES" | "NO" | "ABSTAIN" | ""
-  >("");
+  const [selectedCandidates, setSelectedCandidates] = useState<number[]>([]);
 
   const handleSearch = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -132,45 +143,70 @@ const IssueDetailPage = () => {
       const response = await getVoterById(search);
       console.log("Search Shareholder with id ", search, response.data);
       setVoterData(response.data);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error Searching with value,", search, ":", error);
       setVoterData(null);
-      toast.error("Error fetching shareholder data");
+      toast.error(`Error:${error.response.data.message}`);
     }
   };
 
-  // Function to submit the vote
-  // Function to submit the vote
+  const handleCandidateToggle = (candidateId: number) => {
+    if (selectedCandidates.includes(candidateId)) {
+      setSelectedCandidates(
+        selectedCandidates.filter((id) => id !== candidateId)
+      );
+    } else if (selectedCandidates.length < (positionData?.maxVotes || 1)) {
+      setSelectedCandidates([...selectedCandidates, candidateId]);
+    } else {
+      toast.warning(
+        `You can only select up to ${positionData?.maxVotes} candidate(s).`
+      );
+    }
+    // } else {
+    //   setSelectedCandidates([...selectedCandidates, candidateId]);
+    // }
+  };
+
   const handleVoteSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!selectedVote) {
-      toast.warning("Please select a vote before submitting.");
-      return;
-    }
     if (!voterData?.attendance) {
       toast.error("Cannot submit vote: Shareholder is not present.");
       return;
     }
-    const voteDTO: VoteRequest = {
-      issueId: Number(id),
-      optionId: ISSUE_OPTION_IDS[selectedVote],
-      voterId: voterData.id,
-      voterShareHolderId: voterData.shareholderid ?? "",
-    };
-    console.log("Submitting vote:", voteDTO, "for", voterData.shareholderid);
-    try {
-      const response = await voteIssue(voteDTO);
-      console.log(
-        "Submitting vote:",
-        selectedVote,
-        "for",
-        voterData.shareholderid
+    if (selectedCandidates.length === 0) {
+      toast.warning("Please select at least one candidate before submitting.");
+      return;
+    }
+    if (
+      positionData?.maxVotes &&
+      selectedCandidates.length > positionData.maxVotes
+    ) {
+      toast.error(
+        `You have selected ${selectedCandidates.length} candidates, but the maximum allowed is ${positionData.maxVotes}. Please adjust your selection.`
       );
-      console.log("Response for Voting", response);
-      toast.success(`Vote '${selectedVote}' submitted successfully!`);
-      setSelectedVote(""); // Reset vote after submission
+      return;
+    }
+
+    try {
+      // Submit a vote for each selected candidate
+      const votePromises = selectedCandidates.map((candidateId) => {
+        const voteDTO: VoteRequest = {
+          positionId: Number(id),
+          candidateId,
+          voterId: voterData.id,
+          voterShareHolderId: voterData.shareholderid ?? "",
+        };
+        return votePosition(voteDTO);
+      });
+
+      const responses = await Promise.all(votePromises);
+      console.log("Vote responses:", responses);
+      toast.success(
+        `Vote(s) for ${selectedCandidates.length} candidate(s) submitted successfully!`
+      );
+      setSelectedCandidates([]); // Reset selections after submission
     } catch (error: any) {
-      console.error("Error submitting vote:", error); // simple, safe fallback
+      console.error("Error submitting vote:", error);
       toast.error(
         `Error submitting vote: ${
           error?.response?.data?.message ?? error?.message ?? "Unknown error"
@@ -179,15 +215,16 @@ const IssueDetailPage = () => {
     }
   };
 
-  const fetchData = async (issueId: number) => {
-    if (issueId <= 0) return;
+  const fetchData = async (positionId: number) => {
+    if (positionId <= 0) return;
     try {
-      const response = await getIssue(issueId);
+      const response = await getPositionInfo(positionId);
       const raw = response.data;
-      console.log("Issue Data: ", raw);
+      console.log("Position Data: ", raw);
 
       const normalized = normalizeToIssueResult(raw);
       setIssueData(normalized);
+      setPositionData(raw as PositionData); // Store raw data for candidates and maxVotes
     } catch (error) {
       console.error("Error fetching Issue Data:", error);
       toast.error("Error fetching Issue Data");
@@ -200,7 +237,6 @@ const IssueDetailPage = () => {
     }
   }, [id]);
 
-  // helper: badge class for status
   const statusClass = (s: string) => {
     const lower = (s || "").toLowerCase();
     if (lower === "open") return "bg-green-500";
@@ -215,7 +251,7 @@ const IssueDetailPage = () => {
         <div className="flex items-center gap-3 mb-6">
           <FaClipboardCheck className="text-4xl text-blue-600" />
           <h1 className="text-3xl font-bold text-gray-800 font-sans">
-            {issueData.title || "Issue Details"}
+            {issueData.title || "Position Details"}
           </h1>
         </div>
         <div className="space-y-4">
@@ -231,6 +267,10 @@ const IssueDetailPage = () => {
               )}`}>
               {issueData.status || "UNKNOWN"}
             </span>
+          </p>
+          <p>
+            <span className="font-semibold text-gray-800">Max Votes:</span>{" "}
+            {positionData?.maxVotes || "—"}
           </p>
           {/* Search Bar */}
           <form onSubmit={handleSearch} className="mt-6">
@@ -275,7 +315,6 @@ const IssueDetailPage = () => {
                   voterData.attendance ? "text-green-600" : "text-red-600"
                 }
               />
-
               <DetailItem
                 label="Voting Subscription"
                 value={voterData.votingsubscription ?? ""}
@@ -289,49 +328,40 @@ const IssueDetailPage = () => {
               Cast Shareholder Vote
             </h3>
             <form onSubmit={handleVoteSubmit} className="flex flex-col gap-y-4">
-              <label className="flex items-center gap-3 cursor-pointer">
-                <input
-                  type="radio"
-                  name="vote"
-                  value="YES"
-                  checked={selectedVote === "YES"}
-                  onChange={() => setSelectedVote("YES")}
-                  className="accent-blue-600 h-5 w-5"
-                />
-                <span className="text-gray-700 font-medium">YES</span>
-              </label>
-              <label className="flex items-center gap-3 cursor-pointer">
-                <input
-                  type="radio"
-                  name="vote"
-                  value="NO"
-                  checked={selectedVote === "NO"}
-                  onChange={() => setSelectedVote("NO")}
-                  className="accent-red-600 h-5 w-5"
-                />
-                <span className="text-gray-700 font-medium">NO</span>
-              </label>
-              <label className="flex items-center gap-3 cursor-pointer">
-                <input
-                  type="radio"
-                  name="vote"
-                  value="ABSTAINs"
-                  checked={selectedVote === "ABSTAIN"}
-                  onChange={() => setSelectedVote("ABSTAIN")}
-                  className="accent-yellow-600 h-5 w-5"
-                />
-                <span className="text-gray-700 font-medium">ABSTAIN</span>
-              </label>
+              {positionData?.candidates
+                ?.filter((candidate) => candidate.active)
+                .map((candidate) => (
+                  <label
+                    key={candidate.id}
+                    className="flex items-center gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={selectedCandidates.includes(candidate.id)}
+                      onChange={() => handleCandidateToggle(candidate.id)}
+                      className="accent-blue-600 h-5 w-5"
+                    />
+                    <div className="flex flex-col">
+                      <span className="text-gray-700 font-medium">
+                        {candidate.fullName}
+                      </span>
+                      <span className="text-gray-500 text-sm">
+                        {candidate.manifesto}
+                      </span>
+                    </div>
+                  </label>
+                ))}
               <button
-                disabled={!voterData.attendance}
+                disabled={
+                  !voterData.attendance || selectedCandidates.length === 0
+                }
                 type="submit"
                 className={`mt-4 px-6 py-3 rounded-lg transition-colors font-medium text-white
-    ${
-      voterData.attendance
-        ? "bg-green-600 hover:bg-green-700 cursor-pointer"
-        : "bg-gray-400 cursor-not-allowed"
-    }`}>
-                Submit Vote
+                  ${
+                    voterData.attendance && selectedCandidates.length > 0
+                      ? "bg-green-600 hover:bg-green-700 cursor-pointer"
+                      : "bg-gray-400 cursor-not-allowed"
+                  }`}>
+                Submit Vote{selectedCandidates.length > 1 ? "s" : ""}
               </button>
             </form>
           </div>
@@ -341,4 +371,4 @@ const IssueDetailPage = () => {
   );
 };
 
-export default IssueDetailPage;
+export default PositionDetailPage;
