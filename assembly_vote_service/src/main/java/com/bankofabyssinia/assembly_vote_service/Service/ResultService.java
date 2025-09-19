@@ -4,11 +4,16 @@ import com.bankofabyssinia.assembly_vote_service.Entity.*;
 import com.bankofabyssinia.assembly_vote_service.Repository.CandidateVoteRepository;
 import com.bankofabyssinia.assembly_vote_service.Repository.IssueVoteRepository;
 import com.bankofabyssinia.assembly_vote_service.Repository.PositionRepository;
+
+import java.util.Collections;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Service
@@ -99,4 +104,28 @@ public class ResultService {
 
 
     }
+
+    public List<Map<String, Object>> candidateRankings(Long positionId, User user) {
+                if (positionId == null) {
+                        throw new IllegalArgumentException("Position id must not be null");
+                }
+                Map<String, Long> tally = tallyCandidateVotes(positionId, user);
+                if (tally == null || tally.isEmpty()) {
+                        return Collections.emptyList();
+                }
+                // Include candidates with zero votes and add rank
+                AtomicInteger rankCounter = new java.util.concurrent.atomic.AtomicInteger(1);
+                return tally.entrySet().stream()
+                        .sorted((e1, e2) -> Long.compare(e2.getValue(), e1.getValue()))
+                        .map(entry -> {
+                            Map<String, Object> map = new HashMap<>();
+                            map.put("candidate", entry.getKey());
+                            map.put("totalVotes", entry.getValue());
+                            map.put("rank", rankCounter.getAndIncrement());
+                            return map;
+                        })
+                        .collect(Collectors.toList());
+    }
+
+    
 }

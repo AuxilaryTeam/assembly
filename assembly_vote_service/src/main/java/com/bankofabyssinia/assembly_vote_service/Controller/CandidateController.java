@@ -178,8 +178,11 @@ public class CandidateController {
                     )
             );
         }
-
     }
+
+
+    //
+
 
     // report for who voted for candidate in each position
     public ResponseEntity<?> getDetailedResultsByPosition(@PathVariable Long positionId, HttpServletRequest requestHeader) {
@@ -205,4 +208,27 @@ public class CandidateController {
         }
     }
 
-}
+    // get all candidate, the vote they gate and the rank based on the vote they get voted for them in a specific position
+    @GetMapping("/rankings/position/{positionId}")
+    public ResponseEntity<?> getCandidateRankingsByPosition(@PathVariable Long positionId, HttpServletRequest requestHeader) {
+        String token = authService.getToken(requestHeader);
+        User user = authService.getUserFromToken(token);
+        try {
+            Position position = positionRepository.findById(positionId).orElseThrow(() -> new RuntimeException("Position not found"));
+            List<Map<String, Object>> rankings = resultService.candidateRankings(positionId, user);
+
+            return ResponseEntity.ok(
+                    Map.of(
+                            "position", position.getName(),
+                            "rankings", rankings
+                    )
+            );
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(
+                    Map.of(
+                            "error", "Could not retrieve candidate rankings for the position",
+                            "message", e.getMessage()
+                    )
+            );
+        }
+    }
