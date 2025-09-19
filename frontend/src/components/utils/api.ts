@@ -83,14 +83,23 @@ export const updatePosition = (id: number, data: PositionRequest) => {
     return api.put(`/positions/update/${id}`, data)
 }
 
+export const getPositionInfo = (positionId: number) => {
+    return api.get(`/candidates/position/${positionId}`)
+}
+
+export const votePosition = (data: any) => {
+    return api.post("/candidates/vote", data)
+}
+
+
 //  ============= voter =============
 
 export const getVoters = () => {
     return api.get("/voter");
 }
 
-export const getVoterById = (value: string) => {
-    return api.get(`/voter/${value}`);
+export const getVoterById = (voterId: string) => {
+    return api.get(`/voter/${voterId}`);
 }
 
 export const registerVoter = (data: VoterItem) => {

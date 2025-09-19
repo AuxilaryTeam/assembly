@@ -41,7 +41,7 @@ const PositionsPage = () => {
         <div className="flex items-center justify-between">
           {/* Title */}
           <h1 className="text-3xl font-bold  text-gray-800 ">
-            List of Active Issues
+            List of Active Positions
           </h1>
           {/* Create Button */}
           <button
