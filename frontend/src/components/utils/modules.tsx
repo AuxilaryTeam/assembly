@@ -1,6 +1,23 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import type { OptionsType } from "./types";
+import BoALogo from "../../assets/BOA logo white.svg";
+
+// System Tityel
+export const SystemTitle = () => {
+  return (
+    <div className="w-1/2 bg-[#f1ab15] flex flex-col justify-center items-center p-10">
+      <img
+        src={BoALogo}
+        alt="Logo of bank of abyssinia"
+        className="h-24 w-100 mb-6"
+      />
+      <p className="text-3xl font-bold text-white leading-relaxed text-center">
+        Share Holders <br /> Vote System
+      </p>
+    </div>
+  );
+};
 
 // Card and CardContent
 export const Card = ({

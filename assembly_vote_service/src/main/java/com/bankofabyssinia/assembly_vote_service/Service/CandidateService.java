@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class CandidateService {
@@ -166,5 +167,22 @@ public class CandidateService {
         log.setTimestamp(Instant.now());
         logRepository.save(log);
         return assignments.stream().map(CandidateAssignment::getCandidate).toList();
+    }
+
+    public List<Candidate> getAssignmentsByPosition(Position position, User user) {
+        Position foundPosition = positionRepository.findById(position.getId())
+                .orElseThrow(() -> new RuntimeException("Position not found with id: " + position.getId()));
+        List<CandidateAssignment> assignments = candidateAssignmentRepository.findByPosition(foundPosition);
+        Log log = new Log();
+        log.setAction("Viewed candidate assignments for position: " + foundPosition.getName());
+        log.setUser(user);
+        log.setTimestamp(Instant.now());
+        logRepository.save(log);
+
+        List<Candidate> candidates = assignments.stream()
+                .map(CandidateAssignment::getCandidate)
+                .toList();
+
+        return candidates;
     }
 }

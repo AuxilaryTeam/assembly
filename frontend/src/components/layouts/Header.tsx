@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { FaSearch } from "react-icons/fa";
+import { FaSearch, FaUser } from "react-icons/fa";
 import {
   FiGrid,
   FiCalendar,
@@ -16,6 +16,8 @@ import { isAuthenticated } from "../utils/auth";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../store/store";
+import { MdPerson } from "react-icons/md";
+import { BsPerson } from "react-icons/bs";
 
 interface Customer {
   customerId: number;
@@ -74,81 +76,6 @@ const Header: React.FC = () => {
   // inside Header component (replace current useEffect)
   const controllerRef = useRef<AbortController | null>(null);
   const MIN_SEARCH_LENGTH = 1;
-
-  // useEffect(() => {
-  //   let debounceTimer: ReturnType<typeof setTimeout> | null = null;
-
-  //   if (!search || search.trim().length < MIN_SEARCH_LENGTH) {
-  //     // cancel any running request
-  //     if (controllerRef.current) {
-  //       controllerRef.current.abort();
-  //       controllerRef.current = null;
-  //     }
-  //     setCustomers([]);
-  //     setLoading(false);
-  //     return;
-  //   }
-
-  //   setLoading(true);
-
-  //   debounceTimer = setTimeout(() => {
-  //     // cancel previous request if any
-  //     if (controllerRef.current) {
-  //       controllerRef.current.abort();
-  //     }
-
-  //     const controller = new AbortController();
-  //     controllerRef.current = controller;
-
-  //     const doSearch = async () => {
-  //       try {
-  //         // if your searchCustomers accepts config, pass the signal:
-  //         const res = await searchCustomers(search.trim());
-  //         // normalize response shape
-  //         const payload = res?.data;
-  //         console.log("Search results:", payload);
-  //         if (Array.isArray(payload)) {
-  //           setCustomers(payload);
-  //         } else if (
-  //           payload &&
-  //           typeof payload === "object" &&
-  //           Object.keys(payload).length > 0
-  //         ) {
-  //           setCustomers([payload]);
-  //         } else {
-  //           setCustomers([]);
-  //         }
-  //       } catch (error: any) {
-  //         // If request was aborted, avoid treating it as an error
-  //         // Axios aborted error may have name 'CanceledError' or code 'ERR_CANCELED'
-  //         const isCanceled =
-  //           error?.name === "CanceledError" ||
-  //           error?.code === "ERR_CANCELED" ||
-  //           (error?.message && error.response.data.error.includes("not found"));
-
-  //         if (!isCanceled) {
-  //           console.error("Error fetching customers:", error);
-  //           toast.error("Failed to fetch customers");
-  //           setCustomers([]);
-  //         }
-  //       } finally {
-  //         // only stop loading if the current controller is still this one
-  //         if (controllerRef.current === controller) {
-  //           setLoading(false);
-  //           controllerRef.current = null;
-  //         }
-  //       }
-  //     };
-
-  //     void doSearch();
-  //   }, 200);
-
-  //   // cleanup: clear debounce and optionally cancel outstanding request when component unmounts or search changes
-  //   return () => {
-  //     if (debounceTimer) clearTimeout(debounceTimer);
-  //     // don't abort here — abort is handled at the top when starting a new request
-  //   };
-  // }, [search]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -280,7 +207,7 @@ const Header: React.FC = () => {
 
           <Link to="/">
             <img
-              src="/import-export/BOA_logo.svg"
+              src="/BOA_logo.svg"
               alt="Logo of bank of abyssinia"
               className="h-14"
             />
@@ -289,17 +216,8 @@ const Header: React.FC = () => {
             <div className="relative">
               {/* Desktop nav links */}
               <nav className="hidden lg:flex items-center gap-5">
-                {headerLink({ to: "/", children: "Dashboard" })}
-                {headerLink({ to: "/weeklyinput", children: "Weekly Input" })}
-                {headerLink({ to: "/report", children: "Report" })}
-
-                {user !== null &&
-                  user.roleName === "ADMIN" &&
-                  headerLink({ to: "/authorize", children: "Authorize" })}
-                {headerLink({
-                  to: "/proceeds",
-                  children: "Proceeds Processing",
-                })}
+                {headerLink({ to: "/", children: "Polls" })}
+                {headerLink({ to: "/issues", children: "Issues" })}
               </nav>
             </div>
           )}
@@ -309,75 +227,20 @@ const Header: React.FC = () => {
         <div className="relative flex items-center gap-4">
           {!["/signin", "/signup"].includes(currentPath) && (
             <>
-              {/* Search bar */}
-              <div className="relative">
-                <span className="absolute inset-y-0 left-0 flex items-center pl-3">
-                  <FaSearch className="text-[#f1ab15]" />
-                </span>
-                <input
-                  type="text"
-                  value={search}
-                  onChange={(e) => {
-                    setSearch(e.target.value);
-                    setSearchDropDown(true);
-                  }}
-                  onBlur={() => {
-                    setTimeout(() => {
-                      setSearchDropDown(false);
-                    }, 300);
-                  }}
-                  onKeyDown={handleKeyDown} // add this
-                  placeholder="Search by ID or Name..."
-                  className="pl-10 pr-4 py-2 border border-[#f1ab15] rounded-lg focus:outline-none focus:ring-1 focus:ring-[#f1ab15] w-64"
-                />
-
-                {/* Search dropdown as card */}
-                {search && searchDropDown && (
-                  <div className="absolute z-20 mt-1 w-64 bg-white border border-gray-200 rounded-lg shadow-lg overflow-y-auto max-h-60">
-                    {loading ? (
-                      <div className="px-4 py-3 text-sm text-gray-500">
-                        Loading...
-                      </div>
-                    ) : customers.length ? (
-                      customers.map((customer) => (
-                        <Link
-                          key={customer.customerId}
-                          to={`/customerinfo/${customer.customerId}`}
-                          onClick={() => setSearch("")}
-                          className="block px-4 py-3 hover:bg-gray-50">
-                          <div className="text-sm font-medium text-gray-800">
-                            {customer.customerName}
-                          </div>
-                          <div className="text-xs text-gray-500">
-                            ID: {customer.customerId}
-                          </div>
-                          <div className="text-xs text-gray-500">
-                            T24 ID: {customer.t24Id}
-                          </div>
-                        </Link>
-                      ))
-                    ) : (
-                      <div className="px-4 py-3 text-gray-400 text-sm">
-                        No users found.
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
               {/* Notification Icon */}
               {/* <DevNotificationPanel /> */}
 
               {/* User Icon */}
-              <div ref={userDropdownRef} className="relative hidden md:flex">
-                <img
-                  src="/import-export/icons/Account.svg"
-                  alt="User Account"
+              <div className="relative hidden md:flex">
+                <div
+                  ref={userDropdownRef}
                   onClick={() => setShowUserDropdown(!showUserDropdown)}
-                  className="h-8 w-8 cursor-pointer rounded-full"
-                />
+                  className="flex items-center justify-center w-12 h-12 rounded-full shadow-md bg-white cursor-pointer">
+                  <FaUser className="text-[#f1ab15] w-6 h-6 cursor-pointer" />
+                </div>
 
                 {showUserDropdown && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-md z-20">
+                  <div className="absolute right-0 mt-12 w-48 bg-white border border-gray-200 rounded-lg shadow-md z-20">
                     {dropdownLink({
                       to: "/profile",
                       icon: FiUser,

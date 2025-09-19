@@ -67,6 +67,7 @@ public class IssueService {
 //    }
 
     public Issue updateIssue(IssueDTO issueDTO, Long id, User user) {
+
     if (id == null) {
         throw new IllegalArgumentException("Issue id must not be null");
     }
@@ -103,11 +104,13 @@ public class IssueService {
 //    }
 
     public Map getIssueById(Long id, User user) {
+
     if (id == null) {
         throw new IllegalArgumentException("Issue id must not be null");
     }
     Issue issue = issueRepo.findById(id)
         .orElseThrow(() -> new IllegalArgumentException("Issue not found with id: " + id));
+
 
 
 
@@ -177,12 +180,14 @@ public class IssueService {
 
 
     public Issue activateIssue(Long id, User user) {
+
     // check if the Issue is already active
     if (id == null) {
         throw new IllegalArgumentException("Issue id must not be null");
     }
     Issue issue = issueRepo.findById(id)
         .orElseThrow(() -> new IllegalArgumentException("Issue not found with id: " + id));
+
         if (issue.isActive()) {
             throw new IllegalStateException("Issue is already active");
         } else if (issue.getStatus() == ElectionStatus.CLOSED) {
@@ -201,12 +206,14 @@ public class IssueService {
     }
 
     public Issue closeIssue(Long id, User user) {
+
     // check if the Issue is already closed
     if (id == null) {
         throw new IllegalArgumentException("Issue id must not be null. I cant find it NAOD");
     }
     Issue issue = issueRepo.findById(id)
         .orElseThrow(() -> new IllegalArgumentException("Issue not found with id: " + id));
+
         if (issue.getStatus() == ElectionStatus.CLOSED) {
             throw new IllegalStateException("Issue is already closed");
     }
