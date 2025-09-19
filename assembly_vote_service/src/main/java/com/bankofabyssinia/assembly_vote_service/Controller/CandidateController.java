@@ -181,6 +181,34 @@ public class CandidateController {
 
     }
 
+
+    // get the all asigned candideats to a position
+    @GetMapping("/assignments/position/{positionId}")
+    public ResponseEntity<?> getAssignmentsByPosition(@PathVariable Long positionId, HttpServletRequest
+            requestHeader) {
+        String token = authService.getToken(requestHeader);
+        User user = authService.getUserFromToken(token);
+        try {
+            Position position = positionRepository.findById(positionId).orElseThrow(() -> new RuntimeException("Position not found"));
+            List<Candidate> candidates = service.getAssignmentsByPosition(position, user);
+
+            return ResponseEntity.ok(
+                    Map.of(
+                            "position", position.getName(),
+                            "assignments", candidates
+                    )
+            );
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(
+                    Map.of(
+                            "error", "Could not retrieve assignments for the position",
+                            "message", e.getMessage()
+                    )
+            );
+        }
+    }
+
+
     // report for who voted for candidate in each position
     public ResponseEntity<?> getDetailedResultsByPosition(@PathVariable Long positionId, HttpServletRequest requestHeader) {
         String token = authService.getToken(requestHeader);
