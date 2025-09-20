@@ -1,6 +1,6 @@
 import React, { ReactNode, useEffect, useState } from "react";
 import { Button } from "../ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, CircleX } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   BarChart,
@@ -13,6 +13,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { getIssue, getIssueResult } from "../utils/api";
+import { useToast } from "@/hooks/use-toast";
 
 // Raw response type (from backend)
 interface IssueApiResponse {
@@ -89,6 +90,7 @@ export default function PublicPollDisplay({
   const [maxVotes, setMaxVotes] = useState(0);
   const { id, type } = useParams<{ id: string; type: string }>();
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const fetchData = async (issueId: string) => {
     try {
@@ -103,8 +105,21 @@ export default function PublicPollDisplay({
       if (response.data.proposal) {
         setProposal(response.data.proposal);
       }
-    } catch (error) {
-      console.error("Error fetching issue result:", error);
+    } catch (err: any) {
+      console.error("Error fetching issue result:", err);
+      const msg =
+        err?.response?.data?.message ?? err?.message ?? "Unknown error";
+      toast({
+        variant: "destructive",
+        title: (
+          <div className="flex items-center gap-2">
+            <CircleX className="h-5 w-5 text-red-500" />
+            <span>Error Polling Proposal</span>
+          </div>
+        ),
+        description: msg,
+        duration: 4000,
+      });
     }
   };
 
@@ -113,18 +128,29 @@ export default function PublicPollDisplay({
       const response = await getIssue(Number(issueId));
       console.log("Response fetchIssueInformation", response.data);
       setProposal(mapIssueResponseToProposal(response.data, issueId));
-    } catch (error) {}
+    } catch (err: any) {
+      console.error("Error", err);
+      const msg =
+        err?.response?.data?.message ?? err?.message ?? "Unknown error";
+      toast({
+        variant: "destructive",
+        title: (
+          <div className="flex items-center gap-2">
+            <CircleX className="h-5 w-5 text-red-500" />
+            <span>Error Fetching Proposal Information</span>
+          </div>
+        ),
+        description: msg,
+        duration: 4000,
+      });
+    }
   };
-
-  useEffect(() => {
-    if (!id || demo) return;
-    fetchIssueInformation(id);
-  }, [id]);
 
   useEffect(() => {
     if (!id || demo) return;
 
     fetchData(id); // Initial fetch
+    fetchIssueInformation(id);
     const interval = setInterval(() => {
       fetchData(id);
     }, 5000);
@@ -222,7 +248,7 @@ export default function PublicPollDisplay({
         {/* Header */}
         <Button
           variant="outline"
-          onClick={() => navigate(`/${type}/blank`)} // Navigate to blank page
+          onClick={() => navigate(`/displayselector`)}
           className="flex items-center gap-2 mb-2">
           <ArrowLeft size={18} />
           Back

@@ -10,7 +10,7 @@ import Report from "./components/report/Report";
 import { Toaster } from "./components/ui/toaster";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AuthLayout from "./components/AuthLayout";
-import PublicPollDisplay from "./components/pages/Poll";
+import PublicPollDisplay from "./components/pages/PublicPoll";
 import PositionsPage from "./components/pages/PositionsPage";
 import IssuesPage from "./components/pages/IssuesPage";
 import PositionDetailPage from "./components/pages/PositionDetailPage";

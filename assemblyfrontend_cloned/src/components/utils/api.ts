@@ -91,6 +91,10 @@ export const votePosition = (data: any) => {
     return api.post("/candidates/vote", data)
 }
 
+export const getPositionResult = (positionId: number) => {
+    return api.get(`candidates/rankings/position/${positionId}`)
+}
+
 
 //  ============= voter =============
 

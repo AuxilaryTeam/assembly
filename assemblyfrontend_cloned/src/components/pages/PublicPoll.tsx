@@ -1,10 +1,16 @@
-import React from "react";
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { Button } from "../ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, CircleX } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
+import { getPositionInfo, getPositionResult } from "../utils/api";
+import { useToast } from "@/hooks/use-toast";
 
-/* ---------- Types ---------- */
 export interface PublicNominee {
   id: string;
   name: string;
@@ -23,17 +29,15 @@ export interface PublicProposal {
   status?: string;
 }
 
-/* ---------- Props ---------- */
 type Props = {
   proposalId?: string;
   autoRotate?: boolean;
   demo?: boolean;
   overtakeIntervalMs?: number;
-  topCount?: number; // configurable top N
+  topCount?: number;
   sortKey?: "votes" | "name";
 };
 
-/* ---------- Helpers & Dummy Data ---------- */
 function formatTimeLeft(end?: string) {
   if (!end) return "Not scheduled";
   const diff = Date.parse(end) - Date.now();
@@ -96,13 +100,11 @@ const DUMMY_NOMINEES: PublicNominee[] = [
   { id: "b5", name: "Ms. Mahlet Abebe", position: "Board Member", votes: 100 },
 ];
 
-/* ---------- Component ---------- */
 export default function PublicPollDisplay({
   proposalId,
   autoRotate = false,
-  demo = true,
+  demo = false,
   overtakeIntervalMs = 5000,
-  topCount = 5,
   sortKey = "votes",
 }: Props) {
   const [proposal, setProposal] = useState<PublicProposal | null>(
@@ -114,8 +116,10 @@ export default function PublicPollDisplay({
       : []
   );
   const [highlightIndex, setHighlightIndex] = useState(0);
+  const [topCount, setTopCount] = useState(5);
   const navigate = useNavigate();
-  const { id } = useParams();
+  const { id, type } = useParams<{ id: string; type: string }>();
+  const { toast } = useToast();
 
   // FLIP & movement refs
   const nodesRef = useRef<Record<string, HTMLElement | null>>({});
@@ -128,15 +132,88 @@ export default function PublicPollDisplay({
     >
   >({});
 
-  // const fetchData = async (pollId:number) => {
-  //     try {
-  //       const response = await
-  //     } catch (error) {
+  const fetchData = async (positionId: string) => {
+    try {
+      const response = await getPositionResult(Number(positionId));
+      console.log("API Response:", response.data);
+      const rankings = response.data.rankings || [];
+      // Map backend rankings to PublicNominee
+      const fetchedNominees: PublicNominee[] = rankings.map(
+        (r: any, index: number) => ({
+          id: `candidate-${index}`, // Generate ID if not provided by API
+          name: r.candidate || "Unknown",
+          votes: Number(r.totalVotes) || 0,
+          position: response.data.position || "Unknown",
+          description: "", // Adjust if API provides description
+        })
+      );
+      setNominees(fetchedNominees);
+    } catch (err: any) {
+      console.error("Error fetching position result:", err);
+      const msg =
+        err?.response?.data?.message ?? err?.message ?? "Unknown error";
+      toast({
+        variant: "destructive",
+        title: (
+          <div className="flex items-center gap-2">
+            <CircleX className="h-5 w-5 text-red-500" />
+            <span>Error Fetching Issue Information</span>
+          </div>
+        ),
+        description: msg,
+        duration: 4000,
+      });
+      setNominees([]); // Clear nominees on error
+      setProposal(null); // Clear proposal on error
+    }
+  };
 
-  //     }
-  //  }
+  const fetchPositionInformation = async (positionId: string) => {
+    try {
+      const response = await getPositionInfo(Number(positionId));
+      const raw = response.data;
+      console.log("Position Data: ", raw);
+      setProposal({
+        id: positionId,
+        title: raw.title || "Live Poll",
+        category: type === "polls" ? "Poll" : "Governance",
+        status: raw.status || "live", // Adjust based on API if available
+        start: new Date().toISOString(), // Adjust based on API
+        end: new Date(Date.now() + 1000 * 60 * 60 * 24).toISOString(), // Adjust based on API
+      });
+      setTopCount(raw.maxVotes);
+    } catch (err: any) {
+      console.error("Error fetching Issue Data:", err);
+      const msg =
+        err?.response?.data?.message ?? err?.message ?? "Unknown error";
+      toast({
+        variant: "destructive",
+        title: (
+          <div className="flex items-center gap-2">
+            <CircleX className="h-5 w-5 text-red-500" />
+            <span>Error Fetching Issue Information</span>
+          </div>
+        ),
+        description: msg,
+        duration: 4000,
+      });
+    }
+  };
 
-  // initial ordering once
+  useEffect(() => {
+    if (!id || demo) return;
+
+    fetchData(id);
+    fetchPositionInformation(id);
+
+    const interval = setInterval(() => {
+      fetchData(id);
+    }, 5000); // Poll every 5 seconds
+
+    return () => clearInterval(interval);
+  }, [id, demo]);
+
+  // Initial ordering
   useEffect(() => {
     setNominees((prev) =>
       [...prev].sort((a, b) =>
@@ -146,10 +223,9 @@ export default function PublicPollDisplay({
       )
     );
     prevOrderRef.current = nominees.map((n) => n.id);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [sortKey]);
 
-  // FLIP measurement + play
+  // FLIP animation
   useLayoutEffect(() => {
     const positions: Record<string, DOMRect> = {};
     nominees.forEach((n) => {
@@ -181,7 +257,7 @@ export default function PublicPollDisplay({
     prevOrderRef.current = nominees.map((n) => n.id);
   }, [nominees]);
 
-  /* ---------------- Demo simulation (same logic) ---------------- */
+  // Demo simulation
   useEffect(() => {
     if (!demo) return;
 
@@ -275,7 +351,6 @@ export default function PublicPollDisplay({
     return () => clearInterval(iv);
   }, [autoRotate, nominees.length]);
 
-  /* ---------------- Sorting + split logic ---------------- */
   const sortedNominees = useMemo(() => {
     const copy = nominees.slice();
     return sortKey === "votes"
@@ -293,52 +368,50 @@ export default function PublicPollDisplay({
     Math.min(sortedNominees.length, Math.floor(topCount || 0))
   );
 
-  /* ---------------- Render ---------------- */
   return (
-    <div className="max-h-screen bg-white text-black p-5 mt-10 flex items-center justify-center">
-      <style>{`
-        .bar-inner { transition: width 700ms cubic-bezier(.2,.9,.2,1); }
-        .row-move { transition: background-color 600ms ease, color 500ms ease; }
-        .row-up { background-color: rgba(241,171,21,0.12) !important; }
-        .row-down { background-color: rgba(220,38,38,0.08) !important; }
-        .text-up { color: rgba(241,171,21,1) !important; }
-        .text-down { color: rgba(220,38,38,1) !important; }
-        .top-highlight { background-color: rgba(241,171,21,0.08); }
-        .pct-bar { background-color: rgba(0,0,0,0.1); border-radius: 999px; height: 24px; overflow: hidden; }
-        .pct-bar-inner { height: 100%; border-radius: 999px; background-color: #ffca28; }
-        .table-container { max-height: 80vh; overflow-y: auto; }
-        .separator { border-top: 6px solid #f1ab15; height: 6px; width: 100%; }
-      `}</style>
+    <div className="min-h-screen bg-white text-black flex items-start justify-center p-4">
+      <div className="w-full max-w-6xl mx-auto flex flex-col h-[calc(100vh-2rem)]">
+        <style>{`
+          .bar-inner { transition: width 700ms cubic-bezier(.2,.9,.2,1); }
+          .row-move { transition: background-color 600ms ease, color 500ms ease; }
+          .row-up { background-color: rgba(241,171,21,0.12) !important; }
+          .row-down { background-color: rgba(220,38,38,0.08) !important; }
+          .text-up { color: rgba(241,171,21,1) !important; }
+          .text-down { color: rgba(220,38,38,1) !important; }
+          .top-highlight { background-color: rgba(241,171,21,0.08); }
+          .pct-bar { background-color: rgba(0,0,0,0.1); border-radius: 999px; height: 24px; overflow: hidden; }
+          .pct-bar-inner { height: 100%; border-radius: 999px; background-color: #f1ab15; }
+          .table-container { max-height: calc(100vh - 200px); overflow-y: auto; }
+          .separator { border-top: 6px solid #f1ab15; height: 6px; width: 100%; }
+        `}</style>
 
-      <div className="w-full max-w-full">
-        {/* header */}
         {/* <Button
           variant="outline"
-          onClick={() => navigate("/report")}
-          className="flex items-center gap-2">
+          onClick={() => navigate(`/displayselector`)}
+          className="flex items-center gap-2 mb-4">
           <ArrowLeft size={18} />
           Back
         </Button> */}
-        <header className="flex items-center justify-between mb-4 ">
+        <header className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-lg bg-[#f1ab15] flex items-center justify-center text-white text-2xl font-bold">
+            <div className="w-12 h-12 rounded-lg bg-[#f1ab15] flex items-center justify-center text-white text-3xl font-bold">
               {proposal?.title[0] ?? "L"}
             </div>
             <div>
-              <h1 className="text-5xl font-bold">
+              <h1 className="text-3xl font-bold">
                 {proposal?.title ?? "Live Poll"}
               </h1>
-              <div className="text-base text-black text-opacity-70">
+              <div className="text-sm text-black text-opacity-70">
                 {proposal?.category ?? "—"} • {proposal?.status ?? "—"}
               </div>
             </div>
           </div>
         </header>
 
-        <main className="h-fit">
-          <section className="bg-white border border-black/10 rounded-lg p-4">
+        <main className="flex-1 flex flex-col">
+          <section className="bg-white border border-black/10 rounded-lg p-4 flex-1">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-2xl font-semibold">Nominees</h2>
+              <h2 className="text-3xl font-semibold">Nominees</h2>
               <div className="text-3xl text-black text-opacity-70">
                 Total votes: <strong>{totalVotes.toLocaleString()}</strong>
               </div>
@@ -347,7 +420,7 @@ export default function PublicPollDisplay({
             <div className="table-container">
               <table className="min-w-full text-left">
                 <thead>
-                  <tr className="text-base text-black text-opacity-70">
+                  <tr className="text-sm text-black text-opacity-70">
                     <th className="p-4 w-12">#</th>
                     <th className="p-4">Nominee</th>
                     <th className="p-4 w-80">Percentage</th>
@@ -363,16 +436,12 @@ export default function PublicPollDisplay({
                         : Math.round(((n.votes || 0) / totalVotes) * 100);
                     const movement = movementRef.current[n.id]?.dir;
 
-                    // Insert a single-line separator after the topCount nominee
                     const separator =
                       i === safeTopCount &&
                       safeTopCount < sortedNominees.length ? (
                         <tr key={`separator-${i}`}>
                           <td colSpan={4} className="p-0">
-                            <div
-                              className="separator"
-                              style={{ borderTop: "6px solid #f1ab15" }}
-                            />
+                            <div className="separator" />
                           </td>
                         </tr>
                       ) : null;
@@ -383,20 +452,24 @@ export default function PublicPollDisplay({
                         <tr
                           className={`row-move ${
                             i % 2 === 0 ? "bg-white" : "bg-[#f1ab15]/5"
+                          } ${
+                            i === highlightIndex && autoRotate
+                              ? "top-highlight"
+                              : ""
                           }`}
                           ref={(el) => {
                             nodesRef.current[n.id] = el as HTMLElement;
                           }}>
                           <td
-                            className={`p-4 text-2xl ${
+                            className={`p-4 text-3xl ${
                               rank <= safeTopCount
-                                ? "text-[#f1ab15] font-black"
+                                ? "text-[#f1ab15] font-bold"
                                 : "font-semibold"
                             }`}>
                             {rank}
                           </td>
                           <td
-                            className={`p-4 text-3xl font-bold ${
+                            className={`p-4 text-3xl font-semibold ${
                               movement === "up"
                                 ? "row-up"
                                 : movement === "down"
@@ -406,7 +479,7 @@ export default function PublicPollDisplay({
                             {n.name}
                           </td>
                           <td className="p-4">
-                            <div className="flex items-center gap-6">
+                            <div className="flex items-center gap-4">
                               <div className="flex-1">
                                 <div
                                   className="pct-bar"
@@ -421,13 +494,13 @@ export default function PublicPollDisplay({
                                   />
                                 </div>
                               </div>
-                              <div className="text-3xl font-semibold text-black w-16 text-right">
+                              <div className="text-3xl font-semibold text-black w-12 text-right">
                                 {pct}%
                               </div>
                             </div>
                           </td>
                           <td
-                            className={`p-4 text-right font-semibold text-2xl ${
+                            className={`p-4 text-right font-semibold text-3xl ${
                               movement === "up"
                                 ? "text-up"
                                 : movement === "down"
