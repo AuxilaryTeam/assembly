@@ -88,7 +88,8 @@ const DashboardLayout = () => {
             }}
             exit={{ width: 0 }}
             transition={{ duration: 0.2 }}
-            className="hidden md:flex flex-col bg-white shadow-xl border-r border-gray-200 print:hidden">
+            className="hidden md:flex flex-col bg-white shadow-xl border-r border-gray-200 print:hidden"
+          >
             <div className="flex flex-col h-full">
               {/* Sidebar header with collapse controls */}
               <div className="flex items-center justify-between p-4 border-b border-gray-200">
@@ -98,7 +99,8 @@ const DashboardLayout = () => {
                     <button
                       onClick={() => setSidebarState("collapsed")}
                       className="text-gray-700 p-1 hover:bg-gray-200 rounded"
-                      title="Expand">
+                      title="Expand"
+                    >
                       <FiChevronLeft size={28} />
                     </button>
                   </div>
@@ -119,7 +121,8 @@ const DashboardLayout = () => {
                       <button
                         onClick={() => setSidebarState("expanded")}
                         className="text-gray-700 p-1 hover:bg-gray-200 rounded"
-                        title="Expand">
+                        title="Expand"
+                      >
                         <FiMenu size={20} />
                       </button>
                     </div>
@@ -145,7 +148,8 @@ const DashboardLayout = () => {
                         target="_blank"
                         rel="noopener noreferrer"
                         className={`${commonClasses} ${inactiveClasses}`}
-                        title={sidebarState === "collapsed" ? item.name : ""}>
+                        title={sidebarState === "collapsed" ? item.name : ""}
+                      >
                         <span className="text-xl">{item.icon}</span>
                         {sidebarState === "expanded" && (
                           <span className="ml-3">{item.name}</span>
@@ -163,7 +167,8 @@ const DashboardLayout = () => {
                           isActive ? activeClasses : inactiveClasses
                         }`
                       }
-                      title={sidebarState === "collapsed" ? item.name : ""}>
+                      title={sidebarState === "collapsed" ? item.name : ""}
+                    >
                       <span className="text-xl">{item.icon}</span>
                       {sidebarState === "expanded" && (
                         <span className="ml-3">{item.name}</span>
@@ -181,7 +186,8 @@ const DashboardLayout = () => {
                     sidebarState === "collapsed" ? "w-12 px-0" : "w-full"
                   }`}
                   onClick={handleLogout}
-                  title={sidebarState === "collapsed" ? "Logout" : ""}>
+                  title={sidebarState === "collapsed" ? "Logout" : ""}
+                >
                   <FiLogOut
                     className={sidebarState === "collapsed" ? "" : "mr-2"}
                   />
@@ -199,10 +205,12 @@ const DashboardLayout = () => {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="fixed bottom-4 left-4 z-50 print:hidden">
+          className="fixed bottom-4 left-4 z-50 print:hidden"
+        >
           <Button
             className="bg-amber-400 hover:bg-amber-500 text-black rounded-full p-3 shadow-lg"
-            onClick={expandSidebar}>
+            onClick={expandSidebar}
+          >
             <FiChevronRight size={24} />
           </Button>
         </motion.div>
@@ -223,7 +231,8 @@ const DashboardLayout = () => {
                 size="icon"
                 onClick={hideSidebar}
                 className="text-gray-700 p-1 hover:bg-gray-200 rounded"
-                title="Hide Sidebar">
+                title="Hide Sidebar"
+              >
                 <FiX size={38} />
               </Button>
             )}
@@ -236,8 +245,8 @@ const DashboardLayout = () => {
         </header>
 
         {/* Content Area */}
-        <main className="flex-1 overflow-y-auto p-6 bg-gray-50">
-          <Card className="p-6 shadow-lg border border-gray-100 rounded-xl">
+        <main className="flex-1 overflow-y-auto  bg-gray-50">
+          <Card className=" shadow-lg border border-gray-100 rounded-xl">
             <CardContent>
               <Outlet />
             </CardContent>
