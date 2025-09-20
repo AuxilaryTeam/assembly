@@ -17,6 +17,7 @@ import PositionDetailPage from "./components/pages/PositionDetailPage";
 import IssueDetailPage from "./components/pages/IssueDetailPage";
 import PublicPoposalDisplay from "./components/pages/PublicProposal";
 import PollProposalSelectorPage from "./components/pages/PollProposalSelectorPage";
+import CandidatesPage from "./components/pages/CandidatesPage";
 
 function App() {
   console.log("App component rendering");
@@ -50,6 +51,7 @@ function App() {
                 path="/displayselector"
                 element={<PollProposalSelectorPage />}
               />
+              <Route path="/candidates" element={<CandidatesPage />} />
             </Route>
           </Route>
           <Route path="/proposals/:id" element={<PublicPoposalDisplay />} />

@@ -109,3 +109,36 @@ export const getVoterById = (voterId: string) => {
 export const registerVoter = (data: VoterItem) => {
     return api.post("/voter/register", data);
 }
+
+
+// =========Candidates===========
+
+// register candidate
+export const registerCandidate = (data: any) => {
+    return api.post("/candidates/register", data);
+}
+
+// list all candidates
+export const getAllCandidates = () => {
+    return api.get("/candidates");
+}
+
+// update candidate (POST /candidates/update/{id})
+export const updateCandidateById = (id: number, data: any) => {
+    return api.post(`/candidates/update/${id}`, data);
+}
+
+// assign candidate to a position
+export const assignCandidate = (data: any) => {
+    return api.post("/candidates/assign", data);
+}
+
+// get results (tally) for a position
+export const getPositionTally = (positionId: number) => {
+    return api.get(`/candidates/results/position/${positionId}`);
+}
+
+// optional: detailed results (only if you add a mapping on the controller)
+export const getDetailedPositionResults = (positionId: number) => {
+    return api.get(`/candidates/detailed/position/${positionId}`);
+}

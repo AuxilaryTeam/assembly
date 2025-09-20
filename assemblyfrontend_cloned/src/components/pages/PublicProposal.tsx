@@ -11,6 +11,7 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
+  LabelList,
 } from "recharts";
 import { getIssue, getIssueResult } from "../utils/api";
 import { useToast } from "@/hooks/use-toast";
@@ -306,21 +307,24 @@ export default function PublicPollDisplay({
                       </span>
                     )}
                   />
-                  <Bar
-                    dataKey="votes"
-                    radius={[4, 4, 0, 0]}
-                    label={{
-                      position: "top",
-                      fill: "#374151",
-                      fontSize: 30,
-                      formatter: (value: ReactNode): ReactNode => {
-                        if (typeof value === "number") {
-                          return value.toLocaleString();
-                        }
-                        return value ?? "";
-                      },
-                    }}
-                  />
+                  <Bar dataKey="votes" radius={[4, 4, 0, 0]}>
+                    <LabelList
+                      dataKey="votes"
+                      position="top"
+                      style={{
+                        fill: "#374151",
+                        fontSize: 40,
+                        fontWeight: "700",
+                      }} // bold
+                      formatter={(label: React.ReactNode): React.ReactNode => {
+                        // Handle possible types safely
+                        if (typeof label === "number")
+                          return label.toLocaleString();
+                        if (typeof label === "string") return label;
+                        return label ?? "";
+                      }}
+                    />
+                  </Bar>
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -329,10 +333,10 @@ export default function PublicPollDisplay({
             <div className="mt-4 grid grid-cols-2 gap-4 pt-2 border-t border-gray-200">
               {chartData.map((item) => (
                 <div key={item.category} className="text-center">
-                  <div className="text-2xl font-bold text-gray-900">
+                  <div className="text-3xl font-bold text-gray-900">
                     {item.percentage}%
                   </div>
-                  <div className="text-xl font-medium text-black capitalize">
+                  <div className="text-2xl font-medium text-black capitalize">
                     {item.category}
                   </div>
                   <div className="text-xs text-gray-500">

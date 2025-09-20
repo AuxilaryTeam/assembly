@@ -12,6 +12,7 @@ import {
   FiCheckSquare,
   FiClipboard,
   FiX,
+  FiUsers,
 } from "react-icons/fi";
 import { BsCardChecklist } from "react-icons/bs";
 
@@ -32,6 +33,7 @@ const navItems = [
   { name: "Voting Screen", icon: <FiCheckSquare />, path: "/displayselector" },
   { name: "Issue", icon: <FiCheckSquare />, path: "/issue" },
   { name: "Position", icon: <FiCheckSquare />, path: "/position" },
+  { name: "Candidates", icon: <FiUsers />, path: "/candidates" },
 ];
 
 const DashboardLayout = () => {
