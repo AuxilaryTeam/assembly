@@ -44,7 +44,7 @@ const Print = () => {
     <div className="min-h-screen bg-gray-100">
       {/* Control Panel - Fixed and Static on Scroll */}
       <div className="print:hidden fixed top-20 left-72 right-10 z-50 bg-white p-4 shadow-md">
-        <div className="flex flex-col sm:flex-row justify-arround items-left max-w-4xl mx-auto gap-4">
+        <div className="flex flex-col sm:flex-row justify-between items-left max-w-4xl mx-auto gap-4">
           <h1 className="text-xl font-bold text-gray-800 flex items-center gap-2">
             <FiFileText /> Print Documents for: {person?.nameeng}
           </h1>
@@ -101,6 +101,7 @@ const Print = () => {
               </GenericPrint>
             </div>
             <div className="break-before-page" />
+
             {/* Payment */}
             <div ref={paymentRef}>
               <GenericPrint person={person} documentType="payment">
@@ -142,7 +143,7 @@ const Print = () => {
                   </div>
                 </div>
                 {/* Extra Info */}
-                <div className="mb-2 text-sm space-y-2 p-2 gap-2 print:p-">
+                <div className=" text-sm space-y-2 p-2 gap-2 print:p-">
                   <p>
                     <span className="font-semibold pr-2">የባለአክሲዮኑ ስም :</span>
                     <span className="border-b-2 border-black font-semibold pl-3 tracking-widest inline-block w-64 print:w-48">
@@ -189,15 +190,174 @@ const Print = () => {
               </GenericPrint>{" "}
             </div>
             <div className="break-before-page" />
+
             {/* Vote */}
-            <div ref={voteRef}>
-              <GenericPrint person={person} documentType="vote" />
+            {/* <div ref={voteRef}>
+              <GenericPrint
+                header={
+                  <div className="mb-4 text-center pl-8">
+                    <h1 className="font-bold text-lg mb-1  print:text-md">
+                      <span className="border-b-2 border-black ">
+                        የአቢሲንያ ባንክ አ.ማ የባለአክሲዮኖች 26ኛ መደበኛ ጠቅላላ ጉባዔ የዳይሬክተሮች ቦርድ
+                        የምልመላና አስመራጭ ኮሚቴ አባላት ምርጫ የድምጽ መስጫ ካርድ{" "}
+                      </span>
+                    </h1>
+                  </div>
+                }
+                person={person}
+                documentType="vote"
+              >
+                <div className="mb-2 pt-2 text-left space-y-4  print:p-2">
+                  <div className="mb-2 bg-gray-50 rounded print:p-2">
+                    <div className="flex items-center gap-5 tracking-wide">
+                      <span className="font-semibold">የተፈረሙ አክሲዮኖች ብዛት :</span>
+
+                      <span className="border-b-2 border-black font-semibold pl-3 tracking-widest inline-block w-64 print:w-48">
+                        {person?.totalcapital}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mb-2 text-sm space-y-2 p-2 print:p-2">
+                  <p className="font-semibold text-lg">የተመራጭ ስም:</p>
+                  <div className="space-y-2 p-10">
+                    {[1, 2, 3, 4, 5].map((num) => (
+                      <div key={num} className="flex items-center gap-2">
+                        <span className="font-semibold">{num}.</span>
+                        <span className="border-b-2  border-black flex-1 h-6"></span>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="space-y-2 pt-6">
+                    <div className="flex items-center gap-2 font-bold text-lg">
+                      <span>የባለእክሲዮኑ / የተወካዩ ፊርማ ፡</span>
+                      <span className="border-b-2 border-black flex-1 h-6"></span>
+                    </div>
+                  </div>
+                </div>
+                <div className="mb-4 p-2 rounded mt-2 print:mt-2 print:text-xs">
+                  <h3 className="font-bold mb-4">ማሳሰቢያ፦</h3>
+                  <ol className="list-decimal list-inside space-y-2 text-xs">
+                    <li>ባለአክሲዎኖች ይህንን የድምጽ መስጫ ወረቀት በሚስጥር በመሙላት ድምጽ ይሰጣሉ፡፡</li>
+                    <li>
+                      ለምልመላና አስመራጭ ኮሚቴ አባልነት ለመምረጥ ከቀረቡት እጩዎች መካከል አምስቱ(5) መመረጥ
+                      አለባቸዉ፡፡
+                    </li>
+                    <li>
+                      ባለአክሲዮኖች የመረጧቸዉን አምስቱን(5) ሙሉ ስም ከላይ በተጠቀሰዉ ባዶ ቦታ ላይ በመጻፍ
+                      እና በመፈረም፣ የተሞላዉን የድምጽ መስጫ ወረቀት ለሰብሳቢዎች ያስረክ፡፡
+                    </li>
+                    <li>
+                      ይህ የድምጽ መስጫ ወረቀት ከሚከተሉት በአንዱ ምክንያት ዋጋ ያጣል፡፡
+                      <ul className="list-disc list-inside ml-5 mt-1 space-y-1">
+                        <li>የተመራጩ ሙሉ ስም ካልተጻፈበት፣</li>
+                        <li>ባለአክሲዮኑ ካልፈረመበት፣</li>
+                        <li>የነበረው ጽሁፍ ከጠፋ፣ ከተፋቀ፣ ወይም ስርዝ ድልዝ ካለበት፣</li>
+                      </ul>
+                    </li>
+                  </ol>
+                </div>
+              </GenericPrint>
+
+              <GenericPrint
+                header={
+                  <div className="mb-4 text-center pl-8">
+                    <h1 className="font-bold text-lg mb-1  print:text-md">
+                      <span className="border-b-2 border-black ">
+                        የአቢሲንያ ባንክ አ.ማ የባለአክሲዮኖች 26ኛ መደበኛ ጠቅላላ ጉባዔ የዳይሬክተሮች ቦርድ
+                        የምልመላና አስመራጭ ኮሚቴ አባላት ምርጫ የድምጽ መስጫ ካርድ{" "}
+                      </span>
+                    </h1>
+                  </div>
+                }
+                person={person}
+                documentType="vote"
+              >
+                  <div className="mb-2 pt-2 text-left space-y-4  print:p-2">
+                  <div className="mb-2 bg-gray-50 rounded print:p-2">
+                    <div className="flex items-center gap-5 tracking-wide">
+                      <span className="font-semibold">የተፈረሙ አክሲዮኖች ብዛት :</span>
+
+                      <span className="border-b-2 border-black font-semibold pl-3 tracking-widest inline-block w-64 print:w-48">
+                        {person?.totalcapital}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mb-2 text-sm space-y-2 p-2 print:p-2">
+                  <p className="font-semibold text-lg">የተመራጭ ስም:</p>
+                  <div className="grid grid-cols-2 gap-10 p-10">
+                    <div className="space-y-2">
+                      <p className="font-semibold text-center text-lg">
+                        ለመመረጥ የቀረቡ የዕጩዎች ስም ዝርዝር
+                      </p>
+                      {[...Array(18)].map((_, index) => (
+                        <div key={index} className="flex items-center gap-2">
+                          <span className="font-semibold">{index + 1}.</span>
+                          <span className="border-b-2 border-black flex-1 h-6"></span>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="space-y-2 p-8">
+                      <p className="font-semibold text-left text-lg">
+                        በባለአክስዮኑ የተመረጡ ሙሉ ስም ዝርዝር
+                      </p>
+                      {[1, 2, 3, 4, 5, 6].map((num) => (
+                        <div key={num} className="flex items-center gap-2">
+                          <span className="font-semibold">{num}.</span>
+                          <span className="border-b-2  border-black flex-1 h-6"></span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="space-y-2 pt-6">
+                    <div className="flex items-right gap-2 font-bold text-lg">
+                      <span>የባለእክሲዮኑ / የተወካዩ ፊርማ ፡</span>
+                      <span className="border-b-2 border-black flex-1 h-6"></span>
+                    </div>
+                  </div>
+                </div>
+                <div className="mb-4 p-2 rounded mt-2 print:mt-2 print:text-xs">
+                  <h3 className="font-bold mb-4">ማሳሰቢያ፦</h3>
+                  <ol className="list-decimal list-inside space-y-2 text-xs">
+                    <li> ባለአክሲዮኑ ይህን የድምጽ መስጫ ቅፅ በሚስጥር በመሙላት ድምፅ ይሰጣሉ፡፡ </li>
+                    <li>
+                      ተፅዕኖ ፈጣሪ ባልሆኑ ባለአክሲዮኖች ብቻ ድምጽ በተሰጠበት ሌላ ቅፅ ማለትም በቅፅ-1 ላይ
+                      የተመረጡ ሦስት (3) ዕጩዎችን በዚህ ቅፅ ላይ በድጋሚ አይመርጡም፡፡
+                    </li>
+                    <li>
+                      ለዳይክተሮች ቦርድ አባልነት ለመመረጥ ከላይ ከቀረቡት አስራ ስምንቱ (18) እጩዎች መካከል
+                      ስድስቱን (6) ብቻ መምረጥ ይችላሉ፡፡
+                    </li>
+                    <li>
+                      ለዳይክተሮች ቦርድ አባልነት ለመመረጥ ከላይ ከቀረቡት አስራ ስምንቱ (18) እጩዎች መካከል
+                      ስድስቱን (6) ብቻ መምረጥ ይችላሉ፡፡
+                    </li>
+                    <li>
+                      የመረጡአቸውን ስድስት (6) ዕጩዎች ሙሉ ስም ከላይ በተቀመጠው ባዶ ቦታ ላይ በመፃፍ እና
+                      በመፈረም፤ የተሞላውን የድምፅ መስጫ ቅፅ ያስረክባሉ፡፡
+                    </li>
+                    <li>
+                      ይህ የድምጽ መስጫ ወረቀት ከሚከተሉት በአንዱ ምክንያት ዋጋ ያጣል፡፡
+                      <ul className="list-disc list-inside ml-5 mt-1 space-y-1">
+                        <li>የተመራጩ ሙሉ ስም ካልተጻፈበት፣</li>
+                        <li>ባለአክሲዮኑ ካልፈረመበት፣</li>
+                        <li>የነበረው ጽሁፍ ከጠፋ፣ ከተፋቀ፣ ወይም ስርዝ ድልዝ ካለበት፣</li>
+                        <li>የነበረው ፅሁፍ ከጠፋ፤ ከተፋቀ፡ ወይም ስርዝ ድልዝ ካለበት፤</li>
+                      </ul>
+                    </li>
+                  </ol>
+                </div>
+              </GenericPrint>
             </div>
+             */}
           </div>
         </div>
       </div>
     </div>
   );
 };
-
 export default Print;
