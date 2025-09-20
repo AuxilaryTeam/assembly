@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { ArrowLeft } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   BarChart,
   Bar,
@@ -12,7 +12,17 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import { getIssue, getIssueResult } from "../utils/api";
 
+// Raw response type (from backend)
+interface IssueApiResponse {
+  Status: string;
+  "Issue Description": string;
+  "Issue Title": string;
+  "option with results": Record<string, number>;
+}
+
+// What you want
 export interface PublicProposal {
   id: string;
   title: string;
@@ -21,6 +31,7 @@ export interface PublicProposal {
   start?: string;
   end?: string;
   status?: string;
+  results?: Record<string, number>; // optional: add the voting results
 }
 
 type Props = {
@@ -49,21 +60,81 @@ const DUMMY_PROPOSAL: PublicProposal = {
 };
 
 const INITIAL_VOTES = {
-  Yes: 25000,
-  No: 18000,
-  Abstain: 12000,
+  Yes: 0,
+  No: 0,
 };
+
+function mapIssueResponseToProposal(
+  response: IssueApiResponse,
+  id: string
+): PublicProposal {
+  return {
+    id,
+    title: response["Issue Title"],
+    description: response["Issue Description"],
+    status: response.Status,
+    results: response["option with results"], // keep vote results
+  };
+}
 
 export default function PublicPollDisplay({
   proposalId,
-  demo = true,
+  demo = false,
   overtakeIntervalMs = 5000,
 }: Props) {
   const [proposal, setProposal] = useState<PublicProposal | null>(
     demo ? DUMMY_PROPOSAL : null
   );
   const [votes, setVotes] = useState(INITIAL_VOTES);
+  const [maxVotes, setMaxVotes] = useState(0);
+  const { id, type } = useParams<{ id: string; type: string }>();
   const navigate = useNavigate();
+
+  const fetchData = async (issueId: string) => {
+    try {
+      const response = await getIssueResult(Number(issueId));
+      // Validate and normalize the response
+      const result = response.data.result || {};
+      setVotes({
+        Yes: Number(result.YES) || 0, // Fallback to 0 if undefined or non-numeric
+        No: Number(result.NO) || 0,
+      });
+      // Optionally set proposal data if API provides it
+      if (response.data.proposal) {
+        setProposal(response.data.proposal);
+      }
+    } catch (error) {
+      console.error("Error fetching issue result:", error);
+    }
+  };
+
+  const fetchIssueInformation = async (issueId: string) => {
+    try {
+      const response = await getIssue(Number(issueId));
+      console.log("Response fetchIssueInformation", response.data);
+      setProposal(mapIssueResponseToProposal(response.data, issueId));
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    if (!id || demo) return;
+    fetchIssueInformation(id);
+  }, [id]);
+
+  useEffect(() => {
+    if (!id || demo) return;
+
+    fetchData(id); // Initial fetch
+    const interval = setInterval(() => {
+      fetchData(id);
+    }, 5000);
+
+    return () => clearInterval(interval); // Cleanup
+  }, [id, demo]);
+
+  useEffect(() => {
+    setMaxVotes(Math.max(...Object.values(votes)));
+  }, [votes]);
 
   useEffect(() => {
     if (!demo) return;
@@ -106,29 +177,24 @@ export default function PublicPollDisplay({
     };
   }, [demo, overtakeIntervalMs]);
 
-  const totalVotes = Object.values(votes).reduce((sum, v) => sum + v, 0);
+  const totalVotes = Object.values(votes).reduce((sum, v) => sum + (v || 0), 0);
 
   const chartData = [
     {
       category: "Yes",
-      votes: votes.Yes,
+      votes: votes.Yes || 0, // Ensure votes is a number
       percentage:
-        totalVotes === 0 ? 0 : Math.round((votes.Yes / totalVotes) * 100),
+        totalVotes === 0
+          ? 0
+          : Math.round(((votes.Yes || 0) / totalVotes) * 100),
       fill: "#f1ab15",
     },
     {
       category: "No",
-      votes: votes.No,
+      votes: votes.No || 0,
       percentage:
-        totalVotes === 0 ? 0 : Math.round((votes.No / totalVotes) * 100),
+        totalVotes === 0 ? 0 : Math.round(((votes.No || 0) / totalVotes) * 100),
       fill: "#dc2626",
-    },
-    {
-      category: "Abstain",
-      votes: votes.Abstain,
-      percentage:
-        totalVotes === 0 ? 0 : Math.round((votes.Abstain / totalVotes) * 100),
-      fill: "#6b7280",
     },
   ];
 
@@ -139,7 +205,7 @@ export default function PublicPollDisplay({
         <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
           <p className="font-semibold text-gray-900">{data.category}</p>
           <p className="text-sm text-gray-600">
-            {data.votes.toLocaleString()} votes
+            {(data.votes || 0).toLocaleString()} votes
           </p>
           <p className="text-sm font-medium text-gray-900">
             {data.percentage}%
@@ -156,7 +222,7 @@ export default function PublicPollDisplay({
         {/* Header */}
         <Button
           variant="outline"
-          onClick={() => navigate("/report")}
+          onClick={() => navigate(`/${type}/blank`)} // Navigate to blank page
           className="flex items-center gap-2 mb-2">
           <ArrowLeft size={18} />
           Back
@@ -171,8 +237,7 @@ export default function PublicPollDisplay({
                 {proposal?.title ?? "Live Poll"}
               </h1>
               <div className="text-sm text-black text-opacity-70">
-                {proposal?.category ?? "—"} • {proposal?.status ?? "—"} •{" "}
-                {formatTimeLeft(proposal?.end)}
+                {proposal?.description ?? "—"}
               </div>
             </div>
           </div>
@@ -199,6 +264,7 @@ export default function PublicPollDisplay({
                     axisLine={false}
                   />
                   <YAxis
+                    domain={[0, Math.ceil(maxVotes * 1.2)]}
                     tickFormatter={(value) => value.toLocaleString()}
                     tick={{ fontSize: 12, fill: "#6b7280" }}
                     axisLine={false}
@@ -221,7 +287,12 @@ export default function PublicPollDisplay({
                       position: "top",
                       fill: "#374151",
                       fontSize: 30,
-                      formatter: (value: number) => value.toLocaleString(),
+                      formatter: (value: ReactNode): ReactNode => {
+                        if (typeof value === "number") {
+                          return value.toLocaleString();
+                        }
+                        return value ?? "";
+                      },
                     }}
                   />
                 </BarChart>
@@ -229,17 +300,17 @@ export default function PublicPollDisplay({
             </div>
 
             {/* Percentage breakdown below chart */}
-            <div className="mt-4 grid grid-cols-3 gap-4 pt-2 border-t border-gray-200">
+            <div className="mt-4 grid grid-cols-2 gap-4 pt-2 border-t border-gray-200">
               {chartData.map((item) => (
                 <div key={item.category} className="text-center">
                   <div className="text-2xl font-bold text-gray-900">
                     {item.percentage}%
                   </div>
-                  <div className="text-xs font-medium text-gray-600 capitalize">
+                  <div className="text-xl font-medium text-black capitalize">
                     {item.category}
                   </div>
                   <div className="text-xs text-gray-500">
-                    {item.votes.toLocaleString()} votes
+                    {(item.votes || 0).toLocaleString()} votes
                   </div>
                 </div>
               ))}

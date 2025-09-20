@@ -29,7 +29,7 @@ const navItems = [
   { name: "Report", icon: <FiFileText />, path: "/report" },
   { name: "Display", icon: <FiMonitor />, path: "/display" },
   { name: "Print Display ", icon: <BsCardChecklist />, path: "/displayprint" },
-  { name: "Voting Screen", icon: <FiCheckSquare />, path: "/voting" },
+  { name: "Voting Screen", icon: <FiCheckSquare />, path: "/displayselector" },
   { name: "Issue", icon: <FiCheckSquare />, path: "/issue" },
   { name: "Position", icon: <FiCheckSquare />, path: "/position" },
 ];

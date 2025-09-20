@@ -2,7 +2,7 @@ import React from "react";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Button } from "../ui/button";
 import { ArrowLeft } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 /* ---------- Types ---------- */
 export interface PublicNominee {
@@ -115,6 +115,7 @@ export default function PublicPollDisplay({
   );
   const [highlightIndex, setHighlightIndex] = useState(0);
   const navigate = useNavigate();
+  const { id } = useParams();
 
   // FLIP & movement refs
   const nodesRef = useRef<Record<string, HTMLElement | null>>({});
@@ -126,6 +127,14 @@ export default function PublicPollDisplay({
       { dir: "up" | "down"; timeout: ReturnType<typeof setTimeout> }
     >
   >({});
+
+  // const fetchData = async (pollId:number) => {
+  //     try {
+  //       const response = await
+  //     } catch (error) {
+
+  //     }
+  //  }
 
   // initial ordering once
   useEffect(() => {

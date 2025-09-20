@@ -16,6 +16,7 @@ import IssuesPage from "./components/pages/IssuesPage";
 import PositionDetailPage from "./components/pages/PositionDetailPage";
 import IssueDetailPage from "./components/pages/IssueDetailPage";
 import PublicPoposalDisplay from "./components/pages/PublicProposal";
+import PollProposalSelectorPage from "./components/pages/PollProposalSelectorPage";
 
 function App() {
   console.log("App component rendering");
@@ -45,9 +46,14 @@ function App() {
               <Route path="/positions/:id" element={<PositionDetailPage />} />
               <Route path="/issue" element={<IssuesPage />} />
               <Route path="/issues/:id" element={<IssueDetailPage />} />
+              <Route
+                path="/displayselector"
+                element={<PollProposalSelectorPage />}
+              />
             </Route>
           </Route>
-          <Route path="/voting" element={<PublicPoposalDisplay />} />
+          <Route path="/proposals/:id" element={<PublicPoposalDisplay />} />
+          <Route path="/polls/:id" element={<PublicPollDisplay />} />
           <Route path="/display" element={<Diplay />} />
         </Routes>
       </Router>
