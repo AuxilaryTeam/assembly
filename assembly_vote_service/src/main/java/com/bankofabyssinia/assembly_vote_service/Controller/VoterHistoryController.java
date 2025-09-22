@@ -3,19 +3,18 @@ package com.bankofabyssinia.assembly_vote_service.Controller;
 import java.util.List;
 import java.util.Map;
 
-import org.aspectj.internal.lang.annotation.ajcDeclareAnnotation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.bankofabyssinia.assembly_vote_service.Service.VoterService;
+import com.bankofabyssinia.assembly_vote_service.Entity.User;
 import com.bankofabyssinia.assembly_vote_service.Service.AuthService;
+import com.bankofabyssinia.assembly_vote_service.Service.VoterService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.websocket.server.PathParam;
-import com.bankofabyssinia.assembly_vote_service.Entity.User;
 
 @RestController
 @RequestMapping("/api/voter-history")
@@ -63,7 +62,7 @@ public ResponseEntity<?> getVoterHistoryByPositionPaginated(
     }
 }
 
-    @GetMapping("/by-position/{positionId}")
+    @GetMapping("/by-position")
     public ResponseEntity<?> getVoterHistoryByPosition(@PathParam("positionId") Long positionId, HttpServletRequest requestHeader) {
         String token = authService.getToken(requestHeader);
         User user = authService.getUserFromToken(token);
