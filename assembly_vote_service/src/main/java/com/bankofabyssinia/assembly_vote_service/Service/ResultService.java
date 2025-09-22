@@ -122,9 +122,24 @@ public class ResultService {
                             map.put("candidate", entry.getKey());
                             map.put("totalVotes", entry.getValue());
                             map.put("rank", rankCounter.getAndIncrement());
+                            map.put("candidateId", candidateService.getCandidateByIdByName(entry.getKey(), positionId).getId());
                             return map;
                         })
                         .collect(Collectors.toList());
+    }
+
+    public Map<String, Object> candidateInfoInPosition(Candidate candidate, Position position, User user) {
+        Map<String, Object> info = new HashMap<>();
+        info.put("candidate", candidate.getFullName());
+        info.put("numberOfVoters", detailedCandidateVotes(position.getId(), user).getOrDefault(candidate.getFullName(), List.of()).size());
+        info.put("electionDate", position.getElection().getElectionDay());
+        info.put("totalVotes", tallyCandidateVotes(position.getId(), user).getOrDefault(candidate.getFullName(), 0L));
+        info.put("list of voters", detailedCandidateVotes(position.getId(), user).getOrDefault(candidate.getFullName(), List.of()));
+        return info;
+    }
+
+    public Long getTotalVotersForPosition(Long positionId) {
+        return candidateVoteRepository.countDistinctVotersByPosition_Id(positionId);
     }
 
     

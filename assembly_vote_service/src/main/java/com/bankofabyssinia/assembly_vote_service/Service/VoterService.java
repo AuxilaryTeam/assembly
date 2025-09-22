@@ -157,6 +157,7 @@ public class VoterService {
                 "totalPages", totalPages,
                 "pageSize", pageSize,
                 "totalVoters", totalVoters,
+                "electionDate", position.getElection().getElectionDay(),
                 "votingHistory", votingHistory
         );
     }

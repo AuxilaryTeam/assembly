@@ -18,4 +18,6 @@ public interface CandidateVoteRepository extends JpaRepository<CandidateVote, Lo
     List<CandidateVote> findByVoterId(Long id);
 
     List<CandidateVote> findByVoterIdAndPosition(Long id, Position position);
+
+    Long countDistinctVotersByPosition_Id(Long positionId);
 }

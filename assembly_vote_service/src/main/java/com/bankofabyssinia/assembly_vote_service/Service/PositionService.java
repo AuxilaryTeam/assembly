@@ -30,6 +30,8 @@ public class PositionService {
         position.setDescription(positionDTO.getDescription());
         position.setMaxVotes(positionDTO.getMaxVotes());
         position.setMaxCandidates(positionDTO.getMaxCandidates());
+        position.setElection(electionRepo.findById(positionDTO.getElectionId())
+                .orElseThrow(() -> new IllegalArgumentException("Election not found with id: " + positionDTO.getElectionId())));
 
         Log log = new Log();
         log.setAction("Created Position with name: " + position.getName());
@@ -48,6 +50,8 @@ public class PositionService {
         position.setName(positionDTO.getName());
 //        position.setElection(election);
         position.setDescription(positionDTO.getDescription());
+        position.setMaxVotes(positionDTO.getMaxVotes());
+        position.setMaxCandidates(positionDTO.getMaxCandidates());
 
         Log log = new Log();
         log.setAction("Updated Position with ID: " + position.getId());

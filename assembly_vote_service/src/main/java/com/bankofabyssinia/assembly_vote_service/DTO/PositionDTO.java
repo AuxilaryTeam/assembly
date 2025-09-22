@@ -9,4 +9,5 @@ public class PositionDTO {
 //    private Long electionId;
     private Long maxVotes;
     private Long maxCandidates;
+    private Long electionId;
 }

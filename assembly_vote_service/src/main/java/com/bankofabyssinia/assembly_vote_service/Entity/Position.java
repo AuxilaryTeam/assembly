@@ -22,4 +22,8 @@ public class Position {
     @Column(nullable = false)
     private Long maxVotes;
     private ElectionStatus status;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "election_id")
+    private Election election;
 }

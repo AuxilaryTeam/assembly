@@ -13,8 +13,8 @@ import java.time.LocalDateTime;
 
 @Service
 public class VotingService {
-    @Autowired
-    private BallotRepository ballotRepository;
+    // @Autowired
+    // private BallotRepository ballotRepository;
 
     @Autowired
     private CandidateVoteRepository candidateVoteRepository;
