@@ -30,7 +30,9 @@ public class SecurityConfig {
                             "/v3/api-docs/**",
                             "/swagger-resources/**",
                             "/webjars/**",
-                            "/swagger-ui.html"
+                            "/swagger-ui.html",
+                            "/api/role/create",
+                            "/api/role/all"
                         ).permitAll() // Allow access to these endpoints
                         .anyRequest().authenticated() // Secure other endpoints
                 )

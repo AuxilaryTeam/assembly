@@ -5,6 +5,7 @@ import com.bankofabyssinia.assembly_vote_service.DTO.VoteDTO;
 import com.bankofabyssinia.assembly_vote_service.Entity.*;
 import com.bankofabyssinia.assembly_vote_service.Repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 
 
@@ -101,6 +102,7 @@ public class CandidateService {
         CandidateAssignment candidateAssignment = new CandidateAssignment();
         candidateAssignment.setCandidate(candidate);
         candidateAssignment.setPosition(position);
+        candidateAssignment.setElection(position.getElection());
 
         Log log = new Log();
         log.setUser(user);
@@ -148,6 +150,7 @@ public class CandidateService {
         candidateVote.setPosition(position);
         candidateVote.setVoter(voter);
         candidateVote.setAssignment(candidateAssignment);
+        candidateVote.setElection(position.getElection());
         candidateVote.setCreatedAt(Instant.now());
 
         Log log = new Log();
@@ -159,15 +162,7 @@ public class CandidateService {
         return candidateVoteRepository.save(candidateVote);
     }
 
-    public List<Candidate> getCandidatesByPosition(Position position, User user) {
-        List<CandidateAssignment> assignments = candidateAssignmentRepository.findByPosition(position);
-        Log log = new Log();
-        log.setAction("Viewed candidates for position: " + position.getName());
-        log.setUser(user);
-        log.setTimestamp(Instant.now());
-        logRepository.save(log);
-        return assignments.stream().map(CandidateAssignment::getCandidate).toList();
-    }
+   
 
     public List<Candidate> getAssignmentsByPosition(Position position, User user) {
         Position foundPosition = positionRepository.findById(position.getId())
@@ -184,5 +179,44 @@ public class CandidateService {
                 .toList();
 
         return candidates;
+    }
+
+    public Candidate getCandidateById(Long candidateId, Position position, User user) {
+    if (candidateId == null) {
+        throw new IllegalArgumentException("Candidate id must not be null");
+    }
+    if (position == null || position.getId() == null) {
+        throw new IllegalArgumentException("Position and position id must not be null");
+    }
+    Candidate candidate = candidateRepository.findById(candidateId)
+        .orElseThrow(() -> new RuntimeException("Candidate not found with id: " + candidateId));
+
+    CandidateAssignment assignment = candidateAssignmentRepository.findByCandidateAndPosition(candidate, position);
+    if (assignment == null) {
+        throw new RuntimeException("Candidate assignment not found for candidate id: " + candidateId + " and position id: " + position.getId());
+    }
+    return assignment.getCandidate();
+    }
+
+    public List<Candidate> getCandidatesByPosition(Position position, User user) {
+        if (position == null || position.getId() == null) {
+            throw new IllegalArgumentException("Position and position id must not be null");
+        }
+        List<CandidateAssignment> assignments = candidateAssignmentRepository.findByPosition(position);
+        return assignments.stream()
+                .map(CandidateAssignment::getCandidate)
+                .toList();
+    }
+
+    public Candidate getCandidateByIdByName(String key, Long positionId) {
+        Position position = positionRepository.findById(positionId)
+                .orElseThrow(() -> new RuntimeException("Position not found with id: " + positionId));
+        List<CandidateAssignment> assignments = candidateAssignmentRepository.findByPosition(position);
+        for (CandidateAssignment assignment : assignments) {
+            if (assignment.getCandidate().getFullName().equals(key)) {
+                return assignment.getCandidate();
+            }
+        }
+        throw new RuntimeException("Candidate not found with name: " + key + " in position id: " + positionId);
     }
 }

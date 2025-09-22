@@ -18,6 +18,10 @@ public class Issue {
     private String description;
     private ElectionStatus status;
 
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "election_id")
+    private Election election;
+
     public boolean isActive() {
         return this.status == ElectionStatus.OPEN;
     }

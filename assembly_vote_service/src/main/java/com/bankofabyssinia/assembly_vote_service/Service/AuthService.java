@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.net.http.HttpRequest;
 import java.util.Optional;
 
 @Service
@@ -71,8 +72,8 @@ public class AuthService {
         }
     }
 
-    public String getToken(HttpServletRequest request) throws IllegalArgumentException {
-        String authHeader = request.getHeader("Authorization");
+    public String getToken(HttpServletRequest requestHeader) throws IllegalArgumentException {
+        String authHeader = requestHeader.getHeader("Authorization");
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);

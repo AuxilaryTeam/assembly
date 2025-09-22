@@ -35,7 +35,8 @@ public class IssueService {
         Issue issue = new Issue();
         issue.setTitle(issueDTO.getTitle());
         issue.setDescription(issueDTO.getDescription());
-//        issue.setElection(election);
+       issue.setElection(electionRepository.findById(issueDTO.getElectionId())
+               .orElseThrow(() -> new IllegalArgumentException("Election not found with id: " + issueDTO.getElectionId())));
         issue.setStatus(ElectionStatus.DRAFT);
         Issue savedIssue = issueRepo.save(issue);
 
@@ -167,6 +168,7 @@ public class IssueService {
 //        vote.setElection(issue.getElection());
         vote.setIssueOption(option);
         vote.setVoter(voter);
+        vote.setElection(issue.getElection());
         vote.setCreatedAt(Instant.now());
 
         Log log = new Log();

@@ -8,5 +8,5 @@ public class PositionDTO {
     private String description;
     private Long maxVotes;
     private Long maxCandidates;
-    //    private Long electionId;
+    private Long electionId;
 }

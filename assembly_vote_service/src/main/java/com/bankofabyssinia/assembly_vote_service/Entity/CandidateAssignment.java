@@ -3,6 +3,7 @@ package com.bankofabyssinia.assembly_vote_service.Entity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,4 +19,8 @@ public class CandidateAssignment {
     private Candidate candidate;
     @ManyToOne(optional = false)
     private Position position;
+    
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "election_id")
+    private Election election;
 }

@@ -225,14 +225,20 @@ public class CandidateController {
     public ResponseEntity<?> getCandidateRankingsByPosition(@PathVariable Long positionId, HttpServletRequest requestHeader) {
         String token = authService.getToken(requestHeader);
         User user = authService.getUserFromToken(token);
+
+
         try {
             Position position = positionRepository.findById(positionId).orElseThrow(() -> new RuntimeException("Position not found"));
             List<Map<String, Object>> rankings = resultService.candidateRankings(positionId, user);
+            Long totalVoters = resultService.getTotalVotersForPosition(positionId);
 
             return ResponseEntity.ok(
                     Map.of(
                             "position", position.getName(),
-                            "rankings", rankings
+                            "rankings", rankings,
+                            "electionDate", position.getElection().getElectionDay(),
+                            "totalVoters", totalVoters,
+                            "totalVotes", resultService.candidateRankings(positionId, user).stream().mapToLong(r -> (Long) r.get("totalVotes")).sum()
                     )
             );
         } catch (Exception e) {
@@ -244,4 +250,32 @@ public class CandidateController {
             );
         }
     }
+
+    /**
+     * Get information by candidate id and position id
+     * including the number of votes they received and the number of voters who voted for them
+     * and list of voters who voted for them
+     */
+    @GetMapping("/{candidateId}/position/{positionId}/info")
+    public ResponseEntity<?> getCandidateInfoInPosition(@PathVariable Long candidateId, @PathVariable Long positionId, HttpServletRequest requestHeader) {
+        String token = authService.getToken(requestHeader);
+        User user = authService.getUserFromToken(token);
+        try {
+            Position position = positionRepository.findById(positionId).orElseThrow(() -> new RuntimeException("Position not found"));
+            Candidate candidate = service.getCandidateById(candidateId, position,user);
+            Map<String, Object> candidateInfo = resultService.candidateInfoInPosition(candidate, position, user);
+
+            return ResponseEntity.ok(
+                   candidateInfo
+            );
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(
+                    Map.of(
+                            "error", "Could not retrieve candidate info for the position",
+                            "message", e.getMessage()
+                    )
+            );
+        }
+    }
+
 }

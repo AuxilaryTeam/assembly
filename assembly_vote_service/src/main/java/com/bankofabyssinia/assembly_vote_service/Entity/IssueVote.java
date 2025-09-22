@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import java.time.Instant;
 
 @Entity
-@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"ballot_id", "issue_id"})})
+@Table
 @Data
 @NoArgsConstructor
 public class IssueVote {
@@ -21,4 +21,11 @@ public class IssueVote {
     @Enumerated(EnumType.STRING)
     private IssueOption issueOption;
     private Instant createdAt = Instant.now();
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "election_id")
+    private Election election;
+
+    // ...existing code...
+    // ...existing code...
 }

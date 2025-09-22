@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
+import java.time.LocalDate;
 
 @Entity
 @Data
@@ -21,8 +22,8 @@ public class Election {
     private ElectionType type; // ISSUE or CANDIDATE
     @Enumerated(EnumType.STRING)
     private ElectionStatus status; // ACTIVE, INACTIVE, COMPLETED
-    private Instant startsAt;
-    private Instant endsAt;
+    
+    private LocalDate electionDay;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by")
