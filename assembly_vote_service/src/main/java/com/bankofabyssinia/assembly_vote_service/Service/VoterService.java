@@ -70,7 +70,7 @@ public class VoterService {
         Position position = positionRepository.findById(positionId)
                 .orElseThrow(() -> new IllegalArgumentException("Position not found with ID: " + positionId));
 
-        List<Voter> allVoters = voterRepository.findAll();
+        List<Voter> allVoters = candidateVoteRepository.findDistinctVotersByPosition_Id(positionId);
 
         List<Map<String, Object>> votingHistory = new ArrayList<>();
 
@@ -117,7 +117,9 @@ public class VoterService {
         Position position = positionRepository.findById(positionId)
                 .orElseThrow(() -> new IllegalArgumentException("Position not found with ID: " + positionId));
 
-        List<Voter> allVoters = voterRepository.findAll();
+        // List<Voter> allVoters = voterRepository.findAll();
+        List<Voter> allVoters = candidateVoteRepository.findDistinctVotersByPosition_Id(positionId);
+
         int totalVoters = allVoters.size();
         int totalPages = (int) Math.ceil((double) totalVoters / pageSize);
         int fromIndex = (pageNumber - 1) * pageSize;
