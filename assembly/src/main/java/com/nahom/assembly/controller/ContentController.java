@@ -23,10 +23,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nahom.assembly.config.MyUserDetailService;
+import com.nahom.assembly.model.AttendanceLog;
 import com.nahom.assembly.model.Sherholderdetail;
+import com.nahom.assembly.repo.AttendanceLogRepository;
 import com.nahom.assembly.repo.ShareholderRepo;
 import com.nahom.assembly.webtoken.JwtService;
 import com.nahom.assembly.webtoken.LoginForm;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 
@@ -45,6 +49,9 @@ public class ContentController {
 
     @Autowired
     private ShareholderRepo sharerepo;
+
+    @Autowired
+    private AttendanceLogRepository attendanceLogRepository;
        
 
     @GetMapping("/home")
@@ -190,6 +197,28 @@ public Optional<Sherholderdetail> getSherholderdetail( @PathVariable Long id){
         public BigDecimal sumsub() {
             return sharerepo.sumShareSubscription();
         }
+
+        @PostMapping("/admin/printlog")
+        public ResponseEntity<AttendanceLog> logPrint(@RequestBody AttendanceLog request) {
+            // ensure timestamp is set if missing
+            if (request.getTimestamp() == null) {
+                request.setTimestamp(java.time.LocalDateTime.now());
+            }
+
+            AttendanceLog savedLog = attendanceLogRepository.save(request);
+
+            return ResponseEntity.ok(savedLog);
+        }
+
+        @GetMapping("/admin/printlog")
+        public ResponseEntity<List<AttendanceLog>> getPrintLog() {
+            List<AttendanceLog> logs = attendanceLogRepository.findAllByOrderByTimestampDesc();
+            return ResponseEntity.ok(logs);
+        }
+
+        
+
+        
 
 
 }

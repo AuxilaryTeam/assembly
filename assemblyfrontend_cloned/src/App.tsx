@@ -18,6 +18,7 @@ import IssueDetailPage from "./components/pages/IssueDetailPage";
 import PublicPoposalDisplay from "./components/pages/PublicProposal";
 import PollProposalSelectorPage from "./components/pages/PollProposalSelectorPage";
 import CandidatesPage from "./components/pages/CandidatesPage";
+import PrintPrevDisplays from "./components/pages/PrintPrevDisplays";
 
 function App() {
   console.log("App component rendering");
@@ -42,6 +43,7 @@ function App() {
               <Route path="/searchprint" element={<Searchprint />} />
               <Route path="/report" element={<Report />} />
               <Route path="/displayprint" element={<Diplayprint />} />
+              <Route path="/printprevdisplay" element={<PrintPrevDisplays />} />
               <Route path="/print" element={<Print />} />
               <Route path="/position" element={<PositionsPage />} />
               <Route path="/positions/:id" element={<PositionDetailPage />} />
