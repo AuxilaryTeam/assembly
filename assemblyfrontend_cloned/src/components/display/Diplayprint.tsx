@@ -106,10 +106,10 @@ const DisplayPrint = () => {
 
       if (allSuccessful) {
         setLastUpdated(new Date().toLocaleString());
-        toast({
-          title: "Data Updated",
-          description: "Meeting statistics updated successfully",
-        });
+        // toast({
+        //   title: "Data Updated",
+        //   description: "Meeting statistics updated successfully",
+        // });
       }
     } catch (err) {
       console.error("Error updating data:", err);
@@ -118,50 +118,11 @@ const DisplayPrint = () => {
     }
   }, [fetchAttendanceCount, fetchSumSubscription, fetchVotingSum, toast]);
 
-  const printDocument = () => {
-    {
-      /* attendanceCount,sharesSum total share,sumvoting attendeeShareCount */
-    }
-    postVoteLog({
-      id: 0,
-      timestamp: new Date().toISOString(),
-      attendeeCount: attendanceCount,
-      totalShare: sharesSum,
-      attendeeShareCount: sumvoting,
-    });
-    toast({
-      title: "Preparing Document",
-      description:
-        "The official meeting document is being prepared for printing",
-    });
-
-    setTimeout(() => {
-      window.print();
-    }, 300);
-  };
-
-  const fetchPrintLogs = async () => {
-    try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}admin/printlog`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      console.log("PrintLogs:", response);
-    } catch (err) {
-      console.log("Error", err);
-    }
-  };
-
   const postVoteLog = async (voteLog: VoteLogType) => {
-    console.log("Vote log", voteLog);
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_API_BASE_URL}admin/printlog`,
-        voteLog, // <-- body (data)
+        voteLog,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -173,6 +134,29 @@ const DisplayPrint = () => {
       console.error("Error:", error);
       throw error;
     }
+  };
+
+  const handlePrint = () => {
+    // Log the vote data to the server
+    postVoteLog({
+      id: 0,
+      timestamp: new Date().toISOString(),
+      attendeeCount: attendanceCount,
+      totalShare: sharesSum,
+      attendeeShareCount: sumvoting,
+    });
+
+    // // Show a toast that the document is being prepared for printing
+    // toast({
+    //   title: "Preparing Document",
+    //   description:
+    //     "The official meeting document is being prepared for printing",
+    // });
+
+    // Wait a brief moment to allow the toast to show, then trigger the print dialog
+    setTimeout(() => {
+      window.print();
+    }, 300);
   };
 
   useEffect(() => {
@@ -200,13 +184,15 @@ const DisplayPrint = () => {
             <button
               onClick={fetchData}
               disabled={isLoading}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 transition-colors">
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 transition-colors"
+            >
               <FiRefreshCw className={isLoading ? "animate-spin" : ""} />
               {isLoading ? "Updating..." : "Refresh Data"}
             </button>
             <button
-              onClick={printDocument}
-              className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors">
+              onClick={handlePrint} // Call the new handlePrint function
+              className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
+            >
               <FiPrinter />
               Print Official Document
             </button>
@@ -306,11 +292,12 @@ const DisplayPrint = () => {
         </div>
 
         {/* Signatures Section */}
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="mt-12 grid grid-rows-1 md:grid-cols-2 gap-8">
           <div className="text-center">
             <div
               className="border-t-2 border-gray-400 pt-4 mx-auto"
-              style={{ width: "80%" }}>
+              style={{ width: "80%" }}
+            >
               <p className="font-semibold">የጉባኤው ፕሬዚደንት</p>
               <p className="text-sm text-gray-600">ስም እና ፊርማ</p>
             </div>
@@ -318,7 +305,8 @@ const DisplayPrint = () => {
           <div className="text-center">
             <div
               className="border-t-2 border-gray-400 pt-4 mx-auto"
-              style={{ width: "80%" }}>
+              style={{ width: "80%" }}
+            >
               <p className="font-semibold">የጉባኤው ፀሃፊ</p>
               <p className="text-sm text-gray-600">ስም እና ፊርማ</p>
             </div>

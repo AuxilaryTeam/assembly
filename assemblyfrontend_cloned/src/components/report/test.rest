@@ -1,0 +1,11 @@
+POST http://localhost:8081/api/auth/login
+Content-Type: application/json
+
+{
+"email": "your_email@example.com",
+"username": "admin",
+"password": "123456"
+}
+###
+GET http://localhost:8081/api/voter-history/by-position/2
+Authorization: Bearer  eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZGRpc3UuYW5kYXJnZUBiYW5rb2ZhYnlzc2luaWEuY29tIiwidXNlcklkIjoyLCJyb2xlSWQiOjEsInJvbGVOYW1lIjoiQURNSU4iLCJpYXQiOjE3NTg1NTA2OTMsImV4cCI6MTc1ODYzNzA5M30.b4KeNfG-iA0vlMllO-DAAZdzV3xs-9J2kzt_-hD0G9sWMxxSgC0ZU3qdnxX3-cdC9f9CyvxSPQN_4nNTGbmNXQ
