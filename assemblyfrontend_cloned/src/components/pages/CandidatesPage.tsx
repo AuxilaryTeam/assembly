@@ -4,6 +4,7 @@ import {
   getAllCandidates,
   updateCandidateById,
   assignCandidate,
+  getActivePositions,
 } from "../utils/api"; // adjust path to where your API functions live
 import CopyButton from "../CopyButton";
 import { Pencil } from "lucide-react";
@@ -54,6 +55,35 @@ export default function CandidatesPage({
   // search state
   const [query, setQuery] = useState("");
   const [onlyActive, setOnlyActive] = useState(false);
+  const [positions, setPositions] = useState<{ id: number; name: string }[]>(
+    []
+  );
+  const [positionQuery, setPositionQuery] = useState("");
+  const [filteredPositions, setFilteredPositions] = useState<
+    { id: number; name: string }[]
+  >([]);
+
+  useEffect(() => {
+    async function fetchPositions() {
+      try {
+        const res = await getActivePositions();
+        setPositions(res.data ?? []);
+        setFilteredPositions(res.data ?? []);
+      } catch (err: any) {
+        console.error("Failed to fetch positions", err);
+      }
+    }
+    fetchPositions();
+  }, []);
+
+  useEffect(() => {
+    const q = positionQuery.trim().toLowerCase();
+    setFilteredPositions(
+      positions.filter(
+        (p) => String(p.id).includes(q) || p.name.toLowerCase().includes(q)
+      )
+    );
+  }, [positionQuery, positions]);
 
   useEffect(() => {
     // If parent passed candidates, skip fetching
@@ -195,7 +225,7 @@ export default function CandidatesPage({
             />
           </label>
           <div className="flex gap-2">
-            <button className="px-4 py-2 bg-blue-600 text-white rounded">
+            <button className="px-4 py-2 bg-[#f1ab15] text-white rounded">
               Register
             </button>
             <button
@@ -221,18 +251,31 @@ export default function CandidatesPage({
             />
           </label>
           <label className="block">
-            <div className="text-sm">Position ID</div>
+            <div className="text-sm">Position</div>
             <input
+              value={positionQuery}
+              onChange={(e) => setPositionQuery(e.target.value)}
+              placeholder="Search position by ID or name"
+              className="mt-1 w-full border rounded p-2 mb-1"
+            />
+            <select
               value={assignPayload.positionId}
               onChange={(e) =>
                 setAssignPayload((s) => ({ ...s, positionId: e.target.value }))
               }
-              className="mt-1 w-full border rounded p-2"
-              required
-            />
+              className="w-full border rounded p-2"
+              required>
+              <option value="">Select position</option>
+              {filteredPositions.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.id} - {p.name}
+                </option>
+              ))}
+            </select>
           </label>
+
           <div className="flex gap-2">
-            <button className="px-4 py-2 bg-green-600 text-white rounded">
+            <button className="px-4 py-2 bg-[#f1ab15] text-white rounded">
               Assign
             </button>
             <button
@@ -254,13 +297,14 @@ export default function CandidatesPage({
               placeholder="Search by name, manifesto or id..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="border rounded p-2 w-72"
+              className="w-72 border rounded p-2 focus:outline-none focus:ring-2 focus:ring-[#f1ab15] focus:border-[#f1ab15]"
             />
             <label className="flex items-center gap-2 text-sm">
               <input
                 type="checkbox"
                 checked={onlyActive}
                 onChange={(e) => setOnlyActive(e.target.checked)}
+                className="accent-[#f1ab15] w-4 h-4"
               />
               Only active
             </label>
