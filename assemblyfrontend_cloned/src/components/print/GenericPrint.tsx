@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import logo from "../../assets/Logo.png";
 import slogan from "../../assets/logo2.jpg";
 
@@ -29,6 +29,24 @@ const GenericPrint: React.FC<GenericPrintProps> = ({
   header,
   children,
 }) => {
+  const [isEditingId, setIsEditingId] = useState(false);
+  const [isEditingDate, setIsEditingDate] = useState(false);
+  const [idValue, setIdValue] = useState(person?.shareholderid);
+  const [dateValue, setDateValue] = useState("መስከረም 20 ቀን 2018 ዓ.ም.");
+
+  const handleDateClick = () => {
+    setIsEditingDate(true);
+  };
+
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setDateValue(e.target.value);
+  };
+
+  const handleBlur = (
+    setter: React.Dispatch<React.SetStateAction<boolean>>
+  ) => {
+    setter(false);
+  };
   return (
     <div className="bg-white p-14 mb-2 rounded-lg shadow-lg max-w-4xl mx-auto border border-gray-200 print:border-0 print:shadow-none print:pr-14 print:pl-14 print:max-w-full">
       {/* Bank Letterhead */}
@@ -61,9 +79,20 @@ const GenericPrint: React.FC<GenericPrintProps> = ({
             <span className="font-semibold">ID NO:</span>{" "}
             {person?.shareholderid}
           </p>
-          <p>
-            <span className="font-semibold">የሰነድ ቀን:</span> መስከረም 20 ቀን 2018
-            ዓ.ም.
+          <p className="cursor-pointer" onClick={handleDateClick}>
+            <span className="font-semibold">የሰነድ ቀን:</span>{" "}
+            {isEditingDate ? (
+              <input
+                type="text"
+                value={dateValue}
+                onChange={handleDateChange}
+                onBlur={() => handleBlur(setIsEditingDate)}
+                className="bg-transparent border-none outline-none w-full p-0 m-0"
+                autoFocus
+              />
+            ) : (
+              <span>{dateValue}</span>
+            )}
           </p>
         </div>
       </div>
