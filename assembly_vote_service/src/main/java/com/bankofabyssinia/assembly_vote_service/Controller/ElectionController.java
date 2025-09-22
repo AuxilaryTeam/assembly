@@ -53,7 +53,7 @@ public class ElectionController {
         String token = authService.getToken(requestHeader);
         User user = authService.getUserFromToken(token);
         try {
-            Election activatedElection = electionService.createElection(id, user);
+            Election activatedElection = electionService.activateElection(id, user);
             return ResponseEntity.ok(activatedElection);
         } catch (Exception e) {
             return ResponseEntity.status(500).body(

@@ -26,6 +26,8 @@ import com.bankofabyssinia.assembly_vote_service.Service.ResultService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 @Slf4j
@@ -245,4 +247,23 @@ public class IssueController {
             );
         }
     }
+
+    // @GetMapping("/inactive")
+    // public ResponseEntity<?> getInactiveIssues(HttpServletRequest requestHeader) {
+    //     String token = authService.getToken(requestHeader);
+    //     User user = authService.getUserFromToken(token);
+        
+    //     try {
+    //         List<Issue> inactiveIssues = issueService.getInactiveIssues(user);
+    //         return ResponseEntity.ok(inactiveIssues);
+    //     } catch (Exception e) {
+    //         return ResponseEntity.status(500).body(
+    //                 Map.of(
+    //                         "error", "Could not retrieve inactive issues",
+    //                         "message", e.getMessage()
+    //                 )
+    //         );
+    //     }
+    // }
+    
 }
