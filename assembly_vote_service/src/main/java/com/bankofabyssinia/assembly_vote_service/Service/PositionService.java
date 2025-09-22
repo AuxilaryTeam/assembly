@@ -26,7 +26,7 @@ public class PositionService {
         Position position = new Position();
         position.setName(positionDTO.getName());
 //        position.setElection(election);
-        position.setStatus(ElectionStatus.DRAFT);
+        position.setStatus(ElectionStatus.OPEN);
         position.setDescription(positionDTO.getDescription());
         position.setMaxVotes(positionDTO.getMaxVotes());
         position.setMaxCandidates(positionDTO.getMaxCandidates());
