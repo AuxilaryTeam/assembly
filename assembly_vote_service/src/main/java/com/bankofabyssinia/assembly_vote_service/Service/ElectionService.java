@@ -30,7 +30,7 @@ public class ElectionService {
         return electionRepo.save(election);
     }
 
-    public Election createElection(Long id, User user) {
+    public Election activateElection(Long id, User user) {
         Election election = electionRepo.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Election not found with id: " + id));
         election.setStatus(ElectionStatus.OPEN);
