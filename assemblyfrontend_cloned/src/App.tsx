@@ -19,6 +19,8 @@ import PublicPoposalDisplay from "./components/pages/PublicProposal";
 import PollProposalSelectorPage from "./components/pages/PollProposalSelectorPage";
 import CandidatesPage from "./components/pages/CandidatesPage";
 import PrintPrevDisplays from "./components/pages/PrintPrevDisplays";
+import ElectionsPage from "./components/pages/ElectionPage";
+import DashboardPage from "./components/pages/DashboardPage";
 
 function App() {
   console.log("App component rendering");
@@ -45,10 +47,14 @@ function App() {
               <Route path="/displayprint" element={<Diplayprint />} />
               <Route path="/printprevdisplay" element={<PrintPrevDisplays />} />
               <Route path="/print" element={<Print />} />
-              <Route path="/position" element={<PositionsPage />} />
+              <Route path="/positions" element={<PositionsPage />} />
+              <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/positions/:id" element={<PositionDetailPage />} />
-              <Route path="/issue" element={<IssuesPage />} />
+              <Route path="/issues" element={<IssuesPage />} />
               <Route path="/issues/:id" element={<IssueDetailPage />} />
+              <Route path="/elections" element={<ElectionsPage />} />
+              <Route path="/log" element={<PrintPrevDisplays />} />
+
               <Route
                 path="/displayselector"
                 element={<PollProposalSelectorPage />}

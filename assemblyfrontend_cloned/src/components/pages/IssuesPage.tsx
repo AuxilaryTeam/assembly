@@ -6,7 +6,8 @@ import { getIssueList } from "../utils/api";
 import { useNavigate } from "react-router-dom";
 import { IssueItem } from "../utils/types";
 import { useToast } from "@/hooks/use-toast";
-import { CircleX } from "lucide-react";
+import { ArrowLeft, CircleX } from "lucide-react";
+import { Button } from "../ui/button";
 
 const IssuesPage = () => {
   const navigate = useNavigate();
@@ -23,7 +24,6 @@ const IssuesPage = () => {
   const fetchIssueList = async () => {
     try {
       const response = await getIssueList();
-      console.log("reponse", response.data);
       setIssues(response.data);
     } catch (error) {
       console.error("Error:", error);
@@ -48,6 +48,13 @@ const IssuesPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 py-10 px-6">
+      <Button
+        variant="outline"
+        onClick={() => navigate("/dashboard")}
+        className="flex items-center gap-2">
+        <ArrowLeft size={18} />
+        Back
+      </Button>
       <div className="max-w-4xl mx-auto space-y-2 mb-4">
         <div className="flex items-center justify-between">
           {/* Title */}
@@ -94,6 +101,7 @@ const IssuesPage = () => {
       </div>
 
       <Modal
+        title="Issue Creating Form"
         isOpen={createIssue}
         onClose={function (): void {
           setCreateIssue(!createIssue);

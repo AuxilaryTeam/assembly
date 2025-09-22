@@ -13,6 +13,7 @@ import {
   FiClipboard,
   FiX,
   FiUsers,
+  FiGrid,
 } from "react-icons/fi";
 import { BsCardChecklist } from "react-icons/bs";
 
@@ -31,8 +32,7 @@ const navItems = [
   { name: "Display", icon: <FiMonitor />, path: "/display" },
   { name: "Print Display ", icon: <BsCardChecklist />, path: "/displayprint" },
   { name: "Voting Screen", icon: <FiCheckSquare />, path: "/displayselector" },
-  { name: "Issue", icon: <FiCheckSquare />, path: "/issue" },
-  { name: "Position", icon: <FiCheckSquare />, path: "/position" },
+  { name: "Dashboard", icon: <FiGrid />, path: "/dashboard" },
   { name: "Candidates", icon: <FiUsers />, path: "/candidates" },
   { name: "Print Log", icon: <BookOpen />, path: "/log" },
 ];

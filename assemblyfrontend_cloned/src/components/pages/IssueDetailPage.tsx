@@ -1,10 +1,11 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { getIssue, getVoterById, voteIssue } from "../utils/api";
 import type { IssueResult, VoteRequest, VoterItem } from "../utils/types";
 import { useEffect, useState } from "react";
 import { FaSearch, FaClipboardCheck } from "react-icons/fa";
-import { AlertTriangle, CheckCircle, CircleX } from "lucide-react";
+import { AlertTriangle, ArrowLeft, CheckCircle, CircleX } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Button } from "../ui/button";
 
 /**
  * Helper: try to read a value from a response object using many possible keys
@@ -112,6 +113,7 @@ const ISSUE_OPTION_IDS = {
 const IssueDetailPage = () => {
   const { id } = useParams();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [issueData, setIssueData] = useState<IssueResult>({
     title: "",
     description: "",
@@ -269,6 +271,13 @@ const IssueDetailPage = () => {
 
   return (
     <div className="p-5 flex flex-col gap-4 max-w-7xl mx-auto">
+      <Button
+        variant="outline"
+        onClick={() => navigate("/issues")}
+        className="flex items-center gap-2">
+        <ArrowLeft size={18} />
+        Back
+      </Button>
       {/* Top Section: Issue Details with Search Bar */}
       <div className="bg-white shadow-lg rounded-xl p-5 border border-gray-100 transition-transform hover:scale-[1.01] duration-300">
         <div className="flex items-center gap-3 mb-6">

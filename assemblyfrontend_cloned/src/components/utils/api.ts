@@ -142,3 +142,23 @@ export const getPositionTally = (positionId: number) => {
 export const getDetailedPositionResults = (positionId: number) => {
     return api.get(`/candidates/detailed/position/${positionId}`);
 }
+
+
+// ==============Election=======================
+
+// Create a new election
+export const createElection = (electionData: any) => {
+    return api.post("/elections/create", electionData);
+};
+
+// Activate an election by ID
+export const activateElection = (electionId: number) => {
+    return api.put(`/elections/activate/${electionId}`);
+};
+
+// Get all elections
+export const getAllElections = () => {
+    return api.get("/elections/all");
+};
+
+

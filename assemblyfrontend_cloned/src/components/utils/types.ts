@@ -19,13 +19,16 @@ export interface DecodedUser {
     roleName: string;
 }
 
-export interface User {
+export type User = {
     id: number;
     firstName: string;
+    lastName: string;
     email: string;
-    roleId: number;
-    roleName: string;
-}
+    username: string;
+    password: string; // you might want to omit this on the frontend
+    role: Role;
+    fullName: string;
+};
 
 export interface AuthState {
     user: User | null;
@@ -73,6 +76,7 @@ export interface SignUpRequest {
 //  ======== Issue ==========
 export type IssueRequest = {
     id: number;
+    electionId: number;
     title: string;
     description: string;
 };
@@ -98,7 +102,7 @@ export interface PositionRequest {
     description: string;
     maxVotes: number;
     maxCandidates: number;
-    // electionId?: number; 
+    electionId: number;
 }
 
 export type ElectionStatus = "DRAFT" | "OPEN" | "CLOSED";
@@ -110,13 +114,8 @@ export interface PositionItem {
     maxCandidates: number;   // default handled in backend
     maxVotes: number;
     status?: ElectionStatus; // can be null/undefined if not set
-    // election?: Election;  // uncomment if you later need relation
+    election?: ElectionItem;
 }
-
-
-
-
-
 
 // ========== Voter ===========
 
@@ -142,4 +141,21 @@ export type VoteRequest = {
     candidateId?: number;
     issueId?: number;
     optionId?: number;
+};
+
+
+//  ==============Election===============
+
+export type Role = {
+    id: number;
+    name: string;
+};
+
+export type ElectionItem = {
+    id: number;
+    name: string;
+    status: ElectionStatus;
+    electionDay: string; // "2025-09-23" (LocalDate)
+    createdBy: User;
+    createdAt: string; // ISO timestamp "2025-09-22T11:35:23.999062Z"
 };

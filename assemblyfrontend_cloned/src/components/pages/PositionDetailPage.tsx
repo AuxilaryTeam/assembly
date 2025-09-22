@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   getPositionInfo,
   getVoterById,
@@ -9,7 +9,8 @@ import type { IssueResult, VoteRequest, VoterItem } from "../utils/types";
 import { useEffect, useState } from "react";
 import { FaSearch, FaClipboardCheck } from "react-icons/fa";
 import { useToast } from "@/hooks/use-toast";
-import { CircleX, CheckCircle, AlertTriangle } from "lucide-react";
+import { CircleX, CheckCircle, AlertTriangle, ArrowLeft } from "lucide-react";
+import { Button } from "../ui/button";
 
 interface Candidate {
   id: number;
@@ -122,6 +123,7 @@ const DetailItem = ({
 );
 
 const PositionDetailPage = () => {
+  const navigate = useNavigate();
   const { id } = useParams();
   const { toast } = useToast();
   const [issueData, setIssueData] = useState<IssueResult>({
@@ -321,6 +323,13 @@ const PositionDetailPage = () => {
 
   return (
     <div className="p-5 flex flex-col gap-4 max-w-7xl mx-auto">
+      <Button
+        variant="outline"
+        onClick={() => navigate("/positions")}
+        className="flex items-center gap-2">
+        <ArrowLeft size={18} />
+        Back
+      </Button>
       {/* Top Section: Issue Details with Search Bar */}
       <div className="bg-white shadow-lg rounded-xl p-5 border border-gray-100 transition-transform hover:scale-[1.01] duration-300">
         <div className="flex items-center gap-3 mb-6">

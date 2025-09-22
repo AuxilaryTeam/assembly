@@ -6,9 +6,10 @@ import Modal from "../modal/Modal";
 import CreateIssueForm from "../forms/CreateIssueForm";
 import { getActivePositions, getIssueList } from "../utils/api";
 import { useNavigate } from "react-router-dom";
-import { CircleX } from "lucide-react";
+import { ArrowLeft, CircleX } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import CreatePositionForm from "../forms/CreatePositionForm";
+import { Button } from "../ui/button";
 
 const PositionsPage = () => {
   const navigate = useNavigate();
@@ -50,6 +51,13 @@ const PositionsPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 py-10 px-6">
+      <Button
+        variant="outline"
+        onClick={() => navigate("/dashboard")}
+        className="flex items-center gap-2">
+        <ArrowLeft size={18} />
+        Back
+      </Button>
       <div className="max-w-4xl mx-auto space-y-2 mb-4">
         <div className="flex items-center justify-between">
           {/* Title */}
@@ -96,6 +104,7 @@ const PositionsPage = () => {
       </div>
 
       <Modal
+        title="Position Creation Form"
         isOpen={createIssue}
         onClose={function (): void {
           setCreateIssue(!createIssue);
