@@ -18,8 +18,8 @@ public class Election {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    @Enumerated(EnumType.STRING)
-    private ElectionType type; // ISSUE or CANDIDATE
+    // @Enumerated(EnumType.STRING)
+    // private ElectionType type; // ISSUE or CANDIDATE
     @Enumerated(EnumType.STRING)
     private ElectionStatus status; // ACTIVE, INACTIVE, COMPLETED
     
@@ -28,4 +28,6 @@ public class Election {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by")
     private User createdBy;
+
+    private Instant createdAt = Instant.now();
 }

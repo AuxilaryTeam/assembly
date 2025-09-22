@@ -45,6 +45,10 @@ public class ElectionService {
     }
 
     public List<Election> getAllElections() {
-        return electionRepo.findAll();
-    }
+        // sort the all elections by created date in descending order
+        List<Election> elections = electionRepo.findAll();
+        elections.sort((e1, e2) -> e2.getElectionDay().compareTo(e1.getElectionDay()));
+        return elections;
+}
+
 }
