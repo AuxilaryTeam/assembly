@@ -17,6 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 @RestController
@@ -62,5 +65,38 @@ public class ElectionController {
         }
     }
 
-
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllElections(HttpServletRequest requestHeader) {
+        String token = authService.getToken(requestHeader);
+        if (token == null) {
+            return ResponseEntity.status(403).body(
+                Map.of(
+                    "error", "Missing authentication token",
+                    "message", "You must provide a valid token to view elections."
+                )
+            );
+        }
+        User user = authService.getUserFromToken(token);
+        if (user == null) {
+            return ResponseEntity.status(403).body(
+                Map.of(
+                    "error", "Forbidden",
+                    "message", "You do not have permission to view elections."
+                )
+            );
+        }
+        try {
+            return ResponseEntity.ok(electionService.getAllElections());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(
+                Map.of(
+                    "error", "Could not retrieve elections",
+                    "message", e.getMessage()
+                )
+            );
+        }
+    }
 }
+
+
+

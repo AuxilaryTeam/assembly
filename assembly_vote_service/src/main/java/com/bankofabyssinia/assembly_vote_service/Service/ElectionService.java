@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.List;
 
 @Service
 public class ElectionService {
@@ -41,5 +42,9 @@ public class ElectionService {
         logRepo.save(log);
 
         return electionRepo.save(election);
+    }
+
+    public List<Election> getAllElections() {
+        return electionRepo.findAll();
     }
 }
