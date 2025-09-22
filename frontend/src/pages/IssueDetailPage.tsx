@@ -209,7 +209,7 @@ const IssueDetailPage = () => {
   };
 
   return (
-    <div className="p-5 flex flex-col gap-4 max-w-7xl mx-auto">
+    <div className="p-2 flex flex-col gap-4 max-w-7xl mx-auto">
       {/* Top Section: Issue Details with Search Bar */}
       <div className="bg-white shadow-lg rounded-xl p-5 border border-gray-100 transition-transform hover:scale-[1.01] duration-300">
         <div className="flex items-center gap-3 mb-6">

@@ -9,6 +9,16 @@
       "projectName": "assembly_vote_service",
       "args": "",
       "envFile": "${workspaceFolder}/.env"
+    },
+    {
+      "type": "java",
+      "name": "Spring Boot-AssemblyApplication<assembly>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "com.nahom.assembly.AssemblyApplication",
+      "projectName": "assembly",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
     }
   ]
 }
