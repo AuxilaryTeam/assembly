@@ -66,9 +66,7 @@ const PrintPrevDisplays = () => {
   const printDocument = (log: VoteLogType) => {
     setSelectedLog(log);
 
-    setTimeout(() => {
-      window.print();
-    }, 300);
+    window.print();
   };
 
   useEffect(() => {
@@ -111,7 +109,8 @@ const PrintPrevDisplays = () => {
             <button
               onClick={fetchData}
               disabled={isLoading}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 transition-colors">
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 transition-colors"
+            >
               <FiRefreshCw className={isLoading ? "animate-spin" : ""} />
               {isLoading ? "Updating..." : "Refresh Data"}
             </button>
@@ -167,7 +166,8 @@ const PrintPrevDisplays = () => {
                       <td className="px-4 py-2 border-b">
                         <button
                           onClick={() => printDocument(log)}
-                          className="flex items-center gap-2 px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors">
+                          className="flex items-center gap-2 px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
+                        >
                           <FiPrinter />
                           Print
                         </button>
@@ -181,7 +181,8 @@ const PrintPrevDisplays = () => {
                 <button
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 1}
-                  className="px-3 py-1 bg-gray-200 rounded-md disabled:opacity-50 flex items-center gap-2">
+                  className="px-3 py-1 bg-gray-200 rounded-md disabled:opacity-50 flex items-center gap-2"
+                >
                   <FiChevronLeft />
                   Previous
                 </button>
@@ -191,7 +192,8 @@ const PrintPrevDisplays = () => {
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages}
-                  className="px-3 py-1 bg-gray-200 rounded-md disabled:opacity-50 flex items-center gap-2">
+                  className="px-3 py-1 bg-gray-200 rounded-md disabled:opacity-50 flex items-center gap-2"
+                >
                   Next
                   <FiChevronRight />
                 </button>
@@ -299,7 +301,8 @@ const PrintPrevDisplays = () => {
             <div className="text-center">
               <div
                 className="border-t-2 border-gray-400 pt-4 mx-auto"
-                style={{ width: "80%" }}>
+                style={{ width: "80%" }}
+              >
                 <p className="font-semibold">የጉባኤው ፕሬዚደንት</p>
                 <p className="text-sm text-gray-600">ስም እና ፊርማ</p>
               </div>
@@ -307,7 +310,8 @@ const PrintPrevDisplays = () => {
             <div className="text-center">
               <div
                 className="border-t-2 border-gray-400 pt-4 mx-auto"
-                style={{ width: "80%" }}>
+                style={{ width: "80%" }}
+              >
                 <p className="font-semibold">የጉባኤው ፀሃፊ</p>
                 <p className="text-sm text-gray-600">ስም እና ፊርማ</p>
               </div>

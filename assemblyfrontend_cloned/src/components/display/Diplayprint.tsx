@@ -154,9 +154,7 @@ const DisplayPrint = () => {
     // });
 
     // Wait a brief moment to allow the toast to show, then trigger the print dialog
-    setTimeout(() => {
-      window.print();
-    }, 300);
+    window.print();
   };
 
   useEffect(() => {
@@ -214,10 +212,6 @@ const DisplayPrint = () => {
               alt="Bank of Abyssinia Logo"
               className="h-16 w-auto mr-4"
             />
-            <div>
-              <h1 className="text-xl font-bold text-gray-900">አቢሲኒያ ባንክ</h1>
-              <p className="text-md text-gray-700">የባለአክሲዮኖች ጉባኤ</p>
-            </div>
           </div>
           <img
             src={slogan}
@@ -227,23 +221,16 @@ const DisplayPrint = () => {
         </div>
 
         {/* Meeting Details */}
-        <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+        <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-32 text-sm">
+          <div></div>
           <div>
             <p>
-              <span className="font-semibold">የስብሰባ ቀን:</span>{" "}
+              <span className="font-semibold">የታተመበት (print) ቀን:</span>{" "}
               {new Date().toLocaleDateString()}
             </p>
             <p>
-              <span className="font-semibold">የስብሰባ መለያ:</span> BOA-SH-2023-001
-            </p>
-          </div>
-          <div>
-            <p>
-              <span className="font-semibold">ሰነድ የተጻፈበት ቀን:</span>{" "}
-              {new Date().toLocaleString()}
-            </p>
-            <p>
-              <span className="font-semibold">ያጸደቀው ባለሥልጣን:</span> የጉባኤ ፀሃፊ
+              <span className="font-semibold">ሰዓት (time):</span>{" "}
+              {new Date().toLocaleTimeString()}
             </p>
           </div>
         </div>
@@ -290,61 +277,6 @@ const DisplayPrint = () => {
             </p>
           </div>
         </div>
-
-        {/* Signatures Section */}
-        <div className="mt-12 grid grid-rows-1 md:grid-cols-2 gap-8">
-          <div className="text-center">
-            <div
-              className="border-t-2 border-gray-400 pt-4 mx-auto"
-              style={{ width: "80%" }}
-            >
-              <p className="font-semibold">የጉባኤው ፕሬዚደንት</p>
-              <p className="text-sm text-gray-600">ስም እና ፊርማ</p>
-            </div>
-          </div>
-          <div className="text-center">
-            <div
-              className="border-t-2 border-gray-400 pt-4 mx-auto"
-              style={{ width: "80%" }}
-            >
-              <p className="font-semibold">የጉባኤው ፀሃፊ</p>
-              <p className="text-sm text-gray-600">ስም እና ፊርማ</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Footer */}
-        <div className="mt-12 text-center text-xs text-gray-500 border-t pt-4">
-          <p>ይህ የባንክ አቢሲኒያ ባንክ - የባለአክሲዮኖች ጉባኤ ኦፊሴላዊ ሰነድ ነው</p>
-          <p>
-            ቀን {new Date().toLocaleString()} | የሰነድ መለያ:{" "}
-            {Math.random().toString(36).substring(2, 10).toUpperCase()}
-          </p>
-        </div>
-      </div>
-
-      {/* Print Instructions (Hidden when printing) */}
-      <div className="print:hidden mt-6 bg-yellow-50 p-4 rounded-lg border border-yellow-200 max-w-4xl mx-auto">
-        <h3 className="font-bold text-yellow-800 mb-2">
-          Printing Instructions:
-        </h3>
-        <ul className="list-disc list-inside text-yellow-700 text-sm">
-          <li>
-            Click "Print Official Document" to generate a printable version
-          </li>
-          <li>
-            Ensure the document includes all borders and background colors in
-            print preview
-          </li>
-          <li>Use quality paper for official records</li>
-          <li>
-            Have both the Chairperson and Secretary sign the document after
-            printing
-          </li>
-          <li>
-            File this document as an official record of the shareholders meeting
-          </li>
-        </ul>
       </div>
     </div>
   );

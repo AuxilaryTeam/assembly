@@ -264,15 +264,17 @@ const Display = () => {
             <div className="flex items-center space-x-2 mb-4 md:mb-0">
               <Button
                 variant="outline"
-                onClick={() => navigate("/report")}
-                className="flex items-center gap-2">
+                onClick={() => navigate("/displayprint")}
+                className="flex items-center gap-2"
+              >
                 <ArrowLeft size={18} />
                 Back
               </Button>
               <Button
                 variant="outline"
                 onClick={fetchData}
-                className="flex items-center gap-2">
+                className="flex items-center gap-2"
+              >
                 <RefreshCcw size={18} />
                 Refresh
               </Button>
@@ -283,7 +285,8 @@ const Display = () => {
                 onClick={() =>
                   setViewMode(viewMode === "grid" ? "list" : "grid")
                 }
-                className="flex items-center gap-2">
+                className="flex items-center gap-2"
+              >
                 {viewMode === "grid" ? (
                   <LayoutList size={18} />
                 ) : (
@@ -308,7 +311,8 @@ const Display = () => {
               viewMode === "grid"
                 ? "grid grid-cols-1 md:grid-cols-2"
                 : "flex flex-col"
-            }`}>
+            }`}
+          >
             {/* Attendance Count Metric */}
             <div className="relative bg-white p-8 rounded-2xl border border-gray-200 shadow-xl hover:shadow-2xl transition-shadow duration-300 overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-amber-50 to-amber-100 opacity-60 rounded-bl-full"></div>
@@ -329,7 +333,8 @@ const Display = () => {
                   className="h-2 bg-amber-500 rounded-full"
                   style={{
                     width: `${Math.min((attendanceCount / 1000) * 100, 100)}%`,
-                  }}></div>
+                  }}
+                ></div>
               </div>
             </div>
 
@@ -353,7 +358,8 @@ const Display = () => {
                   className="h-2 bg-amber-500 rounded-full"
                   style={{
                     width: `${Math.min((sharesSum / 10000000) * 100, 100)}%`,
-                  }}></div>
+                  }}
+                ></div>
               </div>
             </div>
 
@@ -377,7 +383,8 @@ const Display = () => {
                   className="h-2 bg-amber-500 rounded-full"
                   style={{
                     width: `${Math.min((sumVoting / 10000000) * 100, 100)}%`,
-                  }}></div>
+                  }}
+                ></div>
               </div>
             </div>
 
@@ -399,7 +406,8 @@ const Display = () => {
               <div className="mt-6 h-2 bg-gray-100 rounded-full">
                 <div
                   className="h-2 bg-amber-500 rounded-full"
-                  style={{ width: `${percentage}%` }}></div>
+                  style={{ width: `${percentage}%` }}
+                ></div>
               </div>
             </div>
           </div>
@@ -411,7 +419,8 @@ const Display = () => {
               <div
                 className={`h-4 w-4 rounded-full ${
                   isLoading ? "bg-amber-500 animate-pulse" : "bg-green-500"
-                } mr-3`}></div>
+                } mr-3`}
+              ></div>
               <span className="text-md md:text-lg font-semibold text-gray-700">
                 {isLoading ? "Updating data..." : "System status: Normal"}
               </span>
