@@ -12,6 +12,7 @@ import com.bankofabyssinia.assembly_vote_service.Entity.Log;
 import com.bankofabyssinia.assembly_vote_service.Entity.Position;
 import com.bankofabyssinia.assembly_vote_service.Entity.User;
 import com.bankofabyssinia.assembly_vote_service.Entity.Voter;
+import com.bankofabyssinia.assembly_vote_service.Exception.PositionNotFoundException;
 import com.bankofabyssinia.assembly_vote_service.Exception.VoterNotFoundException;
 import com.bankofabyssinia.assembly_vote_service.Repository.CandidateVoteRepository;
 import com.bankofabyssinia.assembly_vote_service.Repository.LogRepository;
@@ -68,7 +69,7 @@ public class VoterService {
     // VOTER VOTING HISTORY
     public List<?> getVoterHistoryByPosition (Long positionId, User user) {
         Position position = positionRepository.findById(positionId)
-                .orElseThrow(() -> new IllegalArgumentException("Position not found with ID: " + positionId));
+                .orElseThrow(() -> new PositionNotFoundException("Position not found with ID: " + positionId));
 
         List<Voter> allVoters = candidateVoteRepository.findDistinctVotersByPosition_Id(positionId);
 

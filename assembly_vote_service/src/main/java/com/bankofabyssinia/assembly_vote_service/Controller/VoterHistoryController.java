@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bankofabyssinia.assembly_vote_service.Entity.User;
+import com.bankofabyssinia.assembly_vote_service.Exception.PositionNotFoundException;
 import com.bankofabyssinia.assembly_vote_service.Service.AuthService;
 import com.bankofabyssinia.assembly_vote_service.Service.VoterService;
 
@@ -80,7 +81,15 @@ public ResponseEntity<?> getVoterHistoryByPositionPaginated(
 
             List<?> voterHistories = voterService.getVoterHistoryByPosition(positionId, user);
             return ResponseEntity.ok(voterHistories);
-        } catch (Exception e) {
+        } catch (PositionNotFoundException e) { 
+            return ResponseEntity.status(404).body(
+                    Map.of(
+                            "error", e.getMessage(),
+                            "message", "Position not found"
+                    )
+            );
+        }
+        catch (Exception e) {
             return ResponseEntity.status(500).body(
                     Map.of(
                             "error", e.getMessage(),
