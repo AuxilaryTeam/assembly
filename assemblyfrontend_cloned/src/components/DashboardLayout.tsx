@@ -15,7 +15,7 @@ import {
   FiUsers,
   FiGrid,
 } from "react-icons/fi";
-import { BsCardChecklist } from "react-icons/bs";
+import { BsBarChartLine, BsCardChecklist } from "react-icons/bs";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -28,13 +28,22 @@ import { toast } from "@/hooks/use-toast";
 const navItems = [
   { name: "Attendance", icon: <FiClipboard />, path: "/search" },
   { name: "Print Attendance", icon: <FiPrinter />, path: "/searchprint" },
-  { name: "Report", icon: <FiFileText />, path: "/report" },
+  {
+    name: "Attendance Report",
+    icon: <FiFileText />,
+    path: "/attendancereport",
+  },
   { name: "Display", icon: <FiMonitor />, path: "/display" },
   { name: "Print Display ", icon: <BsCardChecklist />, path: "/displayprint" },
   { name: "Voting Screen", icon: <FiCheckSquare />, path: "/displayselector" },
   { name: "Dashboard", icon: <FiGrid />, path: "/dashboard" },
   { name: "Candidates", icon: <FiUsers />, path: "/candidates" },
   { name: "Print Log", icon: <BookOpen />, path: "/log" },
+  {
+    name: "General Reports",
+    icon: <BsBarChartLine />,
+    path: "/VoteReportsPage",
+  },
 ];
 
 const DashboardLayout = () => {
@@ -144,7 +153,7 @@ const DashboardLayout = () => {
                     return (
                       <a
                         key={item.name}
-                        href={`/assemblynah${item.path}`}
+                        href={`/assembly${item.path}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className={`${commonClasses} ${inactiveClasses}`}

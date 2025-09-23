@@ -1,7 +1,8 @@
 import axios from "axios";
 import type { LoginRequest, SignUpRequest, IssueRequest, VoterItem, VoteRequest, PositionRequest } from "./types";
 
-const BASE_URL = "http://localhost:8081/api"
+// export const BASE_URL = "http://localhost:8081/api"
+export const BASE_URL = "http://inhouseapps.bankofabyssinia.com:8085/voteservice/api"
 
 // Axios instance for API requests
 const api = axios.create({

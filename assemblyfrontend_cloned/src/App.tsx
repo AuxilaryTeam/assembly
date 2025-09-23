@@ -6,7 +6,6 @@ import Searchprint from "./components/search/Searchprint";
 import Diplay from "./components/display/Diplay";
 import Diplayprint from "./components/display/Diplayprint";
 import Print from "./components/print/Print";
-import Report from "./components/report/Report";
 import { Toaster } from "./components/ui/toaster";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AuthLayout from "./components/AuthLayout";
@@ -21,16 +20,20 @@ import CandidatesPage from "./components/pages/CandidatesPage";
 import PrintPrevDisplays from "./components/pages/PrintPrevDisplays";
 import ElectionsPage from "./components/pages/ElectionPage";
 import DashboardPage from "./components/pages/DashboardPage";
+import AttendanceReport from "./components/report/AttendanceReport";
+import VoteReportsPage from "./components/report/VoteReportsPage";
 
 function App() {
   console.log("App component rendering");
 
   return (
     <>
-      <Router basename="/assemblynah">
+      <Router basename="/assembly">
         <Routes>
           {/* Public Route: Login */}
+          <Route path="" element={<Login />} />
           <Route path="/" element={<Login />} />
+
           <Route path="/login" element={<Login />} />
 
           {/* Protected Routes */}
@@ -43,7 +46,9 @@ function App() {
               }>
               <Route path="/search" element={<Search />} />
               <Route path="/searchprint" element={<Searchprint />} />
-              <Route path="/report" element={<Report />} />
+              <Route path="/attendancereport" element={<AttendanceReport />} />
+              <Route path="/VoteReportsPage" element={<VoteReportsPage />} />
+
               <Route path="/displayprint" element={<Diplayprint />} />
               <Route path="/printprevdisplay" element={<PrintPrevDisplays />} />
               <Route path="/print" element={<Print />} />

@@ -19,7 +19,7 @@ interface Shareholder {
   fiscalyear: string;
 }
 
-const Report = () => {
+const AttendanceReport = () => {
   const [shareholders, setShareholders] = useState<Shareholder[]>([]);
   const [search, setSearch] = useState("");
   const token = localStorage.getItem("token");
@@ -158,4 +158,4 @@ const Report = () => {
   );
 };
 
-export default Report;
+export default AttendanceReport;

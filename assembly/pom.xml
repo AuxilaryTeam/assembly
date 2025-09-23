@@ -122,7 +122,7 @@
 			</plugin>
 		</plugins>
 
-		<finalName>assemblynahom</finalName>
+		<finalName>assemblyservice</finalName>
 	</build>
 
 </project>
