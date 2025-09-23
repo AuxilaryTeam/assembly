@@ -9,9 +9,7 @@ const ProtectedRoute = () => {
   const [showToast, setShowToast] = useState(false);
 
   useEffect(() => {
-    console.log("ProtectedRoute: Checking authentication");
     const token = localStorage.getItem("token");
-    console.log("ProtectedRoute: Token found:", token ? "Yes" : "No");
 
     if (!token) {
       console.log(
@@ -26,14 +24,11 @@ const ProtectedRoute = () => {
         duration: 3000,
       });
 
-      console.log("ProtectedRoute: Toast triggered, waiting before navigation");
-
       // Set flag to show toast
       setShowToast(true);
 
       // Navigate after a delay to allow toast to be visible
       const timer = setTimeout(() => {
-        console.log("ProtectedRoute: Navigating to login page");
         navigate("/", {
           replace: true,
           state: { showToast: true },
@@ -41,11 +36,9 @@ const ProtectedRoute = () => {
       });
 
       return () => {
-        console.log("ProtectedRoute: Cleaning up timeout");
         clearTimeout(timer);
       };
     } else {
-      console.log("ProtectedRoute: Token found, allowing access");
       setIsAuthenticated(true);
     }
   }, [navigate, toast]);
@@ -57,11 +50,6 @@ const ProtectedRoute = () => {
     );
     return null;
   }
-
-  console.log(
-    "ProtectedRoute: Authentication status:",
-    isAuthenticated ? "Authenticated" : "Not authenticated"
-  );
 
   // Only render children if authenticated
   return isAuthenticated ? <Outlet /> : null;

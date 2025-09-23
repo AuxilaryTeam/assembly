@@ -24,7 +24,7 @@ interface Shareholder {
   shareholderid: string;
   phone: string;
   attendance: number;
-  attendanceTime: string | null;
+  attendanceTimestampstamp: string | null;
   votingsubscription: number;
   sharesubsription: number;
   paidcapital: number;
@@ -98,6 +98,8 @@ const Search = () => {
         ? response.data
         : [response.data];
 
+      console.log("Response", response.data);
+
       if (data.length === 0) {
         setError("No results found for your search");
         toast({
@@ -145,6 +147,7 @@ const Search = () => {
 
   const handleConfirmAttendance = async () => {
     if (!selectedShareholder) return;
+    console.log("Is Marking", isMarking);
 
     const token = getAuthToken();
     if (!token) {
@@ -157,7 +160,9 @@ const Search = () => {
 
     try {
       await axios.post(
-        `${apiBase}admin/attendance0/${selectedShareholder.id}`,
+        `${apiBase}admin/attendance${isMarking ? "" : "0"}/${
+          selectedShareholder.id
+        }`,
         { attendance: isMarking ? 1 : 0 },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -171,7 +176,7 @@ const Search = () => {
             ? {
                 ...s,
                 attendance: isMarking ? 1 : 0,
-                attendanceTime: isMarking ? now : null,
+                attendanceTimestamp: isMarking ? now : null,
               }
             : s
         )
@@ -193,7 +198,7 @@ const Search = () => {
             person: {
               ...selectedShareholder,
               attendance: 1,
-              attendanceTime: now,
+              attendanceTimestamp: now,
             },
           },
         });
@@ -269,10 +274,13 @@ const Search = () => {
     },
     {
       header: "Attendance Time",
-      accessor: "attendanceTime",
+      accessor: "attendanceTimestamp",
       align: "center",
       width: "w-48",
-      renderCell: (value) => value || "-",
+      renderCell: (value) =>
+        value !== null && typeof value === "string"
+          ? value.split("T").join(" ")
+          : "-",
     },
   ];
 

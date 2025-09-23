@@ -28,7 +28,7 @@ function App() {
 
   return (
     <>
-      <Router basename="/assemblynah">
+      <Router basename="/assembly">
         <Routes>
           {/* Public Route: Login */}
           <Route path="" element={<Login />} />
@@ -43,8 +43,7 @@ function App() {
                 <AuthLayout>
                   <DashboardLayout />
                 </AuthLayout>
-              }
-            >
+              }>
               <Route path="/search" element={<Search />} />
               <Route path="/searchprint" element={<Searchprint />} />
               <Route path="/attendancereport" element={<AttendanceReport />} />

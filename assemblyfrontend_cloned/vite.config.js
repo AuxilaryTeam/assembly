@@ -7,8 +7,11 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export default defineConfig({
-  base: "/assemblynah/",
+  base: "/assembly/",
   plugins: [react()],
+  build: {
+    outDir: "assembly", // default is 'dist', change as needed
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

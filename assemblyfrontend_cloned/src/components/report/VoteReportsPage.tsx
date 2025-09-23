@@ -23,6 +23,7 @@ import slogan from "../../assets/logo2.jpg";
 import { useToast } from "@/hooks/use-toast";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
+import { BASE_URL } from "../utils/api";
 
 interface VotedCandidate {
   Vote: number;
@@ -63,8 +64,6 @@ interface SummaryResponse {
     candidateId: number;
   }>;
 }
-
-const apiBase = "http://localhost:8081/api/";
 
 const GenericPrint = ({
   children,
@@ -175,7 +174,7 @@ const ReportViewer = ({
     try {
       // Fetch voter history
       const voterResponse = await axios.get(
-        `${apiBase}voter-history/by-position`,
+        `${BASE_URL}/voter-history/by-position`,
         {
           ...config,
           params: { positionId },
@@ -195,7 +194,7 @@ const ReportViewer = ({
       // Handle summary report
       if (reportType === "Summary of Vote Result") {
         const summaryResponse = await axios.get(
-          `${apiBase}candidates/rankings/position/${positionId}`,
+          `${BASE_URL}/candidates/rankings/position/${positionId}`,
           config
         );
         setSummaryData(summaryResponse.data);
@@ -226,7 +225,7 @@ const ReportViewer = ({
 
         const candidatePromises = Array.from(candidateIds).map((id) =>
           axios.get(
-            `${apiBase}candidates/${id}/position/${positionId}/info`,
+            `${BASE_URL}/candidates/${id}/position/${positionId}/info`,
             config
           )
         );
@@ -326,8 +325,7 @@ const ReportViewer = ({
       return (
         <GenericPrint
           reportType="Detail Vote Result by Voters"
-          reportDate={reportDate}
-        >
+          reportDate={reportDate}>
           <div className="text-center py-8">No voter data available.</div>
         </GenericPrint>
       );
@@ -340,8 +338,7 @@ const ReportViewer = ({
           reportType="Detail Vote Result by Voters"
           reportDate={reportDate}
           currentPage={pageIndex + 1}
-          totalPages={totalPages}
-        >
+          totalPages={totalPages}>
           <Table className="border border-gray-400">
             <TableHeader>
               <TableRow className="border border-gray-400">
@@ -365,8 +362,7 @@ const ReportViewer = ({
                 .map((voter) => (
                   <TableRow
                     key={voter.voterId}
-                    className="border border-gray-400"
-                  >
+                    className="border border-gray-400">
                     <TableCell className="border border-gray-400 px-2 py-1 text-center  font-medium">
                       {voter.shareholderId}
                     </TableCell>
@@ -379,8 +375,7 @@ const ReportViewer = ({
                           {voter.votedCandidates.map((candidate, idx) => (
                             <div
                               key={idx}
-                              className="flex justify-between font-medium"
-                            >
+                              className="flex justify-between font-medium">
                               <span>{candidate.candidateName}</span>
                             </div>
                           ))}
@@ -419,8 +414,7 @@ const ReportViewer = ({
       return (
         <GenericPrint
           reportType="Detail Vote Result by Candidates"
-          reportDate={reportDate}
-        >
+          reportDate={reportDate}>
           <div className="text-center py-8">
             {candidateId
               ? `No data available for candidate ID: ${candidateId}`
@@ -433,8 +427,7 @@ const ReportViewer = ({
     return (
       <GenericPrint
         reportType="Detail Vote Result by Candidates"
-        reportDate={reportDate}
-      >
+        reportDate={reportDate}>
         <div className="space-y-6">
           {candidateData.map((candidate, index) => (
             <div key={candidate.candidateId}>
@@ -469,8 +462,7 @@ const ReportViewer = ({
                     candidate.voters.map((voter, idx) => (
                       <TableRow
                         key={voter.voterId}
-                        className="border border-gray-400"
-                      >
+                        className="border border-gray-400">
                         <TableCell className="border border-gray-400 px-2 py-1 text-center">
                           {idx + 1}
                         </TableCell>
@@ -489,8 +481,7 @@ const ReportViewer = ({
                     <TableRow>
                       <TableCell
                         colSpan={4}
-                        className="text-center py-4 text-gray-500"
-                      >
+                        className="text-center py-4 text-gray-500">
                         No voters found for this candidate
                       </TableCell>
                     </TableRow>
@@ -516,8 +507,7 @@ const ReportViewer = ({
       return (
         <GenericPrint
           reportType="Summary of Vote Result"
-          reportDate={reportDate}
-        >
+          reportDate={reportDate}>
           <div className="text-center py-8">No summary data available.</div>
         </GenericPrint>
       );
@@ -527,8 +517,7 @@ const ReportViewer = ({
       <GenericPrint
         reportType="Summary of Vote Result"
         reportDate={reportDate}
-        positionName={summaryData.position}
-      >
+        positionName={summaryData.position}>
         <Table className="border border-gray-400 w-full">
           <TableHeader>
             <TableRow className="border border-gray-400 bg-gray-100">
@@ -550,8 +539,7 @@ const ReportViewer = ({
             {summaryData.rankings.map((candidate) => (
               <TableRow
                 key={candidate.candidateId}
-                className="border border-gray-400"
-              >
+                className="border border-gray-400">
                 <TableCell className="border border-gray-400 px-3 py-2 text-center font-medium">
                   {candidate.candidateId.toString().padStart(5, "0")}
                 </TableCell>
@@ -740,8 +728,7 @@ const VoteReportsPage = () => {
                     setSelectedReport(value);
                     setCandidateId(""); // Reset candidate ID when report type changes
                   }}
-                  value={selectedReport}
-                >
+                  value={selectedReport}>
                   <SelectTrigger id="reportSelect">
                     <SelectValue placeholder="Choose a report" />
                   </SelectTrigger>
@@ -762,8 +749,7 @@ const VoteReportsPage = () => {
                 <Button
                   onClick={handlePrint}
                   disabled={!selectedReport || !positionId}
-                  className="flex items-center space-x-2"
-                >
+                  className="flex items-center space-x-2">
                   <FiPrinter />
                   <span>Print Report</span>
                 </Button>
@@ -771,8 +757,7 @@ const VoteReportsPage = () => {
                   onClick={handleExportPDF}
                   disabled={!selectedReport || !positionId}
                   variant="outline"
-                  className="flex items-center space-x-2"
-                >
+                  className="flex items-center space-x-2">
                   <FiDownload />
                   <span>Export as PDF</span>
                 </Button>
