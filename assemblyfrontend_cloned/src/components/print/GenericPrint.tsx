@@ -19,7 +19,7 @@ interface Person {
 interface GenericPrintProps {
   person: Person;
   documentType: "payment" | "dividend" | "vote";
-  header?: React.ReactNode; // New prop for custom header
+  header?: React.ReactNode;
   children?: React.ReactNode;
 }
 
@@ -47,10 +47,11 @@ const GenericPrint: React.FC<GenericPrintProps> = ({
   ) => {
     setter(false);
   };
+
   return (
-    <div className="bg-white p-14 mb-2 rounded-lg shadow-lg max-w-4xl mx-auto border border-gray-200 print:border-0 print:shadow-none print:pr-14 print:pl-14 print:max-w-full">
+    <div className="bg-white p-14 mb-2 rounded-lg shadow-lg max-w-4xl mx-auto border border-gray-200 print:border-0 print:shadow-none print:pr-14 print:pl-14 print:max-w-full font-abyssinica">
       {/* Bank Letterhead */}
-      <div className="flex justify-between items-center mb-6 pb-4 print:pb-2 pr-6 pl-14">
+      <div className="flex justify-between items-center mb-3 pb-4 ">
         <div className="flex items-center">
           <img
             src={logo}
@@ -60,34 +61,22 @@ const GenericPrint: React.FC<GenericPrintProps> = ({
         </div>
         <img src={slogan} alt="Bank Slogan" className="h-10 w-auto print:h-8" />
       </div>
-
-      {/* Document Header */}
-      {header ? (
-        <div className="mb-4 text-left pl-8">{header}</div>
-      ) : (
-        <div className="mb-4 text-left pl-8">
-          <h1 className="font-bold text-lg mb-1 print:text-md">
-            እ.ኤ.አ. የ2024/2025 በጀት ዓመት የትርፍ ድርሻን (Dividend) ድልድል ማሳወቂያ
-          </h1>
-        </div>
-      )}
-
       {/* Shareholder Information */}
-      <div className="mb-4 flex justify-end text-xs pr-6 print:text-2xs print:pr-4">
+      <div className="mb-4 flex justify-end text-xs pr-6 print:text-2xs">
         <div className="text-right space-y-1">
-          <p>
-            <span className="font-semibold">ID NO:</span>{" "}
+          <p className="font-overpass text-[14px]">
+            <span className="font-semibold ">ID NO:</span>{" "}
             {person?.shareholderid}
           </p>
-          <p className="cursor-pointer" onClick={handleDateClick}>
-            <span className="font-semibold">የሰነድ ቀን:</span>{" "}
+          <p className="cursor-pointer text-[14px]" onClick={handleDateClick}>
+            <span className="font-semibold">የስብሰባ ቀን:</span>{" "}
             {isEditingDate ? (
               <input
                 type="text"
                 value={dateValue}
                 onChange={handleDateChange}
                 onBlur={() => handleBlur(setIsEditingDate)}
-                className="bg-transparent border-none outline-none w-full p-0 m-0"
+                className="bg-transparent border-none outline-none w-full p-0 m-0 font-abyssinica"
                 autoFocus
               />
             ) : (
@@ -96,42 +85,72 @@ const GenericPrint: React.FC<GenericPrintProps> = ({
           </p>
         </div>
       </div>
+      {/* Document Header */}
+      {header ? (
+        <div className="mb-5 text-left pl-8">{header}</div>
+      ) : (
+        <div className="mb-5 text-left pl-8">
+          <h1 className="font-bold text-lg mb-1 print:text-md">
+            እ.ኤ.አ. የ2024/2025 በጀት ዓመት የትርፍ ድርሻን (Dividend) ድልድል ማሳወቂያ
+          </h1>
+        </div>
+      )}
 
       {/* Shareholder Details */}
-      <div className="  bg-gray-50 rounded print:p-2">
-        <div className="flex items-center gap-5 tracking-wide">
-          <span className="font-semibold">የባለአክሲዮኑ ስም :</span>
-          <span className="text-md font-bold border-b-2 border-black ">
-            {person?.nameamh} / {person?.nameeng}
-          </span>
-        </div>
+      <div className="flex items-center gap-5 tracking-wide flex-wrap  w-fit  pl-12">
+        <span className="font-semibold whitespace-nowrap">የባለአክሲዮኑ ስም :</span>
+        <span className="text-md font-bold border-b-2 pr-4 pl-2 border-black flex-1">
+          <span className="font-abyssinica">{person?.nameamh}</span> /{" "}
+          <span className="font-overpass">{person?.nameeng}</span>
+        </span>
       </div>
 
       {/* Financial Details (Only for dividend/payment) */}
       {(documentType === "dividend" || documentType === "payment") && (
-        <div className="max-w-3xl mx-auto mb-2 p-10">
-          <div className="grid grid-cols-2 gap-2 text-base">
-            <span className="font-semibold">ሀ. የተፈረመ አክሲዮን:</span>
-            <span className="border-b-2 border-black text-center">
-              {Intl.NumberFormat("en-US").format(person?.totalcapital || 0)} ብር
+        <div className="max-w-2xl mx-auto mb-4 pl-5 pr-56 pt-6 pb-8">
+          <div className="grid grid-cols-2 gap-y-2 gap-x-4 text-base text-center">
+            {/* Column headers */}
+            <span className="font-semibold mb-4"></span>
+            <span className="mb-2 text-lg font-semibold">በብር</span>
+
+            {/* Total Capital */}
+            <span className="font-semibold text-left">ሀ. የተፈረመ አክሲዮን:</span>
+            <span className="border-b-2 border-black text-center pl-2">
+              {Intl.NumberFormat("en-US", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              }).format(person?.totalcapital || 0)}
             </span>
 
-            <span className="font-semibold">ለ. የተከፈለ አክሲዮን:</span>
-            <span className="border-b-2 border-black text-center">
-              {Intl.NumberFormat("en-US").format(person?.paidcapital || 0)} ብር
+            {/* Paid Capital */}
+            <span className="font-semibold text-left">ለ. የተከፈለ አክሲዮን:</span>
+            <span className="border-b-2 border-black text-center pl-2">
+              {Intl.NumberFormat("en-US", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              }).format(person?.paidcapital || 0)}
             </span>
 
-            <span className="font-semibold">ሐ. ያልተከፈለ ቀሪ ገንዘብ:</span>
-            <span className="border-b-2 border-black text-center">
-              {Intl.NumberFormat("en-US").format(
+            {/* Remaining Capital */}
+            <span className="font-semibold text-left">ሐ. ያልተከፈለ ቀሪ ገንዘብ:</span>
+            <span className="border-b-2 border-black text-center pl-2">
+              {Intl.NumberFormat("en-US", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              }).format(
                 (person?.totalcapital || 0) - (person?.paidcapital || 0)
-              )}{" "}
-              ብር
+              )}
             </span>
 
-            <span className="font-semibold">መ. የትርፍ ድርሻ (ከታክስ በፊት):</span>
-            <span className="border-b-2 border-black text-center">
-              {Intl.NumberFormat("en-US").format(person?.devidend || 0)} ብር
+            {/* Dividend */}
+            <span className="font-semibold text-left">
+              መ. የትርፍ ድርሻ (ከታክስ በፊት):
+            </span>
+            <span className="border-b-2 border-black text-center pl-2">
+              {Intl.NumberFormat("en-US", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              }).format(person?.devidend || 0)}
             </span>
           </div>
         </div>
@@ -143,7 +162,7 @@ const GenericPrint: React.FC<GenericPrintProps> = ({
       {/* Notices */}
       {(documentType === "dividend" || documentType === "payment") && (
         <div className="mb-4 p-2 rounded mt-2 print:mt-2 print:text-xs">
-          <h3 className="font-bold  mb-6">ማሳሰቢያ፦</h3>
+          <h3 className="font-bold mb-2">ማሳሰቢያ፦</h3>
           <div className="space-y-1 text-xs">
             <p className="flex flex-row">
               <span className="font-semibold pr-2">1ኛ/</span>{" "}
@@ -170,10 +189,10 @@ const GenericPrint: React.FC<GenericPrintProps> = ({
       )}
 
       {/* Document ID */}
-      {(documentType === "dividend" || documentType === "payment") && (
-        <div className="flex justify-end mt-8 print:mt-5">
-          <div className="flex items-center justify-center w-8 h-8 border border-black rounded-full print:w-6 print:h-6">
-            <p className="text-xs font-bold print:text-2xs">{person?.id}</p>
+      {documentType === "dividend" && (
+        <div className="flex justify-end mt-8 print:mt-5 font-overpass ">
+          <div className="flex items-center justify-center border px-2  py-2 border-black rounded-full ">
+            <p className="text-base font-bold">7000</p>
           </div>
         </div>
       )}

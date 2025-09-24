@@ -64,6 +64,10 @@ export default {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
+      fontFamily: {
+        abyssinica: ["Abyssinica", "sans-serif"], // <-- use this for Ethiopian text
+        overpass: ["Overpass", "sans-serif"],
+      },
     },
   },
   plugins: [
