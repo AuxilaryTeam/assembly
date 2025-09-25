@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,11 +94,20 @@ public Optional<Sherholderdetail> getSherholderdetail( @PathVariable Long id){
 
 
     @PostMapping("/admin/attendance/{id}")
-    public  ResponseEntity<Sherholderdetail> updateAttendance( @PathVariable Long id) {
+    public  ResponseEntity<?> updateAttendance( @PathVariable Long id) {
         //TODO: process POST request
        Optional<Sherholderdetail> temp= sharerepo.findById(id);
+
+       if (temp.isPresent() && temp.get().getVotingsubscription().compareTo(BigDecimal.ZERO) == 0 && temp.get().getTotalcapital().compareTo(BigDecimal.ZERO) == 0) {
+        // If the entity is not found, return a 404 response
+        return ResponseEntity.status(400).body(
+            Map.of(
+                "error", "Invalid shareholder data"
+            )
+        );
+       }
         
-           if (temp.isPresent()) {
+        if (temp.isPresent()) {
         // Update the attendance value, for example, to mark attendance
         Sherholderdetail shareholder = temp.get();
         shareholder.setAttendance(1); // Set attendance to 1 or any desired value
