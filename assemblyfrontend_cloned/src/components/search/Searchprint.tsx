@@ -103,7 +103,6 @@ const SearchPrint = () => {
         });
       }
     } catch (err: any) {
-      console.error("Error fetching shareholders:", err);
       setError(err.message || "Network error");
       setResult([]);
       toast({ title: "Error fetching data", variant: "destructive" });

@@ -100,8 +100,6 @@ const Search = () => {
         ? response.data
         : [response.data];
 
-      console.log("Response", response.data);
-
       if (data.length === 0) {
         setError("No results found for your search");
         toast({
@@ -148,7 +146,6 @@ const Search = () => {
         });
       }
     } catch (err: any) {
-      console.error("API Error:", err);
       toast({
         title: "Search Error",
         variant: "destructive",
@@ -179,7 +176,6 @@ const Search = () => {
 
   const handleConfirmAttendance = async () => {
     if (!selectedShareholder) return;
-    console.log("Is Marking", isMarking);
 
     const token = getAuthToken();
     if (!token) {
@@ -235,7 +231,6 @@ const Search = () => {
         });
       }
     } catch (error) {
-      console.error("Attendance Error:", error);
       toast({
         title: "Error updating attendance",
         variant: "destructive",

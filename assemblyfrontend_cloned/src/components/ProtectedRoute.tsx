@@ -12,10 +12,6 @@ const ProtectedRoute = () => {
     const token = localStorage.getItem("token");
 
     if (!token) {
-      console.log(
-        "ProtectedRoute: No token found, showing toast and redirecting"
-      );
-
       // Show toast immediately
       toast({
         variant: "destructive",
@@ -45,9 +41,6 @@ const ProtectedRoute = () => {
 
   // Show nothing while checking authentication or showing toast
   if (isAuthenticated === null || showToast) {
-    console.log(
-      "ProtectedRoute: Authentication status unknown or showing toast, rendering null"
-    );
     return null;
   }
 

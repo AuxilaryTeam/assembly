@@ -41,7 +41,6 @@ const AttendanceReport = () => {
       );
       setShareholders(res.data);
     } catch (err) {
-      console.error(err);
       toast({
         title: "No results found or an error occurred",
         variant: "destructive",

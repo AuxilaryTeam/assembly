@@ -34,7 +34,6 @@ const DisplayPrint = () => {
       setAttendanceCount(response.data);
       return true;
     } catch (err) {
-      console.error("Error fetching attendance count:", err);
       toast({
         title: "Data Fetch Failed",
         description: "Could not retrieve attendance count",
@@ -54,7 +53,6 @@ const DisplayPrint = () => {
       setSharesSum(response.data);
       return true;
     } catch (err) {
-      console.error("Error fetching subscribed shares sum:", err);
       toast({
         title: "Data Fetch Failed",
         description: "Could not retrieve subscribed shares data",
@@ -74,7 +72,6 @@ const DisplayPrint = () => {
       setSumvoting(response.data);
       return true;
     } catch (err) {
-      console.error("Error fetching voting shares sum:", err);
       toast({
         title: "Data Fetch Failed",
         description: "Could not retrieve voting shares data",
@@ -101,7 +98,6 @@ const DisplayPrint = () => {
         setLastUpdated(new Date().toLocaleString());
       }
     } catch (err) {
-      console.error("Error updating data:", err);
     } finally {
       setIsLoading(false);
     }
@@ -116,7 +112,6 @@ const DisplayPrint = () => {
       });
       return response.data;
     } catch (error) {
-      console.error("Error:", error);
       throw error;
     }
   };

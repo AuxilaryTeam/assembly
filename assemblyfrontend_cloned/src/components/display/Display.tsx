@@ -152,9 +152,6 @@ const Display = () => {
   }, [sumVoting, sharesSum]);
 
   const fetchAttendanceCount = async () => {
-    console.log(
-      `[${new Date().toLocaleString()}] Starting fetch for attendance count...`
-    );
     try {
       const response = await axios.get(`${apiBase}admin/countp`, {
         headers: {
@@ -163,17 +160,9 @@ const Display = () => {
       });
       setPrevAttendanceCount(attendanceCount);
       setAttendanceCount(response.data);
-      console.log(
-        `[${new Date().toLocaleString()}] Attendance count fetched successfully: ${
-          response.data
-        }`
-      );
+
       return true;
     } catch (err) {
-      console.error(
-        `[${new Date().toLocaleString()}] Error fetching attendance count:`,
-        err
-      );
       toast({
         title: "Data Update Failed",
         description: "Could not fetch attendance count",
@@ -184,9 +173,6 @@ const Display = () => {
   };
 
   const fetchSumSubscription = async () => {
-    console.log(
-      `[${new Date().toLocaleString()}] Starting fetch for sum subscription...`
-    );
     try {
       const response = await axios.get(`${apiBase}admin/sumsub`, {
         headers: {
@@ -195,17 +181,9 @@ const Display = () => {
       });
       setPrevSharesSum(sharesSum);
       setSharesSum(response.data);
-      console.log(
-        `[${new Date().toLocaleString()}] Sum subscription fetched successfully: ${
-          response.data
-        }`
-      );
+
       return true;
     } catch (err) {
-      console.error(
-        `[${new Date().toLocaleString()}] Error fetching sum subscription:`,
-        err
-      );
       toast({
         title: "Data Update Failed",
         description: "Could not fetch subscription data",
@@ -216,9 +194,6 @@ const Display = () => {
   };
 
   const fetchVotingSum = async () => {
-    console.log(
-      `[${new Date().toLocaleString()}] Starting fetch for voting sum...`
-    );
     try {
       const response = await axios.get(`${apiBase}admin/sumvoting`, {
         headers: {
@@ -227,17 +202,9 @@ const Display = () => {
       });
       setPrevSumVoting(sumVoting);
       setSumVoting(response.data);
-      console.log(
-        `[${new Date().toLocaleString()}] Voting sum fetched successfully: ${
-          response.data
-        }`
-      );
+
       return true;
     } catch (err) {
-      console.error(
-        `[${new Date().toLocaleString()}] Error fetching voting sum:`,
-        err
-      );
       toast({
         title: "Data Update Failed",
         description: "Could not fetch voting data",
@@ -249,9 +216,6 @@ const Display = () => {
 
   const fetchData = async () => {
     if (!token) {
-      console.warn(
-        `[${new Date().toLocaleString()}] No authentication token found. Skipping fetch.`
-      );
       toast({
         title: "Authentication Error",
         description: "No token found. Please log in again.",
@@ -260,9 +224,6 @@ const Display = () => {
       return;
     }
 
-    console.log(
-      `[${new Date().toLocaleString()}] Starting full data fetch cycle...`
-    );
     setIsLoading(true);
     const results = await Promise.allSettled([
       fetchAttendanceCount(),
@@ -275,21 +236,13 @@ const Display = () => {
     );
 
     if (allSuccessful) {
-      console.log(
-        `[${new Date().toLocaleString()}] All data fetched successfully.`
-      );
       toast({
         title: "Data Updated",
         description: "All metrics refreshed successfully",
         variant: "default",
       });
-    } else {
-      console.warn(
-        `[${new Date().toLocaleString()}] Some fetches failed during cycle.`
-      );
     }
     setIsLoading(false);
-    console.log(`[${new Date().toLocaleString()}] Data fetch cycle completed.`);
   };
 
   useEffect(() => {
@@ -300,9 +253,6 @@ const Display = () => {
     }, 45000);
 
     return () => {
-      console.log(
-        `[${new Date().toLocaleString()}] Cleaning up interval timer.`
-      );
       clearInterval(interval);
     };
   }, []);
