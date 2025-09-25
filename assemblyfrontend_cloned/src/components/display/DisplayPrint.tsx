@@ -4,6 +4,7 @@ import { FiPrinter, FiRefreshCw } from "react-icons/fi";
 import logo from "@/assets/Logo.png";
 import slogan from "@/assets/logo2.jpg";
 import { useToast } from "@/hooks/use-toast";
+import GenericPrint from "../print/GenericPrint";
 
 export interface VoteLogType {
   id: number;
@@ -34,6 +35,7 @@ const DisplayPrint = () => {
       setAttendanceCount(response.data);
       return true;
     } catch (err) {
+      console.error("Error fetching attendance count:", err);
       toast({
         title: "Data Fetch Failed",
         description: "Could not retrieve attendance count",
@@ -53,6 +55,7 @@ const DisplayPrint = () => {
       setSharesSum(response.data);
       return true;
     } catch (err) {
+      console.error("Error fetching subscribed shares sum:", err);
       toast({
         title: "Data Fetch Failed",
         description: "Could not retrieve subscribed shares data",
@@ -72,6 +75,7 @@ const DisplayPrint = () => {
       setSumvoting(response.data);
       return true;
     } catch (err) {
+      console.error("Error fetching voting shares sum:", err);
       toast({
         title: "Data Fetch Failed",
         description: "Could not retrieve voting shares data",
@@ -98,6 +102,7 @@ const DisplayPrint = () => {
         setLastUpdated(new Date().toLocaleString());
       }
     } catch (err) {
+      console.error("Error updating data:", err);
     } finally {
       setIsLoading(false);
     }
@@ -112,6 +117,7 @@ const DisplayPrint = () => {
       });
       return response.data;
     } catch (error) {
+      console.error("Error:", error);
       throw error;
     }
   };
@@ -138,10 +144,79 @@ const DisplayPrint = () => {
   const percentage =
     sharesSum > 0 ? ((sumvoting / sharesSum) * 100).toFixed(2) : "0.00";
 
+  // Custom header for the meeting statistics
+  const meetingHeader = (
+    <div className="mb-5 text-left pl-8">
+      <h1 className="font-bold text-lg mb-1 print:text-md">Text Goes Here</h1>
+    </div>
+  );
+  const TimeDateDetail = (
+    <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-32 text-sm">
+      <div></div>
+      <div>
+        <p>
+          <span className="font-semibold">የታተመበት (print) ቀን:</span>{" "}
+          {new Date().toLocaleDateString()}
+        </p>
+        <p>
+          <span className="font-semibold">ሰዓት (time):</span>{" "}
+          {new Date().toLocaleTimeString()}
+        </p>
+      </div>
+    </div>
+  );
+  // Custom content with the metrics grid
+  const metricsContent = (
+    <div className="max-w-4xl mx-auto mb-4 pl-5 pr-5 pt-6 pb-8">
+      {/* Official Statistics in the new card-like layout */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 print:grid-cols-2">
+        {/* Attendance Count Metric */}
+        <div className="p-4 rounded-lg border border-gray-200 shadow-sm overflow-hidden text-center print:shadow-none print:border-2">
+          <p className="text-base font-bold text-gray-700 mb-2">
+            ለስብሰባ የተገኙ የባለአክሲዮኖች ብዛት
+          </p>
+          <p className="text-3xl font-bold text-gray-900 leading-none">
+            {Intl.NumberFormat("en-US").format(attendanceCount)}
+          </p>
+        </div>
+
+        {/* Subscribed Shares Metric */}
+        <div className="p-4 rounded-lg border border-gray-200 shadow-sm overflow-hidden text-center print:shadow-none print:border-2">
+          <p className="text-base font-bold text-gray-700 mb-2">
+            አጠቃላይ የተፈረመ አክሲዮን ካፒታል
+          </p>
+          <p className="text-3xl font-bold text-gray-900 leading-none">
+            {Intl.NumberFormat("en-US").format(sharesSum)}
+          </p>
+        </div>
+
+        {/* Attended Subscribed Shares Metric */}
+        <div className="p-4 rounded-lg border border-gray-200 shadow-sm overflow-hidden text-center print:shadow-none print:border-2">
+          <p className="text-base font-bold text-gray-700 mb-2">
+            የተገኙ አክሲዮኖች (በቁጥር)
+          </p>
+          <p className="text-3xl font-bold text-gray-900 leading-none">
+            {Intl.NumberFormat("en-US").format(sumvoting)}
+          </p>
+        </div>
+
+        {/* Percentage Metric */}
+        <div className="p-4 rounded-lg border border-gray-200 shadow-sm overflow-hidden text-center print:shadow-none print:border-2">
+          <p className="text-base font-bold text-gray-700 mb-2">
+            የተገኙ አክሲዮኖች (%)
+          </p>
+          <p className="text-3xl font-bold text-gray-900 leading-none">
+            {percentage}%
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-gray-100 p-4 md:p-8 print:p-0 print:min-h-0 print:overflow-hidden">
       {/* Control Panel (Hidden when printing) */}
-      <div className="print:hidden mb-6 bg-white p-4 rounded-lg shadow-md">
+      <div className="print:hidden mb-6 bg-white p-4 rounded-lg shadow-md print:shadow-none">
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
           <h1 className="text-xl font-bold text-gray-800">
             Shareholders Meeting - Official Document
@@ -170,82 +245,14 @@ const DisplayPrint = () => {
         </p>
       </div>
 
-      {/* Printable Document */}
-      <div className="bg-white p-8 rounded-lg shadow-lg max-w-2xl mx-auto border-2 border-gray-300 print:border-0 print:max-w-full print:p-0 print:shadow-none">
-        {/* Bank Letterhead */}
-        <div className="flex justify-between items-center mb-8 border-b-2 border-gray-300 pb-6">
-          <div className="flex items-center">
-            <img
-              src={logo}
-              alt="Bank of Abyssinia Logo"
-              className="h-16 w-auto mr-4"
-            />
-          </div>
-          <img
-            src={slogan}
-            alt="Bank of Abyssinia Slogan"
-            className="h-10 w-auto"
-          />
-        </div>
-
-        {/* Meeting Details */}
-        <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-32 text-sm print:gap-4">
-          <div></div>
-          <div>
-            <p>
-              <span className="font-semibold">የታተመበት (print) ቀን:</span>{" "}
-              {new Date().toLocaleDateString()}
-            </p>
-            <p>
-              <span className="font-semibold">ሰዓት (time):</span>{" "}
-              {new Date().toLocaleTimeString()}
-            </p>
-          </div>
-        </div>
-
-        {/* Official Statistics in the new card-like layout */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 print:grid-cols-2">
-          {/* Attendance Count Metric */}
-          <div className="p-4 rounded-lg border border-gray-200 shadow-sm overflow-hidden text-center print:shadow-sm">
-            <p className="text-base font-bold text-gray-700 mb-2">
-              ለስብሰባ የተገኙ የባለአክሲዮኖች ብዛት
-            </p>
-            <p className="text-3xl font-bold text-gray-900 leading-none">
-              {Intl.NumberFormat("en-US").format(attendanceCount)}
-            </p>
-          </div>
-
-          {/* Subscribed Shares Metric */}
-          <div className="p-4 rounded-lg border border-gray-200 shadow-sm overflow-hidden text-center print:shadow-sm">
-            <p className="text-base font-bold text-gray-700 mb-2">
-              አጠቃላይ የተፈረመ አክሲዮን ካፒታል
-            </p>
-            <p className="text-3xl font-bold text-gray-900 leading-none">
-              {Intl.NumberFormat("en-US").format(sharesSum)}
-            </p>
-          </div>
-
-          {/* Attended Subscribed Shares Metric */}
-          <div className="p-4 rounded-lg border border-gray-200 shadow-sm overflow-hidden text-center print:shadow-sm">
-            <p className="text-base font-bold text-gray-700 mb-2">
-              የተገኙ አክሲዮኖች (በቁጥር)
-            </p>
-            <p className="text-3xl font-bold text-gray-900 leading-none">
-              {Intl.NumberFormat("en-US").format(sumvoting)}
-            </p>
-          </div>
-
-          {/* Percentage Metric */}
-          <div className="p-4 rounded-lg border border-gray-200 shadow-sm overflow-hidden text-center print:shadow-sm">
-            <p className="text-base font-bold text-gray-700 mb-2">
-              የተገኙ አክሲዮኖች (%)
-            </p>
-            <p className="text-3xl font-bold text-gray-900 leading-none">
-              {percentage}%
-            </p>
-          </div>
-        </div>
-      </div>
+      {/* Printable Document using GenericPrint */}
+      <GenericPrint
+        documentType="display"
+        TimeDateDetail={TimeDateDetail}
+        header={meetingHeader}
+      >
+        {metricsContent}
+      </GenericPrint>
     </div>
   );
 };

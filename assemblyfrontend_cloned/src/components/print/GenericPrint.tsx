@@ -17,9 +17,10 @@ interface Person {
 }
 
 interface GenericPrintProps {
-  person: Person;
-  documentType: "payment" | "dividend" | "vote";
+  person?: Person;
+  documentType: "payment" | "dividend" | "vote" | "display";
   header?: React.ReactNode;
+  TimeDateDetail?: React.ReactNode;
   children?: React.ReactNode;
 }
 
@@ -28,6 +29,7 @@ const GenericPrint: React.FC<GenericPrintProps> = ({
   documentType,
   header,
   children,
+  TimeDateDetail,
 }) => {
   const [isEditingId, setIsEditingId] = useState(false);
   const [isEditingDate, setIsEditingDate] = useState(false);
@@ -62,33 +64,37 @@ const GenericPrint: React.FC<GenericPrintProps> = ({
         <img src={slogan} alt="Bank Slogan" className="h-10 w-auto print:h-8" />
       </div>
       {/* Shareholder Information */}
-      <div className="mb-4 flex justify-end text-xs pr-6 print:text-2xs">
-        <div className="text-right space-y-1">
-          <p className="font-overpass text-[14px]">
-            <span className="font-semibold ">ID NO:</span>{" "}
-            <span className="border-b-2 border-black text-center pl-2">
-              {person?.shareholderid}
-            </span>
-          </p>
-          <p className="cursor-pointer text-[14px]" onClick={handleDateClick}>
-            <span className="font-semibold">የስብሰባ ቀን:</span>{" "}
-            <span className="border-b-2 border-black text-center pl-2">
-              {isEditingDate ? (
-                <input
-                  type="text"
-                  value={dateValue}
-                  onChange={handleDateChange}
-                  onBlur={() => handleBlur(setIsEditingDate)}
-                  className="bg-transparent border-none outline-none w-full p-0 m-0 font-abyssinica"
-                  autoFocus
-                />
-              ) : (
-                <span>{dateValue}</span>
-              )}
-            </span>
-          </p>
+      {TimeDateDetail ? (
+        <div className="mb-5 text-left pl-8">{TimeDateDetail}</div>
+      ) : (
+        <div className="mb-4 flex justify-end text-xs pr-6 print:text-2xs">
+          <div className="text-right space-y-1">
+            <p className="font-overpass text-[14px]">
+              <span className="font-semibold ">ID NO:</span>{" "}
+              <span className="border-b-2 border-black text-center pl-2">
+                {person?.shareholderid}
+              </span>
+            </p>
+            <p className="cursor-pointer text-[14px]" onClick={handleDateClick}>
+              <span className="font-semibold">የስብሰባ ቀን:</span>{" "}
+              <span className="border-b-2 border-black text-center pl-2">
+                {isEditingDate ? (
+                  <input
+                    type="text"
+                    value={dateValue}
+                    onChange={handleDateChange}
+                    onBlur={() => handleBlur(setIsEditingDate)}
+                    className="bg-transparent border-none outline-none w-full p-0 m-0 font-abyssinica"
+                    autoFocus
+                  />
+                ) : (
+                  <span>{dateValue}</span>
+                )}
+              </span>
+            </p>
+          </div>
         </div>
-      </div>
+      )}
       {/* Document Header */}
       {header ? (
         <div className="mb-5 text-left pl-8">{header}</div>
@@ -101,13 +107,15 @@ const GenericPrint: React.FC<GenericPrintProps> = ({
       )}
 
       {/* Shareholder Details */}
-      <div className="flex items-center gap-5 tracking-wide flex-wrap  w-fit  pl-12">
-        <span className="font-semibold whitespace-nowrap">የባለአክሲዮኑ ስም :</span>
-        <span className="text-md font-bold border-b-2 pr-4 pl-2 border-black flex-1">
-          <span className="font-abyssinica">{person?.nameamh}</span> /{" "}
-          <span className="font-overpass">{person?.nameeng}</span>
-        </span>
-      </div>
+      {(documentType === "dividend" || documentType === "payment") && (
+        <div className="flex items-center gap-5 tracking-wide flex-wrap  w-fit  pl-12">
+          <span className="font-semibold whitespace-nowrap">የባለአክሲዮኑ ስም :</span>
+          <span className="text-md font-bold border-b-2 pr-4 pl-2 border-black flex-1">
+            <span className="font-abyssinica">{person?.nameamh}</span> /{" "}
+            <span className="font-overpass">{person?.nameeng}</span>
+          </span>
+        </div>
+      )}
 
       {/* Financial Details (Only for dividend/payment) */}
       {(documentType === "dividend" || documentType === "payment") && (
@@ -206,9 +214,9 @@ const GenericPrint: React.FC<GenericPrintProps> = ({
         <div className="flex justify-end mt-8 print:mt-5 font-overpass">
           <div className="flex items-center justify-center border border-black rounded-full px-1 py-1 aspect-square">
             <p className="text-base font-bold whitespace-nowrap">
-              {person.id && String(person.id).length < 5
+              {person?.id && String(person.id).length < 5
                 ? String(person.id).padStart(5, "0")
-                : person.id}
+                : person?.id}
             </p>
           </div>
         </div>
