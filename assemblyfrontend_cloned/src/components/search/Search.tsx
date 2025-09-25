@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
 import SearchCard from "../SearchCard";
 import { Checkbox } from "../ui/checkbox";
-import GenericTable, { Column } from "../GenericTable";
+import GenericTable, { Column, getRemark } from "../GenericTable";
 import {
   Dialog,
   DialogContent,
@@ -16,6 +16,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { FiAlertTriangle, FiCheckCircle } from "react-icons/fi";
+import { Gavel, Printer } from "lucide-react";
 
 interface Shareholder {
   id: number;
@@ -31,6 +32,7 @@ interface Shareholder {
   totalcapital: number;
   devidend: number;
 }
+const apiBase = import.meta.env.VITE_API_BASE_URL;
 
 const Search = () => {
   const navigate = useNavigate();
@@ -83,8 +85,6 @@ const Search = () => {
       return;
     }
 
-    const apiBase = import.meta.env.VITE_API_BASE_URL;
-
     try {
       const response = await axios.get(
         `${apiBase}admin/${type}/${encodeURIComponent(query)}`,
@@ -115,6 +115,36 @@ const Search = () => {
         });
       }
       setResult(data);
+      // Check for remarks
+      const hasLegal = data.some((s) => getRemark(s) === "To Legal");
+      const hasOnlyPrint = data.some((s) => getRemark(s).includes("Only"));
+      if (hasLegal) {
+        toast({
+          title: "Legal Notice",
+          description: (
+            <div className="flex items-center space-x-2">
+              <FiAlertTriangle className="h-4 w-4" />
+              <span>Some shareholders require legal processing.</span>
+            </div>
+          ),
+          variant: "destructive",
+          duration: 5000,
+        });
+      }
+
+      if (hasOnlyPrint) {
+        toast({
+          title: "Notice: Only Print",
+          description: (
+            <div className="flex items-center space-x-2">
+              <Printer className="h-4 w-4" />
+              <span>Some shareholders are marked as print-only.</span>
+            </div>
+          ),
+          variant: "warning", // Assuming you have a 'warning' variant with custom styling
+          duration: 5000,
+        });
+      }
     } catch (err: any) {
       console.error("API Error:", err);
       toast({
@@ -156,7 +186,6 @@ const Search = () => {
     }
 
     const now = new Date().toLocaleString();
-    const apiBase = import.meta.env.VITE_API_BASE_URL;
 
     try {
       await axios.post(
@@ -222,6 +251,19 @@ const Search = () => {
       sortable: true,
     },
     {
+      header: "Attendance",
+      accessor: "attendance",
+      align: "center",
+      width: "w-24",
+      renderCell: (value, row) => (
+        <Checkbox
+          checked={value === 1}
+          onCheckedChange={() => handleAttendanceClick(row)}
+          disabled={loading}
+        />
+      ),
+    },
+    {
       header: "Remark",
       accessor: "remark",
       align: "center",
@@ -259,19 +301,7 @@ const Search = () => {
       width: "w-36",
       sortable: true,
     },
-    {
-      header: "Attendance",
-      accessor: "attendance",
-      align: "center",
-      width: "w-24",
-      renderCell: (value, row) => (
-        <Checkbox
-          checked={value === 1}
-          onCheckedChange={() => handleAttendanceClick(row)}
-          disabled={loading}
-        />
-      ),
-    },
+
     {
       header: "Attendance Time",
       accessor: "attendanceTimestamp",
@@ -283,9 +313,14 @@ const Search = () => {
           : "-",
     },
   ];
+  const rowClassName = (row: Shareholder) => {
+    const remark = getRemark(row);
 
-  const rowClassName = (row: Shareholder) =>
-    row.attendance === 1 ? "bg-green-50" : "";
+    if (remark === "To Legal") return "bg-red-400";
+    if (remark.includes("Only")) return "bg-amber-100";
+    if (row.attendance === 1) return "bg-green-50";
+    return "";
+  };
 
   return (
     <div className="space-y-6 p-4">
@@ -358,7 +393,8 @@ const Search = () => {
             <Button
               className="bg-amber-500 hover:bg-amber-600 text-white"
               onClick={handleConfirmAttendance}
-              disabled={loading}>
+              disabled={loading}
+            >
               {isMarking ? "Mark & Print" : "Unmark"}
             </Button>
           </DialogFooter>

@@ -204,8 +204,12 @@ const GenericPrint: React.FC<GenericPrintProps> = ({
 
       {documentType === "dividend" && (
         <div className="flex justify-end mt-8 print:mt-5 font-overpass">
-          <div className="flex items-center justify-center border border-black rounded-full px-4 py-2 aspect-square">
-            <p className="text-base font-bold whitespace-nowrap">{person.id}</p>
+          <div className="flex items-center justify-center border border-black rounded-full px-1 py-1 aspect-square">
+            <p className="text-base font-bold whitespace-nowrap">
+              {person.id && String(person.id).length < 5
+                ? String(person.id).padStart(5, "0")
+                : person.id}
+            </p>
           </div>
         </div>
       )}

@@ -61,6 +61,8 @@ const DashboardLayout = () => {
   const handleLogout = () => {
     try {
       localStorage.removeItem("token");
+      localStorage.removeItem("voteServiceToken");
+
       toast({
         variant: "success",
         title: (

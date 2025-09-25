@@ -13,6 +13,7 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
+    "allowSyntheticDefaultImports": true,
     "types": ["node"]
   },
   "include": ["src/**/*", "public/assets/**/*", "vite.config.ts"],

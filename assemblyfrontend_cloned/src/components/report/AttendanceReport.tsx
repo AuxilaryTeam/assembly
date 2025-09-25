@@ -60,6 +60,12 @@ const AttendanceReport = () => {
   // GenericTable columns
   const columns: Column[] = [
     { header: "ID", accessor: "id", width: "w-12", align: "center" },
+    {
+      header: "Attendance",
+      accessor: "attendance",
+      align: "center",
+      renderCell: (val) => (val === 1 ? "Present" : "Absent"),
+    },
     { header: "Name (Amh)", accessor: "nameamh", width: "w-48" },
     { header: "Name (Eng)", accessor: "nameeng", width: "w-48" },
     { header: "Phone", accessor: "phone", width: "w-32" },
@@ -92,12 +98,7 @@ const AttendanceReport = () => {
       align: "right",
       renderCell: (val) => Intl.NumberFormat("en-US").format(val),
     },
-    {
-      header: "Attendance",
-      accessor: "attendance",
-      align: "center",
-      renderCell: (val) => (val === 1 ? "Present" : "Absent"),
-    },
+
     { header: "Fiscal Year", accessor: "fiscalyear", align: "center" },
   ];
 

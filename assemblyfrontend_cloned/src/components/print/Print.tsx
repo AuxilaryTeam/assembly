@@ -75,10 +75,10 @@ const Print = () => {
             <div className="relative inline-flex">
               {/* Main Print All Button */}
               <Button
-                onClick={printAll}
+                onClick={printDividend}
                 className="flex items-center gap-2 bg-green-600 text-white hover:bg-green-700 rounded-r-none font-overpass"
               >
-                <FiPrinter /> Print All
+                <FiPrinter /> Print Dividend
               </Button>
               {/* Dropdown Trigger (Chevron) */}
               <DropdownMenu>
@@ -92,12 +92,6 @@ const Print = () => {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
                   <DropdownMenuItem
-                    onClick={printDividend}
-                    className="font-overpass"
-                  >
-                    Print Dividend
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
                     onClick={printPayment}
                     className="font-overpass"
                   >
@@ -108,6 +102,12 @@ const Print = () => {
                     className="font-overpass"
                   >
                     Print Vote
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={printAll}
+                    className="font-overpass"
+                  >
+                    Print All
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -127,7 +127,6 @@ const Print = () => {
                 <div className="mb-24 text-sm space-y-4 p-2 print:p-2"></div>
               </GenericPrint>
             </div>
-            <div className="break-before-page" />
 
             {/* Payment */}
           </div>

@@ -6,6 +6,7 @@ import {
   ChevronDoubleRightIcon,
 } from "@heroicons/react/24/outline";
 import { useToast } from "@/hooks/use-toast";
+import { Shareholder } from "./search/Searchprint";
 
 export interface Column {
   header: string;
@@ -30,7 +31,15 @@ interface GenericTableProps {
   onSort?: (field: string, direction: "asc" | "desc") => void;
   exportToExcel?: boolean;
 }
-
+export const getRemark = (s: Shareholder) => {
+  if (s.votingsubscription === 0 && s.totalcapital === 0) {
+    return "Only Dividend";
+  }
+  if (s.votingsubscription > 0 && s.totalcapital > 0) {
+    return "";
+  }
+  return "To Legal";
+};
 const GenericTable: React.FC<GenericTableProps> = ({
   data,
   columns,
@@ -90,13 +99,15 @@ const GenericTable: React.FC<GenericTableProps> = ({
 
     const headers = columns.map((col) => col.header).join(",");
     const rows = data.map((row) =>
-      columns.map((col) => {
-        const value = row[col.accessor];
-        // Ensure values with commas are properly quoted for CSV
-        return typeof value === "string" && value.includes(",")
-          ? `"${value}"`
-          : value;
-      }).join(",")
+      columns
+        .map((col) => {
+          const value = row[col.accessor];
+          // Ensure values with commas are properly quoted for CSV
+          return typeof value === "string" && value.includes(",")
+            ? `"${value}"`
+            : value;
+        })
+        .join(",")
     );
 
     // Add a Byte Order Mark (BOM) to handle UTF-8 characters like Amharic names
@@ -104,7 +115,7 @@ const GenericTable: React.FC<GenericTableProps> = ({
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
-    
+
     link.setAttribute("href", url);
     link.setAttribute("download", `${title || "table_data"}.csv`);
     link.style.visibility = "hidden";
