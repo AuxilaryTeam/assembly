@@ -18,9 +18,27 @@ interface CountUpComponentProps {
 }
 
 /**
+ * Interface for the MetricCard props to ensure type safety.
+ */
+interface MetricCardProps {
+  label: string;
+  count: number;
+  prevCount: number;
+  decimals: number;
+  suffix: string;
+  progressWidth: number;
+  maxProgress: number;
+  padding?: string; // e.g., "p-8", "p-6"
+  labelFontSize?: string; // e.g., "text-xl", "text-2xl"
+  numberFontSize?: string; // e.g., "text-5xl", "text-7xl"
+}
+
+/**
  * Custom component to animate a number count.
  * @param {CountUpComponentProps} props
  */
+const apiBase = import.meta.env.VITE_API_BASE_URL;
+
 const CountUpComponent = ({
   start,
   end,
@@ -65,22 +83,67 @@ const CountUpComponent = ({
   );
 };
 
+/**
+ * Reusable MetricCard component for displaying metrics with animated numbers and progress bars.
+ * @param {MetricCardProps} props
+ */
+const MetricCard = ({
+  label,
+  count,
+  prevCount,
+  decimals,
+  suffix,
+  progressWidth,
+  maxProgress,
+  padding = "p-8",
+  labelFontSize = "text-6xl md:text-5xl",
+  numberFontSize = "text-7xl md:text-7xl",
+}: MetricCardProps) => {
+  return (
+    <div
+      className={`relative bg-white ${padding} rounded-2xl border border-gray-200 shadow-xl hover:shadow-2xl transition-shadow duration-300 overflow-hidden`}
+    >
+      <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-amber-50 to-amber-100 opacity-60 rounded-bl-full"></div>
+      <p
+        className={`${labelFontSize} font-extrabold text-gray-800 mb-4 leading-tight`}
+      >
+        {label}
+      </p>
+      <p
+        className={`${numberFontSize} font-extrabold text-gray-900 leading-none`}
+      >
+        <CountUpComponent
+          start={prevCount}
+          end={count}
+          duration={1.5}
+          decimals={decimals}
+          suffix={suffix}
+        />
+      </p>
+
+      <div className="mt-6 h-2 bg-gray-100 rounded-full">
+        <div
+          className="h-2 bg-amber-500 rounded-full"
+          style={{
+            width: `${Math.min((progressWidth / maxProgress) * 100, 100)}%`,
+          }}
+        ></div>
+      </div>
+    </div>
+  );
+};
+
 const Display = () => {
   const navigate = useNavigate();
   const [attendanceCount, setAttendanceCount] = useState(0);
   const [prevAttendanceCount, setPrevAttendanceCount] = useState(0);
-
   const [sumVoting, setSumVoting] = useState(0);
   const [prevSumVoting, setPrevSumVoting] = useState(0);
-
   const [sharesSum, setSharesSum] = useState(0);
   const [prevSharesSum, setPrevSharesSum] = useState(0);
-
   const [prevPercentage, setPrevPercentage] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
-
   const [viewMode, setViewMode] = useState("list");
-
   const { toast } = useToast();
   const token = localStorage.getItem("token");
 
@@ -93,14 +156,11 @@ const Display = () => {
       `[${new Date().toLocaleString()}] Starting fetch for attendance count...`
     );
     try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}admin/countp`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axios.get(`${apiBase}admin/countp`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       setPrevAttendanceCount(attendanceCount);
       setAttendanceCount(response.data);
       console.log(
@@ -128,14 +188,11 @@ const Display = () => {
       `[${new Date().toLocaleString()}] Starting fetch for sum subscription...`
     );
     try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}admin/sumsub`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axios.get(`${apiBase}admin/sumsub`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       setPrevSharesSum(sharesSum);
       setSharesSum(response.data);
       console.log(
@@ -163,14 +220,11 @@ const Display = () => {
       `[${new Date().toLocaleString()}] Starting fetch for voting sum...`
     );
     try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}admin/sumvoting`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axios.get(`${apiBase}admin/sumvoting`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       setPrevSumVoting(sumVoting);
       setSumVoting(response.data);
       console.log(
@@ -313,105 +367,49 @@ const Display = () => {
                 : "flex flex-col"
             }`}
           >
-            {/* Attendance Count Metric */}
-            <div className="relative bg-white p-8 rounded-2xl border border-gray-200 shadow-xl hover:shadow-2xl transition-shadow duration-300 overflow-hidden">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-amber-50 to-amber-100 opacity-60 rounded-bl-full"></div>
-              <p className="text-xl md:text-2xl font-bold text-gray-700 mb-4">
-                ለስብሰባ የተገኙ የባለአክሲዮኖች ብዛት
-              </p>
-              <p className="text-5xl md:text-7xl font-extrabold text-gray-900 leading-none">
-                <CountUpComponent
-                  start={prevAttendanceCount}
-                  end={attendanceCount}
-                  duration={1.5}
-                  decimals={0}
-                  suffix=""
-                />
-              </p>
-              <div className="mt-6 h-2 bg-gray-100 rounded-full">
-                <div
-                  className="h-2 bg-amber-500 rounded-full"
-                  style={{
-                    width: `${Math.min((attendanceCount / 1000) * 100, 100)}%`,
-                  }}
-                ></div>
-              </div>
-            </div>
-
-            {/* Subscribed Shares Metric */}
-            <div className="relative bg-white p-8 rounded-2xl border border-gray-200 shadow-xl hover:shadow-2xl transition-shadow duration-300 overflow-hidden">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-amber-50 to-amber-100 opacity-60 rounded-bl-full"></div>
-              <p className="text-xl md:text-2xl font-bold text-gray-700 mb-4">
-                አጠቃላይ የተፈረመ አክሲዮን ካፒታል (በቁጥር)
-              </p>
-              <p className="text-5xl md:text-7xl font-extrabold text-gray-900 leading-none">
-                <CountUpComponent
-                  start={prevSharesSum}
-                  end={sharesSum}
-                  duration={1.5}
-                  decimals={0}
-                  suffix=""
-                />
-              </p>
-              <div className="mt-6 h-2 bg-gray-100 rounded-full">
-                <div
-                  className="h-2 bg-amber-500 rounded-full"
-                  style={{
-                    width: `${Math.min((sharesSum / 10000000) * 100, 100)}%`,
-                  }}
-                ></div>
-              </div>
-            </div>
-
-            {/* Attended Subscribed Shares Metric */}
-            <div className="relative bg-white p-8 rounded-2xl border border-gray-200 shadow-xl hover:shadow-2xl transition-shadow duration-300 overflow-hidden">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-amber-50 to-amber-100 opacity-60 rounded-bl-full"></div>
-              <p className="text-xl md:text-2xl font-bold text-gray-700 mb-4">
-                የተገኙ ባለአክሲዮኖች የተፈረመ አክሲዮን መጠን (በቁጥር)
-              </p>
-              <p className="text-5xl md:text-7xl font-extrabold text-gray-900 leading-none">
-                <CountUpComponent
-                  start={prevSumVoting}
-                  end={sumVoting}
-                  duration={1.5}
-                  decimals={0}
-                  suffix=""
-                />
-              </p>
-              <div className="mt-6 h-2 bg-gray-100 rounded-full">
-                <div
-                  className="h-2 bg-amber-500 rounded-full"
-                  style={{
-                    width: `${Math.min((sumVoting / 10000000) * 100, 100)}%`,
-                  }}
-                ></div>
-              </div>
-            </div>
-
-            {/* Percentage Metric */}
-            <div className="relative bg-white p-8 rounded-2xl border border-gray-200 shadow-xl hover:shadow-2xl transition-shadow duration-300 overflow-hidden">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-amber-100 to-amber-200 opacity-70 rounded-bl-full"></div>
-              <p className="text-xl md:text-2xl font-bold text-gray-700 mb-4">
-                የተገኙ ባለአክሲዮኖች የተፈረመ አክሲዮን መጠን (በ%)
-              </p>
-              <p className="text-5xl md:text-7xl font-extrabold text-gray-900 leading-none">
-                <CountUpComponent
-                  start={prevPercentage}
-                  end={percentage}
-                  duration={1.5}
-                  decimals={2}
-                  suffix="%"
-                />
-              </p>
-              <div className="mt-6 h-2 bg-gray-100 rounded-full">
-                <div
-                  className="h-2 bg-amber-500 rounded-full"
-                  style={{ width: `${percentage}%` }}
-                ></div>
-              </div>
-            </div>
+            <MetricCard
+              label="ለስብሰባ የተገኙ የባለአክሲዮኖች ብዛት"
+              count={attendanceCount}
+              prevCount={prevAttendanceCount}
+              decimals={0}
+              suffix=""
+              progressWidth={attendanceCount}
+              maxProgress={1000}
+              padding="p-8"
+            />
+            <MetricCard
+              label="አጠቃላይ የተፈረመ አክሲዮን ካፒታል (በቁጥር)"
+              count={sharesSum}
+              prevCount={prevSharesSum}
+              decimals={0}
+              suffix=""
+              progressWidth={sharesSum}
+              maxProgress={10000000}
+              padding="p-8"
+            />
+            <MetricCard
+              label="የተገኙ ባለአክሲዮኖች የተፈረመ አክሲዮን መጠን (በቁጥር)"
+              count={sumVoting}
+              prevCount={prevSumVoting}
+              decimals={0}
+              suffix=""
+              progressWidth={sumVoting}
+              maxProgress={10000000}
+              padding="p-8"
+            />
+            <MetricCard
+              label="የተገኙ ባለአክሲዮኖች የተፈረመ አክሲዮን መጠን (በ%)"
+              count={percentage}
+              prevCount={prevPercentage}
+              decimals={2}
+              suffix="%"
+              progressWidth={percentage}
+              maxProgress={100}
+              padding="p-8"
+            />
           </div>
         </div>
+
         {/* Status Bar */}
         <div className="p-6 pt-0 sticky bottom-0 bg-white border-t border-gray-200">
           <div className="flex flex-col md:flex-row items-center justify-between">

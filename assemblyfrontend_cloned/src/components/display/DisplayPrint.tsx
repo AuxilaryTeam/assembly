@@ -22,16 +22,15 @@ const DisplayPrint = () => {
   const token = localStorage.getItem("token");
   const { toast } = useToast();
 
+  const apiBase = import.meta.env.VITE_API_BASE_URL;
+
   const fetchAttendanceCount = useCallback(async () => {
     try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}admin/countp`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axios.get(`${apiBase}admin/countp`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       setAttendanceCount(response.data);
       return true;
     } catch (err) {
@@ -43,18 +42,15 @@ const DisplayPrint = () => {
       });
       return false;
     }
-  }, [token, toast]);
+  }, [apiBase, token, toast]);
 
   const fetchSumSubscription = useCallback(async () => {
     try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}admin/sumsub`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axios.get(`${apiBase}admin/sumsub`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       setSharesSum(response.data);
       return true;
     } catch (err) {
@@ -66,18 +62,15 @@ const DisplayPrint = () => {
       });
       return false;
     }
-  }, [token, toast]);
+  }, [apiBase, token, toast]);
 
   const fetchVotingSum = useCallback(async () => {
     try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}admin/sumvoting`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axios.get(`${apiBase}admin/sumvoting`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       setSumvoting(response.data);
       return true;
     } catch (err) {
@@ -89,7 +82,7 @@ const DisplayPrint = () => {
       });
       return false;
     }
-  }, [token, toast]);
+  }, [apiBase, token, toast]);
 
   const fetchData = useCallback(async () => {
     try {
@@ -106,29 +99,21 @@ const DisplayPrint = () => {
 
       if (allSuccessful) {
         setLastUpdated(new Date().toLocaleString());
-        // toast({
-        //   title: "Data Updated",
-        //   description: "Meeting statistics updated successfully",
-        // });
       }
     } catch (err) {
       console.error("Error updating data:", err);
     } finally {
       setIsLoading(false);
     }
-  }, [fetchAttendanceCount, fetchSumSubscription, fetchVotingSum, toast]);
+  }, [fetchAttendanceCount, fetchSumSubscription, fetchVotingSum]);
 
   const postVoteLog = async (voteLog: VoteLogType) => {
     try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}admin/printlog`,
-        voteLog,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axios.post(`${apiBase}admin/printlog`, voteLog, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       return response.data;
     } catch (error) {
       console.error("Error:", error);
@@ -137,7 +122,6 @@ const DisplayPrint = () => {
   };
 
   const handlePrint = () => {
-    // Log the vote data to the server
     postVoteLog({
       id: 0,
       timestamp: new Date().toISOString(),
@@ -145,25 +129,14 @@ const DisplayPrint = () => {
       totalShare: sharesSum,
       attendeeShareCount: sumvoting,
     });
-
-    // // Show a toast that the document is being prepared for printing
-    // toast({
-    //   title: "Preparing Document",
-    //   description:
-    //     "The official meeting document is being prepared for printing",
-    // });
-
-    // Wait a brief moment to allow the toast to show, then trigger the print dialog
     window.print();
   };
 
   useEffect(() => {
     fetchData();
-
     const interval = setInterval(() => {
       fetchData();
     }, 15000); // 15 seconds
-
     return () => clearInterval(interval);
   }, [fetchData]);
 
@@ -171,7 +144,7 @@ const DisplayPrint = () => {
     sharesSum > 0 ? ((sumvoting / sharesSum) * 100).toFixed(2) : "0.00";
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 md:p-8">
+    <div className="min-h-screen bg-gray-100 p-4 md:p-8 print:p-0 print:min-h-0 print:overflow-hidden">
       {/* Control Panel (Hidden when printing) */}
       <div className="print:hidden mb-6 bg-white p-4 rounded-lg shadow-md">
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
@@ -188,7 +161,7 @@ const DisplayPrint = () => {
               {isLoading ? "Updating..." : "Refresh Data"}
             </button>
             <button
-              onClick={handlePrint} // Call the new handlePrint function
+              onClick={handlePrint}
               className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
             >
               <FiPrinter />
@@ -203,7 +176,7 @@ const DisplayPrint = () => {
       </div>
 
       {/* Printable Document */}
-      <div className="bg-white p-8 rounded-lg shadow-lg max-w-2xl mx-auto border-2 border-gray-300 print:border-0 print:shadow-none">
+      <div className="bg-white p-8 rounded-lg shadow-lg max-w-2xl mx-auto border-2 border-gray-300 print:border-0 print:max-w-full print:p-0 print:shadow-none">
         {/* Bank Letterhead */}
         <div className="flex justify-between items-center mb-8 border-b-2 border-gray-300 pb-6">
           <div className="flex items-center">
@@ -221,7 +194,7 @@ const DisplayPrint = () => {
         </div>
 
         {/* Meeting Details */}
-        <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-32 text-sm">
+        <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-32 text-sm print:gap-4">
           <div></div>
           <div>
             <p>
@@ -236,9 +209,9 @@ const DisplayPrint = () => {
         </div>
 
         {/* Official Statistics in the new card-like layout */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 print:grid-cols-2">
           {/* Attendance Count Metric */}
-          <div className="p-4 rounded-lg border border-gray-200 shadow-sm overflow-hidden text-center">
+          <div className="p-4 rounded-lg border border-gray-200 shadow-sm overflow-hidden text-center print:shadow-sm">
             <p className="text-base font-bold text-gray-700 mb-2">
               ለስብሰባ የተገኙ የባለአክሲዮኖች ብዛት
             </p>
@@ -248,7 +221,7 @@ const DisplayPrint = () => {
           </div>
 
           {/* Subscribed Shares Metric */}
-          <div className="p-4 rounded-lg border border-gray-200 shadow-sm overflow-hidden text-center">
+          <div className="p-4 rounded-lg border border-gray-200 shadow-sm overflow-hidden text-center print:shadow-sm">
             <p className="text-base font-bold text-gray-700 mb-2">
               አጠቃላይ የተፈረመ አክሲዮን ካፒታል
             </p>
@@ -258,7 +231,7 @@ const DisplayPrint = () => {
           </div>
 
           {/* Attended Subscribed Shares Metric */}
-          <div className="p-4 rounded-lg border border-gray-200 shadow-sm overflow-hidden text-center">
+          <div className="p-4 rounded-lg border border-gray-200 shadow-sm overflow-hidden text-center print:shadow-sm">
             <p className="text-base font-bold text-gray-700 mb-2">
               የተገኙ አክሲዮኖች (በቁጥር)
             </p>
@@ -268,7 +241,7 @@ const DisplayPrint = () => {
           </div>
 
           {/* Percentage Metric */}
-          <div className="p-4 rounded-lg border border-gray-200 shadow-sm overflow-hidden text-center">
+          <div className="p-4 rounded-lg border border-gray-200 shadow-sm overflow-hidden text-center print:shadow-sm">
             <p className="text-base font-bold text-gray-700 mb-2">
               የተገኙ አክሲዮኖች (%)
             </p>

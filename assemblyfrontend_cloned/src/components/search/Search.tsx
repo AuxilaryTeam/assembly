@@ -25,13 +25,14 @@ interface Shareholder {
   shareholderid: string;
   phone: string;
   attendance: number;
-  attendanceTimestampstamp: string | null;
+  attendanceTimestamp: string | null;
   votingsubscription: number;
   sharesubsription: number;
   paidcapital: number;
   totalcapital: number;
   devidend: number;
 }
+
 const apiBase = import.meta.env.VITE_API_BASE_URL;
 
 const Search = () => {
@@ -141,7 +142,7 @@ const Search = () => {
               <span>Some shareholders are marked as print-only.</span>
             </div>
           ),
-          variant: "warning", // Assuming you have a 'warning' variant with custom styling
+          variant: "warning",
           duration: 5000,
         });
       }
@@ -255,13 +256,16 @@ const Search = () => {
       accessor: "attendance",
       align: "center",
       width: "w-24",
-      renderCell: (value, row) => (
-        <Checkbox
-          checked={value === 1}
-          onCheckedChange={() => handleAttendanceClick(row)}
-          disabled={loading}
-        />
-      ),
+      renderCell: (value, row) =>
+        row.votingsubscription > 0 && row.sharesubsription > 0 ? (
+          <Checkbox
+            checked={value === 1}
+            onCheckedChange={() => handleAttendanceClick(row)}
+            disabled={loading}
+          />
+        ) : (
+          "-"
+        ),
     },
     {
       header: "Remark",
@@ -301,7 +305,6 @@ const Search = () => {
       width: "w-36",
       sortable: true,
     },
-
     {
       header: "Attendance Time",
       accessor: "attendanceTimestamp",
@@ -313,11 +316,11 @@ const Search = () => {
           : "-",
     },
   ];
+
   const rowClassName = (row: Shareholder) => {
     const remark = getRemark(row);
-
-    if (remark === "To Legal") return "bg-red-400";
-    if (remark.includes("Only")) return "bg-amber-100";
+    if (remark === "To Legal") return "bg-red-50";
+    if (remark.includes("Only")) return "bg-yellow-50";
     if (row.attendance === 1) return "bg-green-50";
     return "";
   };

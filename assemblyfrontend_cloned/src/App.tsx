@@ -3,8 +3,8 @@ import Login from "./components/Login";
 import DashboardLayout from "./components/DashboardLayout";
 import Search from "./components/search/Search";
 import Searchprint from "./components/search/Searchprint";
-import Diplay from "./components/display/Diplay";
-import Diplayprint from "./components/display/Diplayprint";
+import Diplay from "./components/display/Display";
+import Diplayprint from "./components/display/DisplayPrint";
 import Print from "./components/print/Print";
 import { Toaster } from "./components/ui/toaster";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -43,7 +43,8 @@ function App() {
                 <AuthLayout>
                   <DashboardLayout />
                 </AuthLayout>
-              }>
+              }
+            >
               <Route path="/search" element={<Search />} />
               <Route path="/searchprint" element={<Searchprint />} />
               <Route path="/attendancereport" element={<AttendanceReport />} />
