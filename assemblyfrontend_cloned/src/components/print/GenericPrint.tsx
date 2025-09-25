@@ -66,22 +66,26 @@ const GenericPrint: React.FC<GenericPrintProps> = ({
         <div className="text-right space-y-1">
           <p className="font-overpass text-[14px]">
             <span className="font-semibold ">ID NO:</span>{" "}
-            {person?.shareholderid}
+            <span className="border-b-2 border-black text-center pl-2">
+              {person?.shareholderid}
+            </span>
           </p>
           <p className="cursor-pointer text-[14px]" onClick={handleDateClick}>
             <span className="font-semibold">የስብሰባ ቀን:</span>{" "}
-            {isEditingDate ? (
-              <input
-                type="text"
-                value={dateValue}
-                onChange={handleDateChange}
-                onBlur={() => handleBlur(setIsEditingDate)}
-                className="bg-transparent border-none outline-none w-full p-0 m-0 font-abyssinica"
-                autoFocus
-              />
-            ) : (
-              <span>{dateValue}</span>
-            )}
+            <span className="border-b-2 border-black text-center pl-2">
+              {isEditingDate ? (
+                <input
+                  type="text"
+                  value={dateValue}
+                  onChange={handleDateChange}
+                  onBlur={() => handleBlur(setIsEditingDate)}
+                  className="bg-transparent border-none outline-none w-full p-0 m-0 font-abyssinica"
+                  autoFocus
+                />
+              ) : (
+                <span>{dateValue}</span>
+              )}
+            </span>
           </p>
         </div>
       </div>
@@ -107,11 +111,16 @@ const GenericPrint: React.FC<GenericPrintProps> = ({
 
       {/* Financial Details (Only for dividend/payment) */}
       {(documentType === "dividend" || documentType === "payment") && (
-        <div className="max-w-2xl mx-auto mb-4 pl-5 pr-56 pt-6 pb-8">
+        <div className="max-w-2xl mx-auto mb-4 pl-5 pr-52 pt-6 pb-8">
           <div className="grid grid-cols-2 gap-y-2 gap-x-4 text-base text-center">
             {/* Column headers */}
             <span className="font-semibold mb-4"></span>
-            <span className="mb-2 text-lg font-semibold">በብር</span>
+            <div className="items-center p-6">
+              <span className="border-b-2 text-center border-black w-fit pr-4  text-center pl-2">
+                {" "}
+                በብር
+              </span>
+            </div>
 
             {/* Total Capital */}
             <span className="font-semibold text-left">ሀ. የተፈረመ አክሲዮን:</span>
@@ -162,17 +171,22 @@ const GenericPrint: React.FC<GenericPrintProps> = ({
       {/* Notices */}
       {(documentType === "dividend" || documentType === "payment") && (
         <div className="mb-4 p-2 rounded mt-2 print:mt-2 print:text-xs">
-          <h3 className="font-bold mb-2">ማሳሰቢያ፦</h3>
-          <div className="space-y-1 text-xs">
+          <h3 className="font-bold mb-2">
+            {" "}
+            <span className="border-b-2 text-center border-black w-fit text-lg ">
+              ማሳሰቢያ፦
+            </span>
+          </h3>
+          <div className="space-y-1 text-base">
             <p className="flex flex-row">
-              <span className="font-semibold pr-2">1ኛ/</span>{" "}
+              <span className="font-normal pr-2">1ኛ/</span>{" "}
               <span>
                 የትርፍ ድርሻ ክፍፍሉ ተግባራዊ የሚሆነው የባንኩ ጠቅላላ ጉባዔ ከተከናወነ እና በትርፍ ክፍፍሉ ላይ
                 ውሳኔ ከተሰጠ በኋላ እንደሆነ በትህትና እናሳውቃለን፡፡
               </span>
             </p>
             <p className="flex flex-row">
-              <span className="font-semibold pr-2"> 2ኛ/</span>{" "}
+              <span className="font-normal  pr-2"> 2ኛ/</span>{" "}
               <span>
                 የባንክ ሥራ አዋጅን ለማሻሻል በወጣው አዋጅ ቁጥር 1159/2019 መሠረት ማንኛውም ባለአክሲዮን
                 የትርፍ ድርሻው የሚከፈለው ወይም የትርፍ ድርሻውን ለካፒታል ማሳደጊያ እንዲውል የሚደረገው ባለአክሲዮኑ
@@ -188,11 +202,10 @@ const GenericPrint: React.FC<GenericPrintProps> = ({
         </div>
       )}
 
-      {/* Document ID */}
       {documentType === "dividend" && (
-        <div className="flex justify-end mt-8 print:mt-5 font-overpass ">
-          <div className="flex items-center justify-center border px-2  py-2 border-black rounded-full ">
-            <p className="text-base font-bold">7000</p>
+        <div className="flex justify-end mt-8 print:mt-5 font-overpass">
+          <div className="flex items-center justify-center border border-black rounded-full px-4 py-2 aspect-square">
+            <p className="text-base font-bold whitespace-nowrap">{person.id}</p>
           </div>
         </div>
       )}
