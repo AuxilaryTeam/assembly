@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/dialog";
 import { FiAlertTriangle, FiCheckCircle } from "react-icons/fi";
 import { Gavel, Printer } from "lucide-react";
+import { rowClassName } from "./Searchprint";
 
 interface Shareholder {
   id: number;
@@ -316,14 +317,6 @@ const Search = () => {
           : "-",
     },
   ];
-
-  const rowClassName = (row: Shareholder) => {
-    const remark = getRemark(row);
-    if (remark === "To Legal") return "bg-red-50";
-    if (remark.includes("Only")) return "bg-yellow-50";
-    if (row.attendance === 1) return "bg-green-50";
-    return "";
-  };
 
   return (
     <div className="space-y-6 p-4">

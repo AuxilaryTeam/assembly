@@ -112,15 +112,6 @@ const SearchPrint = () => {
     }
   };
 
-  const rowClassName = (row: Shareholder) => {
-    const remark = getRemark(row);
-
-    if (remark === "To Legal") return "bg-red-400";
-    if (remark.includes("Only")) return "bg-yellow-50";
-    if (row.attendance === 1) return "bg-green-50";
-    return "";
-  };
-
   const handleRowClick = (s: Shareholder) => {
     navigate("/print", { state: { person: s } });
   };
@@ -178,3 +169,11 @@ const SearchPrint = () => {
 };
 
 export default SearchPrint;
+export const rowClassName = (row: Shareholder) => {
+  const remark = getRemark(row);
+
+  if (remark === "To Legal") return "bg-red-400";
+  if (remark.includes("Only")) return "bg-yellow-50";
+  if (row.attendance === 1) return "bg-green-50";
+  return "";
+};
