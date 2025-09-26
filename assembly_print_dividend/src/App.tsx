@@ -5,8 +5,8 @@ import Print from "./components/Print";
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<SearchPrint />} />
-      <Route path="/Print" element={<Print />} />
+      <Route path="/assembly_dividend" element={<SearchPrint />} />
+      <Route path="/assembly_dividend/Print" element={<Print />} />
     </Routes>
   );
 }
