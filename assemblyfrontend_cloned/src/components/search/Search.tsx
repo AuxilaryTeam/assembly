@@ -253,14 +253,14 @@ const Search = () => {
       align: "center",
       width: "w-24",
       renderCell: (value, row) =>
-        row.votingsubscription > 0 && row.sharesubsription > 0 ? (
+        row.votingsubscription === 0 && row.sharesubsription === 0 ? (
+          "-"
+        ) : (
           <Checkbox
             checked={value === 1}
             onCheckedChange={() => handleAttendanceClick(row)}
             disabled={loading}
           />
-        ) : (
-          "-"
         ),
     },
     {
@@ -271,6 +271,8 @@ const Search = () => {
       renderCell: (value, row) =>
         row.votingsubscription === 0 && row.sharesubsription === 0
           ? "Only Dividend"
+          : row.votingsubscription !== row.sharesubsription
+          ? "To Legal"
           : row.votingsubscription > 0 && row.sharesubsription > 0
           ? ""
           : "To Legal",

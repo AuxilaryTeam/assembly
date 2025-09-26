@@ -7,10 +7,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export default defineConfig({
-  base: "/",
+  base: "/assembly_dividend",
   plugins: [react()],
   build: {
-    outDir: "assembly", // default is 'dist', change as needed
+    outDir: "assembly_dividend", // default is 'dist', change as needed
   },
   resolve: {
     alias: {
