@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import logo from "../../assets/Logo.png";
-import slogan from "../../assets/logo2.jpg";
+import logo from "@/assets/Logo.png";
+import slogan from "@/assets/logo2.jpg";
 
 interface Person {
   id?: string;

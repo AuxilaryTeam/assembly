@@ -147,19 +147,21 @@ const DisplayPrint = () => {
   // Custom header for the meeting statistics
   const meetingHeader = (
     <div className="mb-5 text-left pl-8">
-      <h1 className="font-bold text-lg mb-1 print:text-md">Text Goes Here</h1>
+      <h1 className="font-bold text-lg text-center mb-1 print:text-md">
+        የአቢሲኒያ ባንክ የባለአክሲዮኖች ስብሰባ
+      </h1>
     </div>
   );
   const TimeDateDetail = (
-    <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-32 text-sm">
+    <div className="mb-8 grid grid-cols-1 md:grid-cols-2 text-sm">
       <div></div>
       <div>
         <p>
-          <span className="font-semibold">የታተመበት (print) ቀን:</span>{" "}
+          <span className="font-semibold">የስብሰባ ቀን:</span>{" "}
           {new Date().toLocaleDateString()}
         </p>
         <p>
-          <span className="font-semibold">ሰዓት (time):</span>{" "}
+          <span className="font-semibold">የታተመበት ሰዓት (print time):</span>{" "}
           {new Date().toLocaleTimeString()}
         </p>
       </div>
@@ -171,7 +173,7 @@ const DisplayPrint = () => {
       {/* Official Statistics in the new card-like layout */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 print:grid-cols-2">
         {/* Attendance Count Metric */}
-        <div className="p-4 rounded-lg border border-gray-200 shadow-sm overflow-hidden text-center print:shadow-none print:border-2">
+        <div className="p-4 rounded-lg border border-gray-200  overflow-hidden text-center  print:border-2">
           <p className="text-base font-bold text-gray-700 mb-2">
             ለስብሰባ የተገኙ የባለአክሲዮኖች ብዛት
           </p>
@@ -181,7 +183,7 @@ const DisplayPrint = () => {
         </div>
 
         {/* Subscribed Shares Metric */}
-        <div className="p-4 rounded-lg border border-gray-200 shadow-sm overflow-hidden text-center print:shadow-none print:border-2">
+        <div className="p-4 rounded-lg border border-gray-200  overflow-hidden text-center  print:border-2">
           <p className="text-base font-bold text-gray-700 mb-2">
             አጠቃላይ የተፈረመ አክሲዮን ካፒታል
           </p>
@@ -191,7 +193,7 @@ const DisplayPrint = () => {
         </div>
 
         {/* Attended Subscribed Shares Metric */}
-        <div className="p-4 rounded-lg border border-gray-200 shadow-sm overflow-hidden text-center print:shadow-none print:border-2">
+        <div className="p-4 rounded-lg border border-gray-200  overflow-hidden text-center  print:border-2">
           <p className="text-base font-bold text-gray-700 mb-2">
             የተገኙ አክሲዮኖች (በቁጥር)
           </p>
@@ -201,7 +203,7 @@ const DisplayPrint = () => {
         </div>
 
         {/* Percentage Metric */}
-        <div className="p-4 rounded-lg border border-gray-200 shadow-sm overflow-hidden text-center print:shadow-none print:border-2">
+        <div className="p-4 rounded-lg border border-gray-200  overflow-hidden text-center  print:border-2">
           <p className="text-base font-bold text-gray-700 mb-2">
             የተገኙ አክሲዮኖች (%)
           </p>
@@ -216,7 +218,7 @@ const DisplayPrint = () => {
   return (
     <div className="min-h-screen bg-gray-100 p-4 md:p-8 print:p-0 print:min-h-0 print:overflow-hidden">
       {/* Control Panel (Hidden when printing) */}
-      <div className="print:hidden mb-6 bg-white p-4 rounded-lg shadow-md print:shadow-none">
+      <div className="print:hidden mb-6 bg-white p-4 rounded-lg shadow-md ">
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
           <h1 className="text-xl font-bold text-gray-800">
             Shareholders Meeting - Official Document
