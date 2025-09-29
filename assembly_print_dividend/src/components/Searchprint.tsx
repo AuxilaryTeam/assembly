@@ -124,7 +124,7 @@ const SearchPrint = () => {
   };
 
   const handleRowClick = (shareholder: Shareholder) => {
-    navigate("/print", { state: { person: shareholder } });
+    navigate("/assembly_dividend/Print", { state: { person: shareholder } });
   };
 
   const columns: Column[] = [

@@ -74,8 +74,8 @@ const GenericPrint: React.FC<GenericPrintProps> = ({
               <span className="font-semibold ">ID NO:</span>{" "}
               <span className="border-b-2 border-black text-center ml-2">
                 {person?.shareholderid &&
-                String(person?.shareholderid).length < 5
-                  ? String(person?.shareholderid).padStart(5, "0")
+                String(person?.shareholderid).length < 4
+                  ? String(person?.shareholderid).padStart(4, "0")
                   : person?.shareholderid}
               </span>
             </p>

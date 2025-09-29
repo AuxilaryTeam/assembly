@@ -195,7 +195,7 @@ const DisplayPrint = () => {
         {/* Attended Subscribed Shares Metric */}
         <div className="p-4 rounded-lg border border-gray-200  overflow-hidden text-center  print:border-2">
           <p className="text-base font-bold text-gray-700 mb-2">
-            የተገኙ አክሲዮኖች (በቁጥር)
+           ለስብሰባ የተገኙ አክሲዮኖች (በቁጥር)
           </p>
           <p className="text-3xl font-bold text-gray-900 leading-none">
             {Intl.NumberFormat("en-US").format(sumvoting)}
@@ -205,7 +205,7 @@ const DisplayPrint = () => {
         {/* Percentage Metric */}
         <div className="p-4 rounded-lg border border-gray-200  overflow-hidden text-center  print:border-2">
           <p className="text-base font-bold text-gray-700 mb-2">
-            የተገኙ አክሲዮኖች (%)
+            ለስብሰባ የተገኙ አክሲዮኖች (%)
           </p>
           <p className="text-3xl font-bold text-gray-900 leading-none">
             {percentage}%
