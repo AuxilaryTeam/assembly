@@ -338,7 +338,7 @@ const Display = () => {
               padding="p-8"
             />
             <MetricCard
-              label="የተገኙ ባለአክሲዮኖች የተፈረመ አክሲዮን መጠን (በቁጥር)"
+              label="ለስብሰባ የተገኙ ባለአክሲዮኖች የተፈረመ አክሲዮን መጠን (በቁጥር)"
               count={sumVoting}
               prevCount={prevSumVoting}
               decimals={0}
@@ -348,7 +348,7 @@ const Display = () => {
               padding="p-8"
             />
             <MetricCard
-              label="የተገኙ ባለአክሲዮኖች የተፈረመ አክሲዮን መጠን (በ%)"
+              label="ለስብሰባ የተገኙ ባለአክሲዮኖች የተፈረመ አክሲዮን መጠን (በ%)"
               count={percentage}
               prevCount={prevPercentage}
               decimals={2}
