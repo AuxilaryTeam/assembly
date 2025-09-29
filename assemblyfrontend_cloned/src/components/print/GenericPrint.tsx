@@ -107,8 +107,8 @@ const GenericPrint: React.FC<GenericPrintProps> = ({
   const renderHeaderFirst = documentType === "display";
 
   return (
-    <div className="bg-white p-14 mb-2 rounded-lg max-w-4xl mx-auto border border-gray-200 print:border-0  print:pr-14 print:pl-14 print:max-w-full font-abyssinica">
-      {/* Bank Letterhead (Unchanged) */}
+    <div className="generic-print-container bg-white p-14 mb-2 rounded-lg max-w-4xl mx-auto border border-gray-200 print:border-0 print:pr-14 print:pl-14 print:max-w-full font-abyssinica">
+      {/* Bank Letterhead ( */}
       <div className="flex justify-between items-center mb-3 pb-4 ">
         <div className="flex items-center">
           <img
@@ -133,7 +133,7 @@ const GenericPrint: React.FC<GenericPrintProps> = ({
         </>
       )}
 
-      {/* Shareholder Details (Unchanged) */}
+      {/* Shareholder Details  */}
       {(documentType === "dividend" || documentType === "payment") && (
         <div className="flex items-center gap-5 tracking-wide flex-wrap  w-fit  pl-12">
           <span className="font-semibold whitespace-nowrap">የባለአክሲዮኑ ስም :</span>
@@ -144,7 +144,7 @@ const GenericPrint: React.FC<GenericPrintProps> = ({
         </div>
       )}
 
-      {/* Financial Details (Only for dividend/payment - Unchanged) */}
+      {/* Financial Details (Only for dividend/payment ) */}
       {(documentType === "dividend" || documentType === "payment") && (
         <div className="max-w-2xl mx-auto mb-4 pl-5 pr-52 pt-6 pb-8">
           <div className="grid grid-cols-2 gap-y-2 gap-x-4 text-base text-center">
@@ -200,10 +200,10 @@ const GenericPrint: React.FC<GenericPrintProps> = ({
         </div>
       )}
 
-      {/* Custom Content (Unchanged) */}
+      {/* Custom Content  */}
       {children}
 
-      {/* Notices (Unchanged) */}
+      {/* Notices  */}
       {(documentType === "dividend" || documentType === "payment") && (
         <div className="mb-4 p-2 rounded mt-2 print:mt-2 print:text-xs">
           <h3 className="font-bold mb-2">
@@ -237,7 +237,7 @@ const GenericPrint: React.FC<GenericPrintProps> = ({
         </div>
       )}
 
-      {/* Footer ID (Unchanged) */}
+      {/* Footer ID  */}
       {documentType === "dividend" && (
         <div className="flex justify-end mt-8 print:mt-5 font-overpass">
           <div className="flex items-center justify-center border border-black rounded-full px-4 py-2 aspect-square">

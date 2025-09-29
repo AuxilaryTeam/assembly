@@ -87,4 +87,44 @@
   .break-before-page {
     page-break-before: always;
   }
+
+  /* Hide URL, page headers, and browser UI */
+  @page {
+    margin: 0.5in;
+    size: letter;
+  }
+  
+  /* Hide browser-specific elements */
+  body::before,
+  body::after {
+    display: none !important;
+  }
+  
+  /* Hide any control panels and navigation */
+  .no-print,
+  [class*="print:hidden"] {
+    display: none !important;
+  }
+  
+  /* Ensure your content takes full width */
+  .print\\:max-w-full {
+    max-width: 100% !important;
+  }
+  
+  /* Remove any background colors for better printing */
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  
+  /* Ensure good contrast */
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  
+  /* Prevent page breaks inside important elements */
+  .generic-print-container {
+    page-break-inside: avoid;
+  }
 }
