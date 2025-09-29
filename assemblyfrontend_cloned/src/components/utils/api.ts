@@ -9,8 +9,10 @@ import type {
 } from "./types";
 
 // export const BASE_URL = "http://localhost:8081/api";
+// export const BASE_URL =
+//   "http://inhouseapps.bankofabyssinia.com:8085/voteservice/api";
 export const BASE_URL =
-  "http://inhouseapps.bankofabyssinia.com:8085/voteservice/api";
+"http://10.5.36.63:8085/voteservice/api"
 
 // Axios instance for API requests
 const api = axios.create({
