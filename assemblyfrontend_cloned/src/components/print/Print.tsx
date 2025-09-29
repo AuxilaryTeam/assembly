@@ -1,7 +1,6 @@
 import React, { useRef, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { FiPrinter, FiArrowLeft, FiFileText } from "react-icons/fi";
-import { ChevronDown } from "lucide-react";
 import GenericPrint from "./GenericPrint";
 import { useReactToPrint } from "react-to-print";
 import {
@@ -11,76 +10,107 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+import { ChevronDown } from "lucide-react";
 
 const Print = () => {
   const location = useLocation();
   const { person } = location.state || {};
   const navigate = useNavigate();
 
-  const allRef = useRef<HTMLDivElement>(null);
-  const dividendRef = useRef<HTMLDivElement>(null);
-  const paymentRef = useRef<HTMLDivElement>(null);
-  const voteRef = useRef<HTMLDivElement>(null);
+  const allRef = useRef(null);
+  const dividendRef = useRef(null);
+  const paymentRef = useRef(null);
+  const voteRef = useRef(null);
 
   const printAll = useReactToPrint({
     contentRef: allRef,
+    pageStyle: `
+      @page { margin: 0 !important; }
+      @media print {
+        html, body { margin: 0 !important; padding: 0 !important; }
+        .slogan-image { height: 32px !important; width: auto !important; }
+        .logo-image { height: 48px !important; width: auto !important; }
+      }
+    `,
+    documentTitle: '',
+    onBeforePrint: () => new Promise((resolve) => setTimeout(resolve, 500)), // Increased timeout
+    preserveAfterPrint: true, // Debug mode, remove after testing
   });
 
   const printDividend = useReactToPrint({
     contentRef: dividendRef,
-    onBeforePrint: async () => {
-      return new Promise((resolve) => setTimeout(resolve, 0));
-    },
+    pageStyle: `
+      @page { margin: 0 !important; }
+      @media print {
+        html, body { margin: 0 !important; padding: 0 !important; }
+        .slogan-image { height: 32px !important; width: auto !important; }
+        .logo-image { height: 48px !important; width: auto !important; }
+      }
+    `,
+    documentTitle: 'Dividend Document',
+    onBeforePrint: () => new Promise((resolve) => setTimeout(resolve, 500)),
+    preserveAfterPrint: true,
   });
 
   const printPayment = useReactToPrint({
     contentRef: paymentRef,
-    onBeforePrint: async () => {
-      return new Promise((resolve) => setTimeout(resolve, 0));
-    },
+    pageStyle: `
+      @page { margin: 0 !important; }
+      @media print {
+        html, body { margin: 0 !important; padding: 0 !important; }
+        .slogan-image { height: 32px !important; width: auto !important; }
+        .logo-image { height: 48px !important; width: auto !important; }
+      }
+    `,
+    documentTitle: 'Payment Document',
+    onBeforePrint: () => new Promise((resolve) => setTimeout(resolve, 500)),
+    preserveAfterPrint: true,
   });
 
   const printVote = useReactToPrint({
     contentRef: voteRef,
-    onBeforePrint: async () => {
-      return new Promise((resolve) => setTimeout(resolve, 0));
-    },
+    pageStyle: `
+      @page { margin: 0 !important; }
+      @media print {
+        html, body { margin: 0 !important; padding: 0 !important; }
+        .slogan-image { height: 32px !important; width: auto !important; }
+        .logo-image { height: 48px !important; width: auto !important; }
+      }
+    `,
+    documentTitle: 'Vote Document',
+    onBeforePrint: () => new Promise((resolve) => setTimeout(resolve, 500)),
+    preserveAfterPrint: true,
   });
 
   const goBack = useCallback(() => navigate(-1), [navigate]);
 
   return (
     <div className="min-h-screen bg-gray-100 font-abyssinica">
-      {/* Control Panel - Fixed and Static on Scroll */}
       <div className="print:hidden fixed top-20 left-72 right-10 z-50 bg-white p-2 shadow-md">
         <div className="flex flex-col sm:flex-row justify-between items-left max-w-4xl mx-auto gap-4">
           <div>
             <h1 className="text-xl font-bold text-gray-800 flex items-center gap-2 font-overpass">
               <FiFileText /> Print Documents for:{" "}
               <span className="border-b-2 border-black text-center">
-                {person?.nameeng}
+                {person?.nameeng || 'Unknown'}
               </span>
             </h1>
           </div>
 
           <div className="flex gap-2">
-            {/* Back */}
             <Button
               onClick={goBack}
               className="flex items-center gap-2 font-overpass"
             >
               <FiArrowLeft /> Go Back
             </Button>
-            {/* Print All with dropdown */}
             <div className="relative inline-flex">
-              {/* Main Print All Button */}
               <Button
                 onClick={printDividend}
                 className="flex items-center gap-2 bg-green-600 text-white hover:bg-green-700 rounded-r-none font-overpass"
               >
                 <FiPrinter /> Print Dividend
               </Button>
-              {/* Dropdown Trigger (Chevron) */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
@@ -116,19 +146,24 @@ const Print = () => {
         </div>
       </div>
 
-      {/* Main content area, with padding to account for the fixed header */}
       <div className="pt-24 p-4 mt-30 md:p-8">
-        {/* Hidden print content */}
         <div className="block mt-10">
           <div ref={allRef}>
-            {/* Dividend */}
-            <div ref={dividendRef}>
+            <div ref={dividendRef} className="break-before-page">
               <GenericPrint person={person} documentType="dividend">
                 <div className="mb-24 text-sm space-y-4 p-2 print:p-2"></div>
               </GenericPrint>
             </div>
-
-            {/* Payment */}
+            {/* <div ref={paymentRef} className="break-before-page">
+              <GenericPrint person={person} documentType="payment">
+                <div className="mb-24 text-sm space-y-4 p-2 print:p-2"></div>
+              </GenericPrint>
+            </div>
+            <div ref={voteRef} className="break-before-page">
+              <GenericPrint person={person} documentType="vote">
+                <div className="mb-24 text-sm space-y-4 p-2 print:p-2"></div>
+              </GenericPrint>
+            </div> */}
           </div>
         </div>
       </div>

@@ -87,4 +87,88 @@
   .break-before-page {
     page-break-before: always;
   }
+
+  /* Suppress browser-added headers and footers */
+  @page {
+    margin: 0 !important;
+    size: auto;
+  }
+
+  /* Remove all margins and padding from html/body */
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+    color: black !important;
+    height: 100% !important;
+    overflow: hidden !important;
+    font-family: 'Abyssinica', 'Helvetica', sans-serif !important;
+  }
+
+  /* Hide browser-specific pseudo-elements */
+  body::before,
+  body::after {
+    display: none !important;
+  }
+
+  /* Hide control panels and non-printable elements */
+  .no-print,
+  [class*="print:hidden"] {
+    display: none !important;
+  }
+
+  /* Ensure content takes full width */
+  .print\\:max-w-full {
+    max-width: 100% !important;
+  }
+
+  /* Prevent page breaks inside key content */
+  .generic-print-container {
+    page-break-inside: avoid !important;
+    margin: 0 !important;
+    padding: 20px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Ensure Tailwind styles and fonts apply correctly */
+  .font-abyssinica {
+    font-family: 'Abyssinica', sans-serif !important;
+  }
+
+  .font-overpass {
+    font-family: 'Overpass', sans-serif !important;
+  }
+
+  /* Force color accuracy for text and borders */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Ensure images render at controlled sizes */
+  img {
+    max-width: 100% !important;
+    height: auto !important;
+    object-fit: contain !important; /* Prevent stretching */
+  }
+
+  /* Specific rule for slogan image */
+  .slogan-image {
+    width: auto !important;
+    height: 40px !important; /* Matches h-10 (2.5rem = 40px) */
+  }
+
+  @media print {
+    .slogan-image {
+      height: 32px !important; /* Matches print:h-8 (2rem = 32px) */
+      width: auto !important;
+    }
+  }
+
+  /* Preload fonts for faster rendering */
+  link[rel="preload"][href*="/assets/fonts/AbyssinicaSIL-Regular.ttf"] {
+    font-family: 'Abyssinica';
+    font-display: swap;
+  }
 }
