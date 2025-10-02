@@ -20,7 +20,7 @@ export interface Shareholder {
   devidend: number;
 }
 
-const apiBase = "http://10.5.36.63:8085/voteservice/api/";
+const apiBase = "http://192.168.20.1:8085/voteservice/api/";
 // VITE_API_BASE_URL=http://10.5.36.63:8085/assemblyservice/api/
 
 export const rowClassName = (row: Shareholder) => {

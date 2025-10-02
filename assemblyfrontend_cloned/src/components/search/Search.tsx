@@ -47,6 +47,8 @@ const Search = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+
+
   const getAuthToken = (): string | null => {
     const token = localStorage.getItem("token");
     if (!token || token.includes("<!DOCTYPE html") || token.includes("<html")) {
@@ -99,7 +101,7 @@ const Search = () => {
       const data: Shareholder[] = Array.isArray(response.data)
         ? response.data
         : [response.data];
-
+console.log("Response",data)
       if (data.length === 0) {
         setError("No results found for your search");
         toast({
@@ -220,6 +222,7 @@ const Search = () => {
       });
 
       if (isMarking) {
+          console.log("person info",selectedShareholder)
         navigate("/print", {
           state: {
             person: {

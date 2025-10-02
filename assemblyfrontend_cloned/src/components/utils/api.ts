@@ -12,7 +12,7 @@ import type {
 // export const BASE_URL =
 //   "http://inhouseapps.bankofabyssinia.com:8085/voteservice/api";
 export const BASE_URL =
-"http://10.5.36.63:8085/voteservice/api"
+"http://192.168.20.1:8085/voteservice/api"
 
 // Axios instance for API requests
 const api = axios.create({

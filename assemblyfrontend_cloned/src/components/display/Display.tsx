@@ -328,7 +328,7 @@ const Display = () => {
               padding="p-8"
             />
             <MetricCard
-              label="አጠቃላይ የተፈረመ አክሲዮን ካፒታል (በቁጥር)"
+              label="አጠቃላይ የተፈረመ አክሲዮን (በቁጥር)"
               count={sharesSum}
               prevCount={prevSharesSum}
               decimals={0}
