@@ -6,7 +6,7 @@ import {
   ChevronDoubleRightIcon,
 } from "@heroicons/react/24/outline";
 import { useToast } from "@/hooks/use-toast";
-import { Shareholder } from "./components/Searchprint";
+import { Shareholder } from "./Searchprint";
 
 export interface Column {
   header: string;

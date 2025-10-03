@@ -77,8 +77,23 @@ public class ContentController {
 
     @GetMapping("/admin/shareid/{shareid}")
     public List<Sherholderdetail> searchshareholderId(@PathVariable String shareid) {
-        return sharerepo.findByShareholderid(shareid);
+        return sharerepo.findByShareholderidStartsWith(shareid);
     }
+    @GetMapping("/admin/search/{query}")
+    public List<Sherholderdetail> searchSmart(@PathVariable String query) {
+        boolean isNumeric = query.chars().allMatch(Character::isDigit);
+        boolean isString = !isNumeric;
+    
+        // normalize query for phone starting with 09
+        String normalizedQuery = query;
+        if (isNumeric && query.startsWith("09")) {
+            normalizedQuery = query.substring(1); // remove leading 0
+        }
+    
+        return sharerepo.searchSmart(normalizedQuery, isNumeric, isString);
+    }
+    
+
 // @GetMapping("/admin/getperson/{id}")
 // public String getuserdata(@PathVariable Long id) {
     

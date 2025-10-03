@@ -22,6 +22,7 @@ import ElectionsPage from "./components/pages/ElectionPage";
 import DashboardPage from "./components/pages/DashboardPage";
 import AttendanceReport from "./components/report/AttendanceReport";
 import VoteReportsPage from "./components/report/VoteReportsPage";
+import SearchPrint from "./components/print_dividend/Searchprint";
 
 function App() {
   console.log("App component rendering");
@@ -35,6 +36,11 @@ function App() {
           <Route path="/" element={<Login />} />
 
           <Route path="/login" element={<Login />} />
+          <Route  element={<DashboardLayout />}>
+          
+          <Route path="/assembly_dividend" element={<SearchPrint />} />
+          <Route path="/assembly_dividend/Print" element={<Print />} />
+          </Route>
 
           {/* Protected Routes */}
           <Route element={<ProtectedRoute />}>

@@ -20,7 +20,7 @@ export interface Shareholder {
   devidend: number;
 }
 
-const apiBase = "http://192.168.20.1:8085/voteservice/api/";
+const apiBase = "http://localhost:8085/voteservice/api/";
 // VITE_API_BASE_URL=http://10.5.36.63:8085/assemblyservice/api/
 
 export const rowClassName = (row: Shareholder) => {
@@ -45,49 +45,64 @@ const SearchPrint = () => {
       setError("Please enter a search term");
       return;
     }
-
+  
     setLoading(true);
     try {
-      let response;
-      if (query.startsWith("9")) {
-        // search by phone
-        response = await axios.get(
-          `${apiBase}admin/phone/phone?phone=${encodeURIComponent(query)}`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+      let responses: Shareholder[] = [];
+  
+      // normalize query if starts with 09
+      let normalizedQuery = query;
+      if (query.startsWith("09")) {
+        normalizedQuery = query.slice(1); // remove leading 0 -> 9xxxx
+      }
+  
+      if (normalizedQuery.startsWith("9")) {
+        // search both phone and shareholder id
+        const [phoneRes, idRes] = await Promise.all([
+          axios.get(`${apiBase}admin/phone/phone?phone=${encodeURIComponent(normalizedQuery)}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          axios.get(`${apiBase}admin/shareid/shareid?shareid=${encodeURIComponent(normalizedQuery)}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+        ]);
+  
+        responses = [
+          ...(Array.isArray(phoneRes.data) ? phoneRes.data : [phoneRes.data]),
+          ...(Array.isArray(idRes.data) ? idRes.data : [idRes.data]),
+        ];
       } else if (isNaN(Number(query))) {
         // search by name
-        response = await axios.get(
-          `${apiBase}admin/name/name?name=${encodeURIComponent(query)}`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+        const res = await axios.get(`${apiBase}admin/name/name?name=${encodeURIComponent(query)}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        responses = Array.isArray(res.data) ? res.data : [res.data];
       } else {
-        // search by shareid
-        response = await axios.get(
-          `${apiBase}admin/shareid/shareid?shareid=${encodeURIComponent(
-            query
-          )}`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+        // search by shareid only
+        const res = await axios.get(`${apiBase}admin/shareid/shareid?shareid=${encodeURIComponent(query)}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        responses = Array.isArray(res.data) ? res.data : [res.data];
       }
-
-      const data: Shareholder[] = Array.isArray(response.data)
-        ? response.data
-        : [response.data];
-
-      if (data.length === 0) {
+  
+      // deduplicate results by shareholderid
+      const uniqueResults: Shareholder[] = Array.from(
+        new Map(responses.map((item) => [item.shareholderid, item])).values()
+      );
+  
+      if (uniqueResults.length === 0) {
         setError("No results found");
         toast({ title: "No results found", variant: "destructive" });
       } else {
-        toast({ title: `Found ${data.length} result(s)`, variant: "success" });
+        toast({ title: `Found ${uniqueResults.length} result(s)`, variant: "success" });
       }
-
-      setResult(data);
-
-      // Show legal/print notices
-      const hasLegal = data.some((s) => getRemark(s) === "To Legal");
-      const hasOnlyPrint = data.some((s) => getRemark(s).includes("Only"));
-
+  
+      setResult(uniqueResults);
+  
+      // notices
+      const hasLegal = uniqueResults.some((s) => getRemark(s) === "To Legal");
+      const hasOnlyPrint = uniqueResults.some((s) => getRemark(s).includes("Only"));
+  
       if (hasLegal) {
         toast({
           title: "Legal Notice",
@@ -101,7 +116,7 @@ const SearchPrint = () => {
           duration: 5000,
         });
       }
-
+  
       if (hasOnlyPrint) {
         toast({
           title: "Notice: Only Print",
@@ -123,6 +138,7 @@ const SearchPrint = () => {
       setLoading(false);
     }
   };
+  
 
   const handleRowClick = (shareholder: Shareholder) => {
     navigate("/assembly_dividend/Print", { state: { person: shareholder } });
@@ -149,7 +165,7 @@ const SearchPrint = () => {
   return (
     <div className="space-y-6 p-4">
       <SearchCard
-        label="Search For Printing"
+        label="Search For Printing Dividend "
         placeholder="Enter ID, Name, or Phone"
         onSearch={handleSearch}
         loading={loading}

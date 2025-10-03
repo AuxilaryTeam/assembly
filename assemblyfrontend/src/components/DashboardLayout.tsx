@@ -52,6 +52,8 @@ const navItems = [
     icon: <BsBarChartLine />,
     path: "/VoteReportsPage",
   },
+  { name: "Print Dividend", icon: <FiPrinter />, path: "/assembly_dividend" },
+
 ];
 
 const DashboardLayout = () => {

@@ -33,75 +33,48 @@ const SearchPrint = () => {
   const handleSearch = async (query: string) => {
     setSearch(query);
     setError(null);
+  
     if (!query.trim()) {
       setResult([]);
       setError("Please enter a search term");
       return;
     }
-
+  
     setLoading(true);
+  
     try {
-      let response;
-      if (query.startsWith("9")) {
-        response = await axios.get(
-          `${apiBase}admin/phone/${encodeURIComponent(query)}`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-      } else if (isNaN(Number(query))) {
-        response = await axios.get(
-          `${apiBase}admin/name/${encodeURIComponent(query)}`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-      } else {
-        response = await axios.get(
-          `${apiBase}admin/shareid/${encodeURIComponent(query)}`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+      // normalize leading 0 for 09 numbers
+      let normalizedQuery = query;
+      if (/^09\d+/.test(query)) {
+        normalizedQuery = query.slice(1);
       }
-
-      const data: Shareholder[] = Array.isArray(response.data)
-        ? response.data
-        : [response.data];
-
-      if (data.length === 0) {
+  
+      const res = await axios.get(`${apiBase}admin/search/${encodeURIComponent(normalizedQuery)}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+  
+      const responses: Shareholder[] = Array.isArray(res.data) ? res.data : [res.data];
+  
+      const uniqueResults: Shareholder[] = Array.from(
+        new Map(responses.map((item) => [item.shareholderid, item])).values()
+      );
+  
+      if (!uniqueResults.length) {
         setError("No results found");
         toast({ title: "No results found", variant: "destructive" });
       } else {
-        toast({ title: `Found ${data.length} result(s)`, variant: "success" });
+        toast({ title: `Found ${uniqueResults.length} result(s)`, variant: "success" });
       }
-
-      setResult(data);
-      // Check for remarks
-      const hasLegal = data.some((s) => getRemark(s) === "To Legal");
-      const hasOnlyPrint = data.some((s) => getRemark(s).includes("Only"));
-
-      if (hasLegal) {
-        toast({
-          title: "Legal Notice",
-          description: (
-            <div className="flex items-center space-x-2">
-              <FiAlertTriangle className="h-4 w-4" />
-              <span>Some shareholders require legal processing.</span>
-            </div>
-          ),
-          variant: "destructive",
-          duration: 5000,
-        });
-      }
-
-      if (hasOnlyPrint) {
-        toast({
-          title: "Notice: Only Print",
-          description: (
-            <div className="flex items-center space-x-2">
-              <Printer className="h-4 w-4" />
-              <span>Some shareholders are marked as print-only.</span>
-            </div>
-          ),
-          variant: "warning", // Assuming you have a 'warning' variant with custom styling
-          duration: 5000,
-        });
-      }
+  
+      setResult(uniqueResults);
+  
+      // check remarks
+      const hasLegal = uniqueResults.some((s) => getRemark(s) === "To Legal");
+      const hasOnlyPrint = uniqueResults.some((s) => getRemark(s).includes("Only"));
+  
+      if (hasLegal) toast({ title: "Legal Notice", description: <div className="flex items-center space-x-2"><FiAlertTriangle className="h-4 w-4" /><span>Some shareholders require legal processing.</span></div>, variant: "destructive", duration: 5000 });
+      if (hasOnlyPrint) toast({ title: "Notice: Only Print", description: <div className="flex items-center space-x-2"><Printer className="h-4 w-4" /><span>Some shareholders are marked as print-only.</span></div>, variant: "warning", duration: 5000 });
+  
     } catch (err: any) {
       setError(err.message || "Network error");
       setResult([]);
@@ -110,7 +83,9 @@ const SearchPrint = () => {
       setLoading(false);
     }
   };
+  
 
+  
   const handleRowClick = (s: Shareholder) => {
     navigate("/print", { state: { person: s } });
   };
