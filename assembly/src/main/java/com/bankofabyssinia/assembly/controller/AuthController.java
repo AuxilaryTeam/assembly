@@ -4,6 +4,9 @@ import com.bankofabyssinia.assembly.DTO.LoginRequest;
 import com.bankofabyssinia.assembly.DTO.LoginResponse;
 import com.bankofabyssinia.assembly.DTO.UserDTO;
 import com.bankofabyssinia.assembly.model.User;
+
+import jakarta.servlet.http.HttpServletRequest;
+
 import com.bankofabyssinia.assembly.Service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -41,10 +44,10 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> loginUser(@RequestBody LoginRequest loginRequest, HttpServletRequest request) {
         try {
 
-            LoginResponse response = authService.login(loginRequest);
+            LoginResponse response = authService.login( loginRequest, request);
             return ResponseEntity.ok(
                   response
             );
@@ -53,6 +56,41 @@ public class AuthController {
                     Map.of(
                             "error", "Login failed",
                             "message", e.getMessage()
+                    )
+            );
+        }
+    }
+
+
+    // logout and invalidate the token
+    @PostMapping("/logout")
+    public ResponseEntity<?> logoutUser(HttpServletRequest request, @RequestBody Map<String, String> body) {
+        try {
+            String accessToken = body.get("accessToken");
+            String refreshToken = body.get("refreshToken");
+
+            if (accessToken == null || accessToken.isEmpty() || refreshToken == null || refreshToken.isEmpty()) {
+                return ResponseEntity.status(400).body(
+                        Map.of(
+                                "error", "Bad Request",
+                                "message", "Access token and refresh token are required. Please provide both tokens and try again."
+                        )
+                );
+            } else {
+                
+                authService.logout(accessToken, refreshToken);
+                return ResponseEntity.ok(
+                        Map.of(
+                                "message", "Logged out successfully"
+                        )
+                );      
+            }
+
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(
+                    Map.of(
+                            "error", "Logout failed",
+                            "message", "There was an issue while logging out. Please try again later."
                     )
             );
         }

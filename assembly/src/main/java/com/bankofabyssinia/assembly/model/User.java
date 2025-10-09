@@ -17,16 +17,19 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String firstName;
-    private String lastName;
-    @Column(unique = true, nullable = true)
-    private String email;
+        @Column(length = 50)
+        private String firstName;
+        @Column(length = 50)
+        private String lastName;
+        @Column(unique = true, nullable = true, length = 100)
+        private String email;
 
-    @Column(unique = true, nullable = true)
-    private String username;
+        @Column(unique = true, nullable = true, length = 50)
+        private String username;
 
-//    @JsonIgnore
-    private String password;
+    //    @JsonIgnore
+        @Column(length = 100)
+        private String password;
 
     @ManyToOne
     @JoinColumn(name = "role_id", referencedColumnName = "id")

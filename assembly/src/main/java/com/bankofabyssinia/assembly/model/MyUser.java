@@ -1,5 +1,6 @@
 package com.bankofabyssinia.assembly.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -11,9 +12,12 @@ public class MyUser {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    private String username;
-    private String password;
-    private String role; //Eg: ADMIN,USER
+        @Column(length = 50)
+        private String username;
+        @Column(length = 100)
+        private String password;
+        @Column(length = 20)
+        private String role; //Eg: ADMIN,USER
 
     public Long getId() {
         return id;

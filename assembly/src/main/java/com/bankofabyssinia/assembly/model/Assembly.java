@@ -21,11 +21,11 @@ public class Assembly {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String name;
-
-    @Column(length = 500)
-    private String description;
+        @Column(length = 100)
+        private String name;
+    
+        @Column(length = 255)
+        private String description;
 
     private LocalDate assemblyDay;
 

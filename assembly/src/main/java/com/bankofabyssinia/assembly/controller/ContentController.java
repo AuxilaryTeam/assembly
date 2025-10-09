@@ -30,6 +30,9 @@ import com.bankofabyssinia.assembly.repo.AttendanceLogRepository;
 import com.bankofabyssinia.assembly.repo.ShareholderRepo;
 // import com.bankofabyssinia.assembly.webtoken.JwtService;
 import com.bankofabyssinia.assembly.webtoken.LoginForm;
+
+import jakarta.servlet.http.HttpServletRequest;
+
 import org.springframework.web.bind.annotation.RequestParam;
 
 
@@ -56,7 +59,7 @@ public class ContentController {
        
 
     @GetMapping("/home")
-    public String handleWelcome() {
+    public String handleWelcome(HttpServletRequest request) {
         return "Welcome to home!";
     }
 

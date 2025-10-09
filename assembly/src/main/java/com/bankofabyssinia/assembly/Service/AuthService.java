@@ -11,7 +11,7 @@ import com.bankofabyssinia.assembly.repo.UserRepository;
 import com.bankofabyssinia.assembly.DTO.LoginRequest;
 import com.bankofabyssinia.assembly.DTO.LoginResponse;
 import com.bankofabyssinia.assembly.DTO.UserDTO;
-import com.bankofabyssinia.assembly.config.JwtUtil;
+import com.bankofabyssinia.assembly.Util.JwtUtil;
 import com.bankofabyssinia.assembly.model.Role;
 import com.bankofabyssinia.assembly.model.User;
 
@@ -32,6 +32,9 @@ public class AuthService {
     @Autowired
     private RoleRepository roleRepo;
 
+    @Autowired
+    private RevokedTokenService revokedTokenService;
+
     public User register(UserDTO user) {
         user.setPassword(encoder.encode(user.getPassword()));
 
@@ -48,7 +51,7 @@ public class AuthService {
         return userRepo.save(newUser);
     }
 
-    public LoginResponse login (LoginRequest loginRequest) {
+    public LoginResponse login (LoginRequest loginRequest, HttpServletRequest httpServletRequest) {
         Optional<User> userOpt = userRepo.findByEmailIgnoreCase(loginRequest.getEmail());
 
         // login with username or email (added feature)
@@ -59,7 +62,7 @@ public class AuthService {
         if (userOpt.isPresent()) {
             User user = userOpt.get();
             if (encoder.matches(loginRequest.getPassword(), user.getPassword())) {
-                String token = jwtUtil.generateToken(user);
+                String token = jwtUtil.generateToken(user, httpServletRequest);
 
                 return LoginResponse.builder()
                         .fullName(user.getFullName())
@@ -75,6 +78,12 @@ public class AuthService {
     }
 
     public String getToken(HttpServletRequest requestHeader) throws IllegalArgumentException {
+
+        // Check for Authorization header
+        // if (requestHeader == null) {
+        //     throw new IllegalArgumentException("Request header is missing");
+        // }
+
         String authHeader = requestHeader.getHeader("Authorization");
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
@@ -96,5 +105,10 @@ public class AuthService {
         Long roleId = jwtUtil.extractRoleId(token);
         return roleRepo.findById(roleId)
                 .orElseThrow(() -> new RuntimeException("Role not found with id: " + roleId));
+    }
+
+    public void logout(String accessToken, String refreshToken) {
+
+        revokedTokenService.revokeToken(accessToken, refreshToken);
     }
 }
