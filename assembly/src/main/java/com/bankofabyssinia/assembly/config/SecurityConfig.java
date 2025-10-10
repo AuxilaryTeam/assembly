@@ -75,7 +75,9 @@ public class SecurityConfig {
                 "/swagger-ui.html",
                 "/api/role/create",
                 "/api/role/all",
-                "/api/admin/**"
+                "/api/admin/**",
+                "/api/auth/refresh-token",
+                "/api/auth/logout"
             ).permitAll() // Allow access to these endpoints
             .anyRequest().authenticated() // Secure other endpoints
         )

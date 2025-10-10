@@ -8,6 +8,8 @@ import com.bankofabyssinia.assembly.model.User;
 import jakarta.servlet.http.HttpServletRequest;
 
 import com.bankofabyssinia.assembly.Service.AuthService;
+import com.bankofabyssinia.assembly.Util.JwtUtil;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,6 +24,9 @@ import java.util.Map;
 public class AuthController {
     @Autowired
     private AuthService authService;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody UserDTO user) {
@@ -91,6 +96,32 @@ public class AuthController {
                     Map.of(
                             "error", "Logout failed",
                             "message", "There was an issue while logging out. Please try again later."
+                    )
+            );
+        }
+    }
+
+     @PostMapping("/refresh-token")
+    public ResponseEntity<?> refreshToken(@RequestBody Map<String, String> request, HttpServletRequest httpServletRequest) {
+        try {
+            String refreshToken = request.get("refreshToken");
+            if (refreshToken == null || refreshToken.isEmpty()) {
+                return ResponseEntity.status(400).body(
+                        Map.of(
+                                "error", "Bad Request",
+                                "message", "No refresh token provided. Please include a refresh token and try again."
+                        )
+                );
+            }
+            Map<String, String> tokens = jwtUtil.refreshAccessToken(refreshToken, httpServletRequest);
+            return ResponseEntity.ok(
+                        tokens
+            );
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(
+                    Map.of(
+                            "error", "Token refresh failed",
+                            "message", "There was an issue while refreshing the token. Please try again later."
                     )
             );
         }

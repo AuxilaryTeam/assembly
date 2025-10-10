@@ -63,11 +63,15 @@ public class AuthService {
             User user = userOpt.get();
             if (encoder.matches(loginRequest.getPassword(), user.getPassword())) {
                 String token = jwtUtil.generateToken(user, httpServletRequest);
+                String refreshToken = jwtUtil.generateRefreshToken(user, httpServletRequest);
+
+
 
                 return LoginResponse.builder()
                         .fullName(user.getFullName())
                         .email(user.getEmail())
                         .token(token)
+                        .refreshToken(refreshToken)
                         .build();
             } else {
                 throw new RuntimeException("Incorrect password");

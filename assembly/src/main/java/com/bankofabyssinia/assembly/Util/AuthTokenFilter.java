@@ -41,7 +41,8 @@ public class AuthTokenFilter extends OncePerRequestFilter{
     "/assembly/api/auth/change-password",
     "/assembly/api/role/create",
     "/assembly/api/role/all",
-    "/assembly/actuator/**"
+    "/assembly/actuator/**",
+    "/assembly/api/auth/refresh-token"
 );
 
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
