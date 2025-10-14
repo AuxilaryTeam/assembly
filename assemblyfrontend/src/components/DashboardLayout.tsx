@@ -14,6 +14,8 @@ import {
   FiX,
   FiUsers,
   FiGrid,
+  FiToggleLeft,
+  FiToggleRight,
 } from "react-icons/fi";
 import { BsBarChartLine, BsCardChecklist } from "react-icons/bs";
 
@@ -24,41 +26,77 @@ import slogan from "@/assets/logo2.jpg";
 import collapsedLogo from "@/assets/logo-collapsed.ico";
 import { BookOpen, CheckCircle, ShieldAlert } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { useAttendance } from "./utils/AttendanceContext";
 
-const navItems = [
-  { name: "Attendance", icon: <FiClipboard />, path: "/search" },
-  { name: "Print Forms", icon: <FiPrinter />, path: "/searchprint" },
-  {
-    name: "Attendance Report",
-    icon: <FiFileText />,
-    path: "/attendancereport",
-  },
-  {
-    name: " Attendance Summary Display",
-    icon: <FiMonitor />,
-    path: "/display",
-  },
-  {
-    name: "Print Attendance Summary ",
-    icon: <BsCardChecklist />,
-    path: "/displayprint",
-  },
-  { name: "Voting Screen", icon: <FiCheckSquare />, path: "/displayselector" },
-  { name: "Dashboard", icon: <FiGrid />, path: "/dashboard" },
-  { name: "Candidates", icon: <FiUsers />, path: "/candidates" },
-  { name: "Print Log", icon: <BookOpen />, path: "/log" },
-  {
-    name: "General Reports",
-    icon: <BsBarChartLine />,
-    path: "/VoteReportsPage",
-  },
-  { name: "Print Dividend", icon: <FiPrinter />, path: "/assembly_dividend" },
+// Define types for navigation items
+interface ToggleItem {
+  name: string;
+  icon: React.ReactElement;
+  action: () => void;
+  isToggle: true;
+}
 
-];
+interface NavItem {
+  name: string;
+  icon: React.ReactElement;
+  path: string;
+  isToggle?: never;
+}
+
+type NavigationItem = ToggleItem | NavItem;
 
 const DashboardLayout = () => {
   const navigate = useNavigate();
+  const { isAttendanceEnabled, toggleAttendance } = useAttendance();
   const [sidebarState, setSidebarState] = useState("expanded");
+
+  // Define attendance toggle item
+  const attendanceToggleItem: ToggleItem = {
+    name: `Attendance ${isAttendanceEnabled ? "ON" : "OFF"}`,
+    icon: isAttendanceEnabled ? (
+      <FiToggleRight className="text-green-500" />
+    ) : (
+      <FiToggleLeft className="text-gray-500" />
+    ),
+    action: toggleAttendance,
+    isToggle: true,
+  };
+
+  // Navigation items with toggle at the top
+  const navItems: NavigationItem[] = [
+    attendanceToggleItem,
+    { name: "Attendance", icon: <FiClipboard />, path: "/search" },
+    { name: "Print Forms", icon: <FiPrinter />, path: "/searchprint" },
+    {
+      name: "Attendance Report",
+      icon: <FiFileText />,
+      path: "/attendancereport",
+    },
+    {
+      name: " Attendance Summary Display",
+      icon: <FiMonitor />,
+      path: "/display",
+    },
+    {
+      name: "Print Attendance Summary ",
+      icon: <BsCardChecklist />,
+      path: "/displayprint",
+    },
+    {
+      name: "Voting Screen",
+      icon: <FiCheckSquare />,
+      path: "/displayselector",
+    },
+    { name: "Dashboard", icon: <FiGrid />, path: "/dashboard" },
+    { name: "Candidates", icon: <FiUsers />, path: "/candidates" },
+    { name: "Print Log", icon: <BookOpen />, path: "/log" },
+    {
+      name: "General Reports",
+      icon: <BsBarChartLine />,
+      path: "/VoteReportsPage",
+    },
+    { name: "Print Dividend", icon: <FiPrinter />, path: "/assembly_dividend" },
+  ];
 
   const handleLogout = () => {
     try {
@@ -100,6 +138,20 @@ const DashboardLayout = () => {
     setSidebarState("expanded");
   };
 
+  // CSS classes for active/inactive navigation items
+  const activeClasses = "bg-amber-50 text-custom-yellow shadow-inner";
+  const inactiveClasses = "text-gray-700";
+
+  // Type guard to check if item is a toggle item
+  const isToggleItem = (item: NavigationItem): item is ToggleItem => {
+    return "isToggle" in item && item.isToggle === true;
+  };
+
+  // Type guard to check if item is a nav item
+  const isNavItem = (item: NavigationItem): item is NavItem => {
+    return "path" in item;
+  };
+
   return (
     <div className="flex h-screen bg-gray-50 font-sans">
       {/* Sidebar */}
@@ -123,19 +175,13 @@ const DashboardLayout = () => {
                     <button
                       onClick={() => setSidebarState("collapsed")}
                       className="text-gray-700 p-1 hover:bg-gray-200 rounded"
-                      title="Expand"
+                      title="Collapse"
                     >
                       <FiChevronLeft size={28} />
                     </button>
                   </div>
                 ) : (
                   <div className="flex flex-col items-center w-full">
-                    {" "}
-                    {sidebarState === "hidden" && (
-                      <div className="flex flex-row items-left justify-around w-full">
-                        <img src={logo} alt="Logo" className="h-14 w-auto" />
-                      </div>
-                    )}
                     <img
                       src={collapsedLogo}
                       alt="Logo"
@@ -157,13 +203,32 @@ const DashboardLayout = () => {
               {/* Navigation items */}
               <nav className="flex-1 overflow-y-auto mt-6 px-2 space-y-2">
                 {navItems.map((item) => {
-                  const commonClasses = `flex items-center p-4 text-base font-semibold rounded-lg transition-colors hover:bg-amber-100 hover:text-amber-700 ${
+                  const commonClasses = `flex items-center p-4 text-base font-semibold rounded-lg transition-colors ${
                     sidebarState === "collapsed" ? "justify-center" : ""
+                  } ${
+                    isToggleItem(item)
+                      ? "bg-gray-100 hover:bg-gray-200 text-gray-800 cursor-pointer"
+                      : "hover:bg-amber-100 hover:text-amber-700 text-gray-700"
                   }`;
-                  const activeClasses =
-                    "bg-amber-50 text-custom-yellow shadow-inner";
-                  const inactiveClasses = "text-gray-700";
 
+                  // Handle toggle button
+                  if (isToggleItem(item)) {
+                    return (
+                      <button
+                        key={item.name}
+                        onClick={item.action}
+                        className={commonClasses}
+                        title={sidebarState === "collapsed" ? item.name : ""}
+                      >
+                        <span className="text-xl">{item.icon}</span>
+                        {sidebarState === "expanded" && (
+                          <span className="ml-3">{item.name}</span>
+                        )}
+                      </button>
+                    );
+                  }
+
+                  // Handle external link for display page
                   if (item.path === "/display") {
                     return (
                       <a
@@ -182,6 +247,7 @@ const DashboardLayout = () => {
                     );
                   }
 
+                  // Handle regular navigation links
                   return (
                     <NavLink
                       key={item.name}
@@ -222,6 +288,7 @@ const DashboardLayout = () => {
           </motion.aside>
         )}
       </AnimatePresence>
+
       {/* Expand Button (Visible when sidebar is hidden) */}
       {sidebarState === "hidden" && (
         <motion.div
@@ -239,6 +306,7 @@ const DashboardLayout = () => {
           </Button>
         </motion.div>
       )}
+
       {/* Main content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
@@ -269,8 +337,8 @@ const DashboardLayout = () => {
         </header>
 
         {/* Content Area */}
-        <main className="flex-1 overflow-y-auto  bg-gray-50">
-          <Card className=" shadow-lg border border-gray-100 rounded-xl">
+        <main className="flex-1 overflow-y-auto bg-gray-50">
+          <Card className="shadow-lg border border-gray-100 rounded-xl">
             <CardContent>
               <Outlet />
             </CardContent>
