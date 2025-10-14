@@ -67,8 +67,9 @@ public class JwtUtil {
         .claim("roleName", user.getRole().getName())
         .claim("roleId", user.getRole().getId())
         .claim("userId", user.getId())
-        .claim("roles", roles)
-        .claim("fingerPrint", fingerPrint )
+        .claim("roleId", user.getRole().getId())
+        .claim("roleName", user.getRole().getName())
+        .claim("fingerPrint", fingerPrint)
         .setIssuedAt(new Date())
         .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
         .signWith(signingKey, SignatureAlgorithm.HS512)
@@ -216,13 +217,7 @@ public class JwtUtil {
         return extractAllClaims(token).get("userId", Long.class);
     }
 
-    public String extractBranchCode(String token) {
-        return extractAllClaims(token).get("branchCode", String.class);
-    }
-
-    public String extractBranchName(String token) {
-        return extractAllClaims(token).get("branchName", String.class);
-    }
+    
 
     public void invalidateToken(String token) {
         // make the token token invalid
