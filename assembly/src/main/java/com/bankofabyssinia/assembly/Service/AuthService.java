@@ -71,6 +71,8 @@ public class AuthService {
                         .fullName(user.getFullName())
                         .email(user.getEmail())
                         .token(token)
+                        .roleId(user.getRole().getId().toString())
+                        .roleName(user.getRole().getName())
                         .refreshToken(refreshToken)
                         .build();
             } else {
