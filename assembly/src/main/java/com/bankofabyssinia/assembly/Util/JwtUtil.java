@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Function;
 
 @Component
 public class JwtUtil {
@@ -37,8 +38,8 @@ public class JwtUtil {
 
     private static final String SECRET_KEY = "pqsO7v2lfk+2g7HGj47zShhYxMCf2iCwYo0FCKXs5Pq4LIn2V6YrNo23sEtY+jERJ7dLgIShEnILH5Q45JmdGw==";
     // Replace with a strong secret key in production
-    private final long EXPIRATION_TIME = 900000; 
-    private final long REFRESH_EXPIRATION_TIME = 10800000; 
+    private final long EXPIRATION_TIME = 900000;
+    private final long REFRESH_EXPIRATION_TIME = 10800000;
 
     public String generateToken(User user, HttpServletRequest request) {
 
@@ -50,30 +51,30 @@ public class JwtUtil {
         } while (revokedTokenRepository.existsByJti(jti)); // Replace false with actual check to see if jti is revoked
 
         AssemblyUserDetails userDetails = AssemblyUserDetails.buildUserDetails(user);
-    List<String> roles = userDetails.getAuthorities().stream()
-        .map(authority -> authority.getAuthority())
-        .toList();
+        List<String> roles = userDetails.getAuthorities().stream()
+                .map(authority -> authority.getAuthority())
+                .toList();
 
         String ip = request.getRemoteAddr();
         String userAgent = request.getHeader("User-Agent");
         String fingerPrint = FingerprintUtil.generateFingerprint(ip, userAgent);
 
-    byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
-    var signingKey = Keys.hmacShaKeyFor(keyBytes);
+        byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
+        var signingKey = Keys.hmacShaKeyFor(keyBytes);
 
-    return Jwts.builder()
-        .setId(jti) // Set the unique identifier
-        .setSubject(user.getEmail())
-        .claim("roleName", user.getRole().getName())
-        .claim("roleId", user.getRole().getId())
-        .claim("userId", user.getId())
-        .claim("roleId", user.getRole().getId())
-        .claim("roleName", user.getRole().getName())
-        .claim("fingerPrint", fingerPrint)
-        .setIssuedAt(new Date())
-        .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-        .signWith(signingKey, SignatureAlgorithm.HS512)
-        .compact();
+        return Jwts.builder()
+                .setId(jti) // Set the unique identifier
+                .setSubject(user.getEmail())
+                .claim("roleName", user.getRole().getName())
+                .claim("roleId", user.getRole().getId())
+                .claim("userId", user.getId())
+                .claim("roleId", user.getRole().getId())
+                .claim("roleName", user.getRole().getName())
+                .claim("fingerPrint", fingerPrint)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                .signWith(signingKey, SignatureAlgorithm.HS512)
+                .compact();
     }
 
     // Generate a refresh token with longer expiration
@@ -86,22 +87,22 @@ public class JwtUtil {
             jti = UUID.randomUUID().toString(); // Generate a unique identifier for the token
         } while (revokedTokenRepository.existsByJti(jti)); // Replace false with actual check to see if jti is revoked
 
-    String ip = request.getRemoteAddr();
-    String userAgent = request.getHeader("User-Agent");
-    String fingerPrint = FingerprintUtil.generateFingerprint(ip, userAgent);
+        String ip = request.getRemoteAddr();
+        String userAgent = request.getHeader("User-Agent");
+        String fingerPrint = FingerprintUtil.generateFingerprint(ip, userAgent);
 
-    byte[] rkeyBytes = Decoders.BASE64.decode(SECRET_KEY);
-    var rSigningKey = Keys.hmacShaKeyFor(rkeyBytes);
+        byte[] rkeyBytes = Decoders.BASE64.decode(SECRET_KEY);
+        var rSigningKey = Keys.hmacShaKeyFor(rkeyBytes);
 
-    return Jwts.builder()
-        .setId(jti) // Set the unique identifier on the refresh token
-        .setSubject(user.getEmail())
-        .claim("userId", user.getId())
-        .claim("fingerPrint", fingerPrint)
-        .setIssuedAt(new Date())
-        .setExpiration(new Date(System.currentTimeMillis() + REFRESH_EXPIRATION_TIME))
-        .signWith(rSigningKey, SignatureAlgorithm.HS512)
-        .compact();
+        return Jwts.builder()
+                .setId(jti) // Set the unique identifier on the refresh token
+                .setSubject(user.getEmail())
+                .claim("userId", user.getId())
+                .claim("fingerPrint", fingerPrint)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + REFRESH_EXPIRATION_TIME))
+                .signWith(rSigningKey, SignatureAlgorithm.HS512)
+                .compact();
     }
 
     // Validate the token is not revoked and not expired
@@ -125,7 +126,6 @@ public class JwtUtil {
             return false; // If there's an error, consider the token as invalid
         }
     }
-    
 
     // Validate refresh token and generate new access token
     public Map<String, String> refreshAccessToken(String refreshToken, HttpServletRequest request) {
@@ -182,10 +182,9 @@ public class JwtUtil {
     public String extractJti(String token) {
         return extractAllClaims(token).getId();
     }
-    
 
     public Claims extractAllClaims(String token) {
-        try{
+        try {
             byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
             return Jwts.parserBuilder()
                     .setSigningKey(Keys.hmacShaKeyFor(keyBytes))
@@ -217,8 +216,6 @@ public class JwtUtil {
         return extractAllClaims(token).get("userId", Long.class);
     }
 
-    
-
     public void invalidateToken(String token) {
         // make the token token invalid
         String jti = extractJti(token);
@@ -239,5 +236,9 @@ public class JwtUtil {
         }
     }
 
-}
+    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = extractAllClaims(token);
+        return claimsResolver.apply(claims);
+    }
 
+}

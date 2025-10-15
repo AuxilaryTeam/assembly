@@ -24,100 +24,78 @@ import AttendanceReport from "./components/report/AttendanceReport";
 import VoteReportsPage from "./components/report/VoteReportsPage";
 import SearchPrint from "./components/print_dividend/Searchprint";
 import { AttendanceProvider } from "./components/utils/AttendanceContext";
+import WebSocketDebug from "./components/utils/WebSocketDebug";
 
 function App() {
   console.log("App component rendering");
 
   return (
     <AttendanceProvider>
-      <Router basename="/assembly">
+      <Router
+        basename="/assemblyservice"
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true,
+        }}
+      >
+        {" "}
         <Routes>
           {/* Public Routes */}
           <Route path="" element={<Login />} />
           <Route path="/" element={<Login />} />
           <Route path="/login" element={<Login />} />
-          <Route element={<DashboardLayout />}>
-            <Route path="/assembly_dividend" element={<SearchPrint />} />
-            <Route path="/assembly_dividend/Print" element={<Print />} />
-          </Route>
-          <Route path="/proposals/:id" element={<PublicPoposalDisplay />} />
-          <Route path="/polls/:id" element={<PublicPollDisplay />} />
-          <Route path="/display" element={<Diplay />} />
 
-          {/* Protected Routes with Role-Based Access */}
-
-          {/* Basic authentication only (any logged-in user) */}
+          {/* Protected Routes */}
           <Route element={<ProtectedRoute />}>
             <Route
               element={
                 <AuthLayout>
                   <DashboardLayout />
+                  <WebSocketDebug />
                 </AuthLayout>
               }
             >
+              {/* Basic routes for all authenticated users */}
               <Route path="/search" element={<Search />} />
               <Route path="/searchprint" element={<Searchprint />} />
               <Route path="/displayprint" element={<Diplayprint />} />
-            </Route>
-          </Route>
-
-          {/* User role and above */}
-          <Route
-            element={
-              <ProtectedRoute requiredRoles={["user", "moderator", "admin"]} />
-            }
-          >
-            <Route
-              element={
-                <AuthLayout>
-                  <DashboardLayout />
-                </AuthLayout>
-              }
-            >
               <Route path="/print" element={<Print />} />
+              <Route path="/display" element={<Diplay />} />
+              <Route path="/assembly_dividend" element={<SearchPrint />} />
+              <Route path="/assembly_dividend/Print" element={<Print />} />
+
+              {/* User role routes */}
               <Route path="/positions" element={<PositionsPage />} />
               <Route path="/positions/:id" element={<PositionDetailPage />} />
               <Route path="/issues" element={<IssuesPage />} />
               <Route path="/issues/:id" element={<IssueDetailPage />} />
               <Route path="/candidates" element={<CandidatesPage />} />
+
+              {/* Admin only routes */}
+              <Route element={<ProtectedRoute requiredRoles="ADMIN" />}>
+                <Route path="/dashboard" element={<DashboardPage />} />
+                <Route
+                  path="/displayselector"
+                  element={<PollProposalSelectorPage />}
+                />
+                <Route
+                  path="/attendancereport"
+                  element={<AttendanceReport />}
+                />
+                <Route path="/votereportspage" element={<VoteReportsPage />} />
+                <Route
+                  path="/printprevdisplay"
+                  element={<PrintPrevDisplays />}
+                />
+                <Route path="/elections" element={<ElectionsPage />} />
+                <Route path="/log" element={<PrintPrevDisplays />} />
+              </Route>
             </Route>
           </Route>
 
-          {/* Moderator role and above */}
-          <Route
-            element={<ProtectedRoute requiredRoles={["moderator", "admin"]} />}
-          >
-            <Route
-              element={
-                <AuthLayout>
-                  <DashboardLayout />
-                </AuthLayout>
-              }
-            >
-              <Route path="/attendancereport" element={<AttendanceReport />} />
-              <Route path="/votereportspage" element={<VoteReportsPage />} />
-              <Route path="/printprevdisplay" element={<PrintPrevDisplays />} />
-              <Route path="/elections" element={<ElectionsPage />} />
-              <Route path="/log" element={<PrintPrevDisplays />} />
-            </Route>
-          </Route>
-
-          {/* Admin only routes */}
-          <Route element={<ProtectedRoute requiredRoles="admin" />}>
-            <Route
-              element={
-                <AuthLayout>
-                  <DashboardLayout />
-                </AuthLayout>
-              }
-            >
-              <Route path="/dashboard" element={<DashboardPage />} />
-              <Route
-                path="/displayselector"
-                element={<PollProposalSelectorPage />}
-              />
-            </Route>
-          </Route>
+          {/* Public display routes */}
+          <Route path="/proposals/:id" element={<PublicPoposalDisplay />} />
+          <Route path="/polls/:id" element={<PublicPollDisplay />} />
         </Routes>
       </Router>
       <Toaster />

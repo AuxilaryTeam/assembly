@@ -1,6 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
 import {
   ShieldAlert,
@@ -12,7 +11,7 @@ import {
   Lock,
   Loader2,
 } from "lucide-react";
-import { userLogin } from "./utils/api";
+import { loginUser } from "./utils/apiAuth";
 
 const Login = () => {
   const location = useLocation();
@@ -24,9 +23,9 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
+  // Show toast if redirected from a protected route
   useEffect(() => {
     const state = location.state as { showToast?: boolean };
-
     if (state?.showToast) {
       toast({
         variant: "destructive",
@@ -39,8 +38,6 @@ const Login = () => {
         description: "Please login to access this page.",
         duration: 4000,
       });
-
-      // Clear state so toast doesn't show again on refresh
       navigate(location.pathname, { replace: true, state: {} });
     }
   }, [location, toast, navigate]);
@@ -50,30 +47,18 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}authenticate`,
-        { username, password },
-        {
-          validateStatus: () => true, // Let us manually check status
-        }
-      );
+      const response = await loginUser({ username, password });
 
-      if (
-        typeof response.data !== "string" ||
-        response.data.includes("<!DOCTYPE html") ||
-        response.status !== 200
-      ) {
-        throw new Error("Invalid response from server");
-      }
+      // Save tokens and user data
+      const { token, refreshToken, roleName, fullName, email } = response.data;
 
-      localStorage.setItem("token", response.data);
+      if (!token) throw new Error("Invalid server response");
 
-      const response2 = await userLogin({
-        username: username,
-        password: password,
-      });
-
-      localStorage.setItem("voteServiceToken", response2.data.token);
+      localStorage.setItem("token", token);
+      localStorage.setItem("refreshToken", refreshToken);
+      localStorage.setItem("userRole", roleName);
+      localStorage.setItem("userName", fullName);
+      localStorage.setItem("userEmail", email);
 
       toast({
         variant: "success",
@@ -83,12 +68,13 @@ const Login = () => {
             <span>Login Successful</span>
           </div>
         ),
-        description: "Redirecting to dashboard...",
+        description: `Welcome ${fullName}! Redirecting to dashboard...`,
         duration: 2000,
       });
 
-      setTimeout(() => navigate("/search"), 2000);
-    } catch (err) {
+      setTimeout(() => navigate("/search"), 1500); // Redirect to search page
+    } catch (err: any) {
+      console.error("Login error:", err);
       toast({
         variant: "destructive",
         title: (
@@ -98,7 +84,9 @@ const Login = () => {
           </div>
         ),
         description:
-          "Invalid username or password, or server error. Please try again.",
+          err.response?.data?.message ||
+          err.message ||
+          "Invalid username or password. Please try again.",
         duration: 4000,
       });
     } finally {
@@ -120,9 +108,9 @@ const Login = () => {
           <div className="space-y-2">
             <label
               htmlFor="username"
-              className="text-sm font-medium text-gray-700 flex items-center gap-1">
-              <User className="w-4 h-4" />
-              Username
+              className="text-sm font-medium text-gray-700 flex items-center gap-1"
+            >
+              <User className="w-4 h-4" /> Username
             </label>
             <div className="relative">
               <input
@@ -130,11 +118,11 @@ const Login = () => {
                 id="username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 text-gray-800 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-gray-50 transition-colors"
                 placeholder="Enter your username"
                 required
                 autoFocus
                 disabled={loading}
+                className="w-full pl-10 pr-4 py-3 text-gray-800 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-gray-50 transition-colors"
               />
               <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
             </div>
@@ -144,9 +132,9 @@ const Login = () => {
           <div className="space-y-2">
             <label
               htmlFor="password"
-              className="text-sm font-medium text-gray-700 flex items-center gap-1">
-              <Lock className="w-4 h-4" />
-              Password
+              className="text-sm font-medium text-gray-700 flex items-center gap-1"
+            >
+              <Lock className="w-4 h-4" /> Password
             </label>
             <div className="relative">
               <input
@@ -154,17 +142,18 @@ const Login = () => {
                 id="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-10 pr-12 py-3 text-gray-800 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-gray-50 transition-colors"
                 placeholder="Enter your password"
                 required
                 disabled={loading}
+                className="w-full pl-10 pr-12 py-3 text-gray-800 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-gray-50 transition-colors"
               />
               <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-                disabled={loading}>
+                disabled={loading}
+              >
                 {showPassword ? (
                   <EyeOff className="w-5 h-5" />
                 ) : (
@@ -182,7 +171,8 @@ const Login = () => {
               loading
                 ? "bg-amber-400 cursor-not-allowed"
                 : "bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 shadow-md hover:shadow-lg"
-            }`}>
+            }`}
+          >
             {loading ? (
               <>
                 <Loader2 className="w-5 h-5 animate-spin" />

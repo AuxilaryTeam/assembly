@@ -20,7 +20,7 @@ export interface Shareholder {
   devidend: number;
 }
 
-const apiBase = "http://localhost:8080/voteservice/api/";
+const apiBase = "http://localhost:8081/voteservice/api/";
 // VITE_API_BASE_URL=http://10.5.36.63:8085/assemblyservice/api/
 
 export const rowClassName = (row: Shareholder) => {
@@ -45,64 +45,87 @@ const SearchPrint = () => {
       setError("Please enter a search term");
       return;
     }
-  
+
     setLoading(true);
     try {
       let responses: Shareholder[] = [];
-  
+
       // normalize query if starts with 09
       let normalizedQuery = query;
       if (query.startsWith("09")) {
         normalizedQuery = query.slice(1); // remove leading 0 -> 9xxxx
       }
-  
+
       if (normalizedQuery.startsWith("9")) {
         // search both phone and shareholder id
         const [phoneRes, idRes] = await Promise.all([
-          axios.get(`${apiBase}admin/phone/phone?phone=${encodeURIComponent(normalizedQuery)}`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          axios.get(`${apiBase}admin/shareid/shareid?shareid=${encodeURIComponent(normalizedQuery)}`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
+          axios.get(
+            `${apiBase}admin/phone/phone?phone=${encodeURIComponent(
+              normalizedQuery
+            )}`,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          ),
+          axios.get(
+            `${apiBase}admin/shareid/shareid?shareid=${encodeURIComponent(
+              normalizedQuery
+            )}`,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          ),
         ]);
-  
+
         responses = [
           ...(Array.isArray(phoneRes.data) ? phoneRes.data : [phoneRes.data]),
           ...(Array.isArray(idRes.data) ? idRes.data : [idRes.data]),
         ];
       } else if (isNaN(Number(query))) {
         // search by name
-        const res = await axios.get(`${apiBase}admin/name/name?name=${encodeURIComponent(query)}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await axios.get(
+          `${apiBase}admin/name/name?name=${encodeURIComponent(query)}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         responses = Array.isArray(res.data) ? res.data : [res.data];
       } else {
         // search by shareid only
-        const res = await axios.get(`${apiBase}admin/shareid/shareid?shareid=${encodeURIComponent(query)}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await axios.get(
+          `${apiBase}admin/shareid/shareid?shareid=${encodeURIComponent(
+            query
+          )}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         responses = Array.isArray(res.data) ? res.data : [res.data];
       }
-  
+
       // deduplicate results by shareholderid
       const uniqueResults: Shareholder[] = Array.from(
         new Map(responses.map((item) => [item.shareholderid, item])).values()
       );
-  
+
       if (uniqueResults.length === 0) {
         setError("No results found");
         toast({ title: "No results found", variant: "destructive" });
       } else {
-        toast({ title: `Found ${uniqueResults.length} result(s)`, variant: "success" });
+        toast({
+          title: `Found ${uniqueResults.length} result(s)`,
+          variant: "success",
+        });
       }
-  
+
       setResult(uniqueResults);
-  
+
       // notices
       const hasLegal = uniqueResults.some((s) => getRemark(s) === "To Legal");
-      const hasOnlyPrint = uniqueResults.some((s) => getRemark(s).includes("Only"));
-  
+      const hasOnlyPrint = uniqueResults.some((s) =>
+        getRemark(s).includes("Only")
+      );
+
       if (hasLegal) {
         toast({
           title: "Legal Notice",
@@ -116,7 +139,7 @@ const SearchPrint = () => {
           duration: 5000,
         });
       }
-  
+
       if (hasOnlyPrint) {
         toast({
           title: "Notice: Only Print",
@@ -138,7 +161,6 @@ const SearchPrint = () => {
       setLoading(false);
     }
   };
-  
 
   const handleRowClick = (shareholder: Shareholder) => {
     navigate("/assembly_dividend/Print", { state: { person: shareholder } });

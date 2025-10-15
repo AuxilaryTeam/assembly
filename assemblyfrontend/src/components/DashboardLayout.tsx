@@ -24,9 +24,18 @@ import { Button } from "@/components/ui/button";
 import logo from "@/assets/Logo.png";
 import slogan from "@/assets/logo2.jpg";
 import collapsedLogo from "@/assets/logo-collapsed.ico";
-import { BookOpen, CheckCircle, ShieldAlert } from "lucide-react";
+import {
+  BookOpen,
+  CheckCircle,
+  ShieldAlert,
+  Circle,
+  Radio,
+  Power,
+  PowerOff,
+} from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useAttendance } from "./utils/AttendanceContext";
+import { UserRole } from "./utils/types";
 
 // Define types for navigation items
 interface ToggleItem {
@@ -43,28 +52,211 @@ interface NavItem {
   isToggle?: never;
 }
 
-type NavigationItem = ToggleItem | NavItem;
+interface StatusItem {
+  name: string;
+  icon: React.ReactElement;
+  isStatus: true;
+}
+
+type NavigationItem = ToggleItem | NavItem | StatusItem;
 
 const DashboardLayout = () => {
   const navigate = useNavigate();
-  const { isAttendanceEnabled, toggleAttendance } = useAttendance();
+  const {
+    isAttendanceEnabled,
+    toggleAttendance,
+    canToggleAttendance,
+    isConnected,
+  } = useAttendance();
   const [sidebarState, setSidebarState] = useState("expanded");
+  const userRole = localStorage.getItem("userRole") as UserRole;
+  const isAdmin = userRole === "ADMIN";
 
-  // Define attendance toggle item
-  const attendanceToggleItem: ToggleItem = {
-    name: `Attendance ${isAttendanceEnabled ? "ON" : "OFF"}`,
-    icon: isAttendanceEnabled ? (
-      <FiToggleRight className="text-green-500" />
-    ) : (
-      <FiToggleLeft className="text-gray-500" />
-    ),
-    action: toggleAttendance,
-    isToggle: true,
+  // Enhanced toggle function with better UX
+  const handleToggleAttendance = () => {
+    if (!canToggleAttendance) return;
+
+    toggleAttendance();
+
+    // Enhanced toast notification
+    toast({
+      title: (
+        <div className="flex items-center gap-2">
+          {isAttendanceEnabled ? (
+            <PowerOff className="h-5 w-5 text-amber-600" />
+          ) : (
+            <Power className="h-5 w-5 text-green-600" />
+          )}
+          <span className="font-medium">
+            Attendance {isAttendanceEnabled ? "Disabled" : "Enabled"}
+          </span>
+        </div>
+      ),
+      description: isConnected
+        ? `Attendance tracking is now ${isAttendanceEnabled ? "OFF" : "ON"}`
+        : "⚠️ No connection to attendance service",
+      duration: 3000,
+      variant: isConnected ? "default" : "destructive",
+    });
   };
 
-  // Navigation items with toggle at the top
+  // Professional toggle button component
+  const AttendanceToggleButton = () => (
+    <div className="flex flex-col gap-2 p-3 bg-white rounded-lg border border-slate-200 shadow-sm">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div
+            className={`p-2 rounded-lg ${
+              isAttendanceEnabled
+                ? "bg-green-50 border border-green-200"
+                : "bg-slate-100 border border-slate-300"
+            }`}
+          >
+            {isAttendanceEnabled ? (
+              <Power className="w-5 h-5 text-green-600" />
+            ) : (
+              <PowerOff className="w-5 h-5 text-slate-500" />
+            )}
+          </div>
+          <div className="flex flex-col">
+            <span className="font-semibold text-slate-900 text-sm">
+              Attendance System
+            </span>
+            <span className="text-slate-600 text-xs">
+              {isAttendanceEnabled ? "Active tracking" : "System paused"}
+            </span>
+          </div>
+        </div>
+
+        <button
+          onClick={handleToggleAttendance}
+          disabled={!isConnected}
+          className={`
+            relative inline-flex h-6 w-11 items-center rounded-full transition-all duration-200
+            focus:outline-none focus:ring-2 focus:ring-custom-yellow focus:ring-offset-2
+            ${isAttendanceEnabled ? "bg-green-500" : "bg-slate-400"}
+            ${
+              !isConnected
+                ? "opacity-50 cursor-not-allowed"
+                : "cursor-pointer hover:shadow-md"
+            }
+          `}
+        >
+          <span
+            className={`
+              inline-block h-4 w-4 transform rounded-full bg-white transition-all duration-200
+              ${isAttendanceEnabled ? "translate-x-6" : "translate-x-1"}
+              shadow-sm
+            `}
+          />
+        </button>
+      </div>
+
+      {/* Status indicator */}
+      <div className="flex items-center justify-between text-xs">
+        <div className="flex items-center gap-1">
+          <div
+            className={`w-2 h-2 rounded-full ${
+              isConnected ? "bg-green-500 animate-pulse" : "bg-red-500"
+            }`}
+          />
+          <span className={isConnected ? "text-green-700" : "text-red-700"}>
+            {isConnected ? "Connected" : "Disconnected"}
+          </span>
+        </div>
+        <span
+          className={`
+          px-2 py-1 rounded text-xs font-medium
+          ${
+            isAttendanceEnabled
+              ? "bg-green-100 text-green-700 border border-green-200"
+              : "bg-slate-100 text-slate-600 border border-slate-300"
+          }
+        `}
+        >
+          {isAttendanceEnabled ? "LIVE" : "PAUSED"}
+        </span>
+      </div>
+    </div>
+  );
+
+  // Admin toggle item with professional UI
+  // const adminToggleItem: ToggleItem | null = isAdmin
+  //   ? {
+  //       name: `Attendance Control`,
+  //       icon: (
+  //         <div className="relative">
+  //           {isAttendanceEnabled ? (
+  //             <Power className="w-5 h-5 text-green-600" />
+  //           ) : (
+  //             <PowerOff className="w-5 h-5 text-slate-500" />
+  //           )}
+  //         </div>
+  //       ),
+  //       action: handleToggleAttendance,
+  //       isToggle: true,
+  //     }
+  //   : null;
+
+  // Professional status indicator for non-admin users
+  const attendanceStatusItem: StatusItem | null = !isAdmin
+    ? {
+        name: `Attendance Status`,
+        icon: (
+          <div className="relative">
+            <div
+              className={`p-2 rounded-lg ${
+                isAttendanceEnabled
+                  ? isConnected
+                    ? "bg-green-50 text-green-600 border border-green-200"
+                    : "bg-amber-50 text-amber-600 border border-amber-200"
+                  : "bg-slate-100 text-slate-500 border border-slate-300"
+              }`}
+            >
+              {isAttendanceEnabled ? (
+                <div className="relative">
+                  <Power className="w-5 h-5" />
+                  {isConnected && (
+                    <div className="absolute -top-1 -right-1 w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                  )}
+                </div>
+              ) : (
+                <PowerOff className="w-5 h-5" />
+              )}
+            </div>
+          </div>
+        ),
+        isStatus: true,
+      }
+    : null;
+
+  const adminNavItems = [
+    { name: "Dashboard", icon: <FiGrid />, path: "/dashboard" },
+    {
+      name: "Voting Screen",
+      icon: <FiCheckSquare />,
+      path: "/displayselector",
+    },
+    {
+      name: "General Reports",
+      icon: <BsBarChartLine />,
+      path: "/VoteReportsPage",
+    },
+    {
+      name: "Print Attendance Summary",
+      icon: <BsCardChecklist />,
+      path: "/displayprint",
+    },
+    { name: "Print Log", icon: <BookOpen />, path: "/log" },
+  ];
+
+  // Navigation items with appropriate items based on user role
   const navItems: NavigationItem[] = [
-    attendanceToggleItem,
+    // Show admin toggle or user status indicator
+    // ...(adminToggleItem ? [adminToggleItem] : []),
+    ...(attendanceStatusItem ? [attendanceStatusItem] : []),
+
+    // Common navigation items
     { name: "Attendance", icon: <FiClipboard />, path: "/search" },
     { name: "Print Forms", icon: <FiPrinter />, path: "/searchprint" },
     {
@@ -73,29 +265,15 @@ const DashboardLayout = () => {
       path: "/attendancereport",
     },
     {
-      name: " Attendance Summary Display",
+      name: "Attendance Summary Display",
       icon: <FiMonitor />,
       path: "/display",
     },
-    {
-      name: "Print Attendance Summary ",
-      icon: <BsCardChecklist />,
-      path: "/displayprint",
-    },
-    {
-      name: "Voting Screen",
-      icon: <FiCheckSquare />,
-      path: "/displayselector",
-    },
-    { name: "Dashboard", icon: <FiGrid />, path: "/dashboard" },
     { name: "Candidates", icon: <FiUsers />, path: "/candidates" },
-    { name: "Print Log", icon: <BookOpen />, path: "/log" },
-    {
-      name: "General Reports",
-      icon: <BsBarChartLine />,
-      path: "/VoteReportsPage",
-    },
     { name: "Print Dividend", icon: <FiPrinter />, path: "/assembly_dividend" },
+
+    // Admin-only items
+    ...(isAdmin ? adminNavItems : []),
   ];
 
   const handleLogout = () => {
@@ -139,21 +317,25 @@ const DashboardLayout = () => {
   };
 
   // CSS classes for active/inactive navigation items
-  const activeClasses = "bg-amber-50 text-custom-yellow shadow-inner";
-  const inactiveClasses = "text-gray-700";
+  const activeClasses =
+    "bg-amber-50 text-custom-yellow border border-amber-200";
+  const inactiveClasses = "text-slate-700 hover:bg-slate-50";
 
-  // Type guard to check if item is a toggle item
+  // Type guards
   const isToggleItem = (item: NavigationItem): item is ToggleItem => {
     return "isToggle" in item && item.isToggle === true;
   };
 
-  // Type guard to check if item is a nav item
+  const isStatusItem = (item: NavigationItem): item is StatusItem => {
+    return "isStatus" in item && item.isStatus === true;
+  };
+
   const isNavItem = (item: NavigationItem): item is NavItem => {
     return "path" in item;
   };
 
   return (
-    <div className="flex h-screen bg-gray-50 font-sans">
+    <div className="flex h-screen bg-slate-50 font-sans">
       {/* Sidebar */}
       <AnimatePresence>
         {sidebarState !== "hidden" && (
@@ -164,20 +346,20 @@ const DashboardLayout = () => {
             }}
             exit={{ width: 0 }}
             transition={{ duration: 0.2 }}
-            className="hidden md:flex flex-col bg-white shadow-xl border-r border-gray-200 print:hidden"
+            className="hidden md:flex flex-col bg-white shadow-sm border-r border-slate-200 print:hidden"
           >
             <div className="flex flex-col h-full">
               {/* Sidebar header with collapse controls */}
-              <div className="flex items-center justify-between p-4 border-b border-gray-200">
+              <div className="flex items-center justify-between p-4 border-b border-slate-200">
                 {sidebarState === "expanded" ? (
                   <div className="flex flex-row items-left justify-around w-full">
-                    <img src={logo} alt="Logo" className="h-14 w-auto" />
+                    <img src={logo} alt="Logo" className="h-12 w-auto" />
                     <button
                       onClick={() => setSidebarState("collapsed")}
-                      className="text-gray-700 p-1 hover:bg-gray-200 rounded"
+                      className="text-slate-600 p-2 hover:bg-slate-100 rounded-lg transition-colors"
                       title="Collapse"
                     >
-                      <FiChevronLeft size={28} />
+                      <FiChevronLeft size={20} />
                     </button>
                   </div>
                 ) : (
@@ -185,15 +367,15 @@ const DashboardLayout = () => {
                     <img
                       src={collapsedLogo}
                       alt="Logo"
-                      className="h-10 w-auto mx-auto mb-2"
+                      className="h-8 w-auto mx-auto mb-2"
                     />
                     <div className="flex gap-1">
                       <button
                         onClick={() => setSidebarState("expanded")}
-                        className="text-gray-700 p-1 hover:bg-gray-200 rounded"
+                        className="text-slate-600 p-2 hover:bg-slate-100 rounded-lg transition-colors"
                         title="Expand"
                       >
-                        <FiMenu size={20} />
+                        <FiMenu size={16} />
                       </button>
                     </div>
                   </div>
@@ -201,30 +383,85 @@ const DashboardLayout = () => {
               </div>
 
               {/* Navigation items */}
-              <nav className="flex-1 overflow-y-auto mt-6 px-2 space-y-2">
+              <nav className="flex-1 overflow-y-auto p-3 space-y-2">
+                {/* Professional toggle button for admin */}
+                {isAdmin && (
+                  <div className="mb-4">
+                    <AttendanceToggleButton />
+                  </div>
+                )}
+
                 {navItems.map((item) => {
-                  const commonClasses = `flex items-center p-4 text-base font-semibold rounded-lg transition-colors ${
+                  const commonClasses = `flex items-center p-3 text-sm font-medium rounded-lg transition-all duration-200 ${
                     sidebarState === "collapsed" ? "justify-center" : ""
                   } ${
                     isToggleItem(item)
-                      ? "bg-gray-100 hover:bg-gray-200 text-gray-800 cursor-pointer"
-                      : "hover:bg-amber-100 hover:text-amber-700 text-gray-700"
+                      ? "bg-white border border-slate-200 text-slate-800 cursor-pointer hover:shadow-sm"
+                      : isStatusItem(item)
+                      ? "bg-slate-50 text-slate-700 cursor-default border border-slate-200"
+                      : "hover:bg-slate-50 text-slate-700"
                   }`;
 
-                  // Handle toggle button
+                  // Handle admin toggle button
                   if (isToggleItem(item)) {
                     return (
                       <button
                         key={item.name}
                         onClick={item.action}
+                        className={`${commonClasses} group relative`}
+                        title={sidebarState === "collapsed" ? item.name : ""}
+                      >
+                        <span className="text-lg">{item.icon}</span>
+                        {sidebarState === "expanded" && (
+                          <div className="ml-3 text-left flex-1">
+                            <div className="font-semibold text-slate-900">
+                              {item.name}
+                            </div>
+                            <div className="text-xs text-slate-500 mt-1">
+                              <div className="flex items-center gap-1">
+                                <div
+                                  className={`w-1.5 h-1.5 rounded-full ${
+                                    isConnected ? "bg-green-500" : "bg-red-500"
+                                  }`}
+                                />
+                                {isAttendanceEnabled ? "Active" : "Inactive"}
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </button>
+                    );
+                  }
+
+                  // Handle status indicator for non-admin users
+                  if (isStatusItem(item)) {
+                    return (
+                      <div
+                        key={item.name}
                         className={commonClasses}
                         title={sidebarState === "collapsed" ? item.name : ""}
                       >
-                        <span className="text-xl">{item.icon}</span>
+                        <span className="text-lg">{item.icon}</span>
                         {sidebarState === "expanded" && (
-                          <span className="ml-3">{item.name}</span>
+                          <div className="ml-3 text-left flex-1">
+                            <div className="font-semibold text-slate-900">
+                              {item.name}
+                            </div>
+                            <div
+                              className={`text-xs font-medium mt-1 ${
+                                isAttendanceEnabled
+                                  ? isConnected
+                                    ? "text-green-600"
+                                    : "text-amber-600"
+                                  : "text-slate-500"
+                              }`}
+                            >
+                              {isAttendanceEnabled ? "Active" : "Inactive"}
+                              {isConnected ? " • Connected" : " • Disconnected"}
+                            </div>
+                          </div>
                         )}
-                      </button>
+                      </div>
                     );
                   }
 
@@ -239,7 +476,7 @@ const DashboardLayout = () => {
                         className={`${commonClasses} ${inactiveClasses}`}
                         title={sidebarState === "collapsed" ? item.name : ""}
                       >
-                        <span className="text-xl">{item.icon}</span>
+                        <span className="text-lg">{item.icon}</span>
                         {sidebarState === "expanded" && (
                           <span className="ml-3">{item.name}</span>
                         )}
@@ -259,7 +496,7 @@ const DashboardLayout = () => {
                       }
                       title={sidebarState === "collapsed" ? item.name : ""}
                     >
-                      <span className="text-xl">{item.icon}</span>
+                      <span className="text-lg">{item.icon}</span>
                       {sidebarState === "expanded" && (
                         <span className="ml-3">{item.name}</span>
                       )}
@@ -269,12 +506,12 @@ const DashboardLayout = () => {
               </nav>
 
               {/* Logout button at bottom */}
-              <div className="p-4 border-t border-gray-200">
+              <div className="p-4 border-t border-slate-200">
                 <Button
-                  variant="destructive"
+                  variant="outline"
                   className={`flex items-center justify-center ${
                     sidebarState === "collapsed" ? "w-12 px-0" : "w-full"
-                  }`}
+                  } text-slate-700 border-slate-300 hover:bg-slate-50`}
                   onClick={handleLogout}
                   title={sidebarState === "collapsed" ? "Logout" : ""}
                 >
@@ -299,10 +536,10 @@ const DashboardLayout = () => {
           className="fixed bottom-4 left-4 z-50 print:hidden"
         >
           <Button
-            className="bg-amber-400 hover:bg-amber-500 text-black rounded-full p-3 shadow-lg"
+            className="bg-custom-yellow text-white rounded-lg p-3 shadow-sm hover:bg-amber-500"
             onClick={expandSidebar}
           >
-            <FiChevronRight size={24} />
+            <FiChevronRight size={20} />
           </Button>
         </motion.div>
       )}
@@ -310,36 +547,64 @@ const DashboardLayout = () => {
       {/* Main content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <header className="bg-white shadow-md flex items-center justify-between p-6 print:hidden">
+        <header className="bg-white shadow-sm flex items-center justify-between p-4 print:hidden">
           {/* Left side: menu toggle */}
           <div className="flex items-center gap-4">
             {sidebarState === "hidden" ? (
               <div className="flex flex-row items-center w-full">
-                <img src={logo} alt="Logo" className="h-14 w-auto ml-4" />
+                <img src={logo} alt="Logo" className="h-10 w-auto ml-4" />
               </div>
             ) : (
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={hideSidebar}
-                className="text-gray-700 p-1 hover:bg-gray-200 rounded"
+                className="text-slate-600 p-2 hover:bg-slate-100 rounded-lg"
                 title="Hide Sidebar"
               >
-                <FiX size={38} />
+                <FiX size={24} />
               </Button>
             )}
           </div>
 
-          {/* Right side: slogan or logo */}
-          <div className="flex items-center gap-2">
-            <img src={slogan} alt="Brand Slogan" className="h-10 w-auto" />
+          {/* Right side: slogan and attendance status indicator for non-admin users */}
+          <div className="flex items-center gap-4">
+            {!isAdmin && (
+              <div
+                className={`flex items-center gap-2 px-3 py-2 rounded-lg border ${
+                  isAttendanceEnabled
+                    ? isConnected
+                      ? "bg-green-50 text-green-700 border-green-200"
+                      : "bg-amber-50 text-amber-700 border-amber-200"
+                    : "bg-slate-100 text-slate-600 border-slate-300"
+                }`}
+              >
+                <div className="relative">
+                  {isAttendanceEnabled ? (
+                    <>
+                      <Power className="w-4 h-4" />
+                      {isConnected && (
+                        <div className="absolute -top-1 -right-1 w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
+                      )}
+                    </>
+                  ) : (
+                    <PowerOff className="w-4 h-4" />
+                  )}
+                </div>
+                <span className="text-sm font-medium">
+                  Attendance {isAttendanceEnabled ? "ON" : "OFF"}
+                  {isConnected ? " • Connected" : " • Disconnected"}
+                </span>
+              </div>
+            )}
+            <img src={slogan} alt="Brand Slogan" className="h-8 w-auto" />
           </div>
         </header>
 
         {/* Content Area */}
-        <main className="flex-1 overflow-y-auto bg-gray-50">
-          <Card className="shadow-lg border border-gray-100 rounded-xl">
-            <CardContent>
+        <main className="flex-1 overflow-y-auto bg-slate-50">
+          <Card className="shadow-sm border border-slate-200 rounded-lg m-4">
+            <CardContent className="p-6">
               <Outlet />
             </CardContent>
           </Card>

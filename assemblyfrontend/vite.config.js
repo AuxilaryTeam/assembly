@@ -7,7 +7,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export default defineConfig({
-  base: "/assembly/",
+  base: "/assemblyservice/",
   plugins: [react()],
   build: {
     outDir: "assembly", // default is 'dist', change as needed

@@ -16,40 +16,38 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-
-
-
-
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 @Component
-public class AuthTokenFilter extends OncePerRequestFilter{
-    // List of public endpoints (Ant-style patterns)
-   private static final List<String> PUBLIC_ENDPOINTS = Arrays.asList(
-    "/assembly/swagger-ui/**",
-    "/assembly/v3/api-docs/**",
-    "/assembly/swagger-ui.html",
-    "/assembly/webjars/**",
-    "/assembly/swagger-resources/**",
-    "/assembly/api/auth/login",
-    "/assembly/api/auth/logout",
-    "/assembly/api/auth/register",
-    "/assembly/api/auth/refresh-token",
-    "/assembly/api/auth/change-password",
-    "/assembly/api/role/create",
-    "/assembly/api/role/all",
-    "/assembly/actuator/**",
-    "/assembly/api/auth/refresh-token"
-);
+public class AuthTokenFilter extends OncePerRequestFilter {
+    // List of public endpoints (Ant-style patterns) - ADD WEBSOCKET ENDPOINTS
+    private static final List<String> PUBLIC_ENDPOINTS = Arrays.asList(
+            "/assemblyservice/swagger-ui/**",
+            "/assemblyservice/v3/api-docs/**",
+            "/assemblyservice/swagger-ui.html",
+            "/assemblyservice/webjars/**",
+            "/assemblyservice/swagger-resources/**",
+            "/assemblyservice/api/auth/login",
+            "/assemblyservice/api/auth/logout",
+            "/assemblyservice/api/auth/register",
+            "/assemblyservice/api/auth/refresh-token",
+            "/assemblyservice/api/auth/change-password",
+            "/assemblyservice/api/role/create",
+            "/assemblyservice/api/role/all",
+            "/assemblyservice/actuator/**",
+            "/assemblyservice/api/auth/refresh-token",
+            "/assemblyservice/ws/**", // WebSocket connections
+            "/ws/**",
+            "/ws/attendance",
+            "/assemblyservice/ws/attendance");
 
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
-    
+
     @Autowired
     private JwtUtil jwtUtil;
-
 
     @Autowired
     private AssemblyUserDetailService userDetailsService;
@@ -60,64 +58,73 @@ public class AuthTokenFilter extends OncePerRequestFilter{
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         String path = request.getRequestURI();
+
         // Skip JWT validation for public endpoints using AntPathMatcher
         boolean isPublic = PUBLIC_ENDPOINTS.stream().anyMatch(pattern -> pathMatcher.match(pattern, path));
-        if (isPublic) {
+
+        // Also skip for WebSocket upgrade requests
+        boolean isWebSocketUpgrade = isWebSocketUpgradeRequest(request);
+
+        if (isPublic || isWebSocketUpgrade) {
+            logger.debug("Skipping JWT validation for public/websocket endpoint: {}", path);
             filterChain.doFilter(request, response);
             return;
         }
-        try{
+
+        try {
             String jwt = parseJwt(request);
-            if(jwt != null && jwtUtil.validateToken(jwt)){
+            if (jwt != null && jwtUtil.validateToken(jwt)) {
                 String email = jwtUtil.extractEmail(jwt);
 
                 String tokenFingerprint = jwtUtil.extractFingerPrint(jwt);
 
                 String requestFingerPrint = FingerprintUtil.generateFingerprint(
-                    request.getRemoteAddr(),
-                    request.getHeader("User-Agent")
-                );
+                        request.getRemoteAddr(),
+                        request.getHeader("User-Agent"));
 
                 if (!requestFingerPrint.equals(tokenFingerprint)) {
-                // logger.warn("Fingerprint mismatch for user: {}", email);
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.setContentType("application/json");
-                response.getWriter().write("{\"error\":\"Unauthorized: Invalid or missing JWT token\"}");
-                return;
-            }
-
+                    logger.warn("Fingerprint mismatch for user: {}", email);
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.setContentType("application/json");
+                    response.getWriter().write("{\"error\":\"Unauthorized: Invalid or missing JWT token\"}");
+                    return;
+                }
 
                 UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-                var authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                var authentication = new UsernamePasswordAuthenticationToken(userDetails, null,
+                        userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 filterChain.doFilter(request, response);
             } else {
-                // logger.warn("Invalid or missing JWT token");
+                logger.warn("Invalid or missing JWT token for path: {}", path);
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 response.setContentType("application/json");
                 response.getWriter().write("{\"error\":\"Unauthorized: Invalid or missing JWT token\"}");
                 return;
             }
         } catch (Exception e) {
-            logger.error("Cannot set user authentication: {}");
+            logger.error("Cannot set user authentication: {}", e.getMessage());
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json");
-            response.getWriter().write("{\"error\":\"Unauthorized: " +  "\"}");
+            response.getWriter().write("{\"error\":\"Unauthorized: Authentication failed\"}");
         }
     }
 
     private String parseJwt(HttpServletRequest request) {
         String headerAuth = request.getHeader("Authorization");
-        if(headerAuth != null && headerAuth.startsWith("Bearer ")){
+        if (headerAuth != null && headerAuth.startsWith("Bearer ")) {
             return headerAuth.substring(7);
         }
-
         return null;
-        
     }
 
-    
+    private boolean isWebSocketUpgradeRequest(HttpServletRequest request) {
+        String connectionHeader = request.getHeader("Connection");
+        String upgradeHeader = request.getHeader("Upgrade");
 
-
+        return "WebSocket".equalsIgnoreCase(upgradeHeader) &&
+                connectionHeader != null &&
+                connectionHeader.toLowerCase().contains("upgrade");
+    }
 }
