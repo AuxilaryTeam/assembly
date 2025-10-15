@@ -11,7 +11,7 @@ import {
   Lock,
   Loader2,
 } from "lucide-react";
-import { loginUser } from "./utils/apiAuth";
+import { loginUser } from "./utils/api";
 
 const Login = () => {
   const location = useLocation();

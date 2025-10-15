@@ -6,7 +6,7 @@ import React, {
   useEffect,
   useRef,
 } from "react";
-import { nativeWebSocketService } from "./nativeWebSocketService";
+import { nativeWebSocketService } from "./api";
 import { useToast } from "@/hooks/use-toast";
 
 interface AttendanceContextType {
