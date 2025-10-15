@@ -1,5 +1,5 @@
 import { Routes, Route } from "react-router-dom";
-import SearchPrint from "./components/Searchprint";
+import SearchPrint from "./components/print_dividend/Searchprint";
 import Print from "./components/Print";
 
 function App() {

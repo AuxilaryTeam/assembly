@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import GenericPrint from "./GenericPrint";
+import GenericPrint from "./print_dividend/GenericPrint";
 
 const Print = () => {
   const location = useLocation();

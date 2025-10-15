@@ -1,51 +1,45 @@
-import { useToast } from "@/hooks/use-toast";
-import { useEffect, useState } from "react";
-import { useNavigate, Outlet } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 
-const ProtectedRoute = () => {
-  const navigate = useNavigate();
-  const { toast } = useToast();
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  const [showToast, setShowToast] = useState(false);
+export type UserRole = "ADMIN" | "USER";
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
+interface ProtectedRouteProps {
+  requiredRoles?: UserRole | UserRole[];
+}
 
-    if (!token) {
-      // Show toast immediately
-      toast({
-        variant: "destructive",
-        title: "🚫 Access Denied",
-        description: "Please login to access this page.",
-        duration: 3000,
-      });
+const ProtectedRoute = ({ requiredRoles }: ProtectedRouteProps = {}) => {
+  const location = useLocation();
+  const token = localStorage.getItem("token");
+  const userRole = localStorage.getItem("userRole") as UserRole;
 
-      // Set flag to show toast
-      setShowToast(true);
-
-      // Navigate after a delay to allow toast to be visible
-      const timer = setTimeout(() => {
-        navigate("/", {
-          replace: true,
-          state: { showToast: true },
-        });
-      });
-
-      return () => {
-        clearTimeout(timer);
-      };
-    } else {
-      setIsAuthenticated(true);
-    }
-  }, [navigate, toast]);
-
-  // Show nothing while checking authentication or showing toast
-  if (isAuthenticated === null || showToast) {
-    return null;
+  // If no token, redirect to login
+  if (!token) {
+    return (
+      <Navigate
+        to="/login"
+        state={{ from: location, showToast: true }}
+        replace
+      />
+    );
   }
 
-  // Only render children if authenticated
-  return isAuthenticated ? <Outlet /> : null;
+  // If roles are required, check authorization
+  if (requiredRoles) {
+    const requiredRolesArray = Array.isArray(requiredRoles)
+      ? requiredRoles
+      : [requiredRoles];
+
+    if (!requiredRolesArray.includes(userRole)) {
+      return (
+        <Navigate
+          to="/search" // Redirect to default page for unauthorized users
+          state={{ from: location, showToast: true }}
+          replace
+        />
+      );
+    }
+  }
+
+  return <Outlet />;
 };
 
 export default ProtectedRoute;

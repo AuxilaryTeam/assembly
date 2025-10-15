@@ -15,9 +15,10 @@ import {
   DialogFooter,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { FiAlertTriangle, FiCheckCircle } from "react-icons/fi";
+import { FiAlertTriangle, FiCheckCircle, FiToggleLeft } from "react-icons/fi";
 import { Gavel, Printer } from "lucide-react";
 import { rowClassName } from "./Searchprint";
+import { useAttendance } from "../utils/AttendanceContext";
 
 interface Shareholder {
   id: number;
@@ -38,6 +39,7 @@ const apiBase = import.meta.env.VITE_API_BASE_URL;
 
 const Search = () => {
   const navigate = useNavigate();
+  const { isAttendanceEnabled } = useAttendance();
   const [result, setResult] = useState<Shareholder[]>([]);
   const [itemsPerPage] = useState(5);
   const [modalOpen, setModalOpen] = useState(false);
@@ -46,8 +48,6 @@ const Search = () => {
   const [isMarking, setIsMarking] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-
 
   const getAuthToken = (): string | null => {
     const token = localStorage.getItem("token");
@@ -101,7 +101,9 @@ const Search = () => {
       const data: Shareholder[] = Array.isArray(response.data)
         ? response.data
         : [response.data];
-console.log("Response",data)
+
+      console.log("Response", data);
+
       if (data.length === 0) {
         setError("No results found for your search");
         toast({
@@ -117,9 +119,11 @@ console.log("Response",data)
         });
       }
       setResult(data);
+
       // Check for remarks
       const hasLegal = data.some((s) => getRemark(s) === "To Legal");
       const hasOnlyPrint = data.some((s) => getRemark(s).includes("Only"));
+
       if (hasLegal) {
         toast({
           title: "Legal Notice",
@@ -222,7 +226,7 @@ console.log("Response",data)
       });
 
       if (isMarking) {
-          console.log("person info",selectedShareholder)
+        console.log("person info", selectedShareholder);
         navigate("/print", {
           state: {
             person: {
@@ -262,7 +266,7 @@ console.log("Response",data)
           <Checkbox
             checked={value === 1}
             onCheckedChange={() => handleAttendanceClick(row)}
-            disabled={loading}
+            disabled={loading || !isAttendanceEnabled}
           />
         ),
     },
@@ -318,6 +322,46 @@ console.log("Response",data)
     },
   ];
 
+  // Show overlay when attendance is disabled
+  if (!isAttendanceEnabled) {
+    return (
+      <div className="space-y-6 p-4 relative">
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-white bg-opacity-90 z-50 flex items-center justify-center rounded-2xl">
+          <div className="text-center p-8 max-w-md">
+            <div className="bg-amber-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+              <FiToggleLeft className="text-amber-600 text-2xl" />
+            </div>
+            <h3 className="text-xl font-bold text-gray-800 mb-2">
+              Attendance Disabled
+            </h3>
+            <p className="text-gray-600 mb-4">
+              The attendance feature is currently turned off. Please enable it
+              from the sidebar to continue.
+            </p>
+            <Button
+              onClick={() => navigate(-1)}
+              className="bg-amber-500 hover:bg-amber-600 text-white"
+            >
+              Go Back
+            </Button>
+          </div>
+        </div>
+
+        {/* Disabled search UI */}
+        <SearchCard
+          label="Search For Attendance"
+          placeholder="Enter ID, Name, or Phone"
+          onSearch={() => {}} // Empty function when disabled
+          loading={false}
+          error="Attendance feature is currently disabled"
+          disabled={true}
+        />
+      </div>
+    );
+  }
+
+  // Normal functionality when attendance is enabled
   return (
     <div className="space-y-6 p-4">
       <SearchCard

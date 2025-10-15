@@ -20,6 +20,7 @@
     "@radix-ui/react-separator": "^1.1.7",
     "@radix-ui/react-slot": "^1.2.3",
     "@radix-ui/react-toast": "^1.2.15",
+    "@stomp/stompjs": "^7.2.1",
     "assemblyfrontend": "file:",
     "axios": "^1.7.7",
     "class-variance-authority": "^0.7.1",
@@ -38,6 +39,7 @@
     "react-to-print": "^3.1.1",
     "react-toast": "^1.0.3",
     "recharts": "^3.2.1",
+    "sockjs-client": "^1.6.1",
     "tailwind-merge": "^3.3.1",
     "tailwind-variants": "^3.1.1",
     "tailwindcss-animate": "^1.0.7"
@@ -48,6 +50,7 @@
     "@types/node": "^24.5.2",
     "@types/react": "^18.3.24",
     "@types/react-dom": "^18.3.7",
+    "@types/sockjs-client": "^1.5.4",
     "@vitejs/plugin-react": "^4.3.3",
     "autoprefixer": "^10.4.21",
     "eslint": "^9.13.0",
